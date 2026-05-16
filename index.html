@@ -141,6 +141,8 @@ h1 span{font-size:11px;color:var(--color-text-tertiary);font-weight:400}
 .pv{font-size:11px;font-weight:500;font-family:var(--font-mono);color:var(--color-text-primary)}
 .p1e{display:flex;gap:5px;align-items:center;margin-top:4px}
 .p1e input{width:52px !important}
+.vtog{font-size:8px;font-family:var(--font-sans);cursor:pointer;padding:2px 7px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-tertiary);height:20px}
+.vtog.act{background:var(--color-background-primary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
 </style>
 </head>
 <body>
@@ -302,6 +304,19 @@ h1 span{font-size:11px;color:var(--color-text-tertiary);font-weight:400}
   <div style="position:relative;width:100%;height:280px"><canvas id="ch" width="1206" height="350" style="display: block; box-sizing: border-box; height: 280px; width: 965px;"></canvas></div>
   <div class="rg8" id="rg"><div class="rc"><div class="rl">Fútbol</div><div class="rv">USD 20k</div></div><div class="rc"><div class="rl">Escuelita</div><div class="rv">USD 18k</div></div><div class="rc"><div class="rl">Paddle</div><div class="rv">USD 6k</div></div><div class="rc"><div class="rl">Buffet</div><div class="rv">USD 895</div></div><div class="rc"><div class="rl">Eventos</div><div class="rv">USD 4k</div></div><div class="rc"><div class="rl">Torneos</div><div class="rv">USD 358</div></div><div class="rc"><div class="rl">Gastos fijos</div><div class="rv ng">-USD 7k</div></div><div class="rc"><div class="rl">Sueldos</div><div class="rv ng">-USD 3k</div></div></div>
   <div class="prow" id="prow"><div class="pcard" onclick="startEditP1()"><div class="pl">Socio principal — editar %</div><div class="pv">55%</div><div style="font-size:9px;font-family:var(--font-mono);margin-top:2px">USD 1,1 M</div></div><div class="pcard nd"><div class="pl">Socio 2 (22%)</div><div class="pv">USD 438k</div></div><div class="pcard nd"><div class="pl">Socio 3 (22%)</div><div class="pv">USD 438k</div></div></div>
+  <div style="margin-top:10px">
+    <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
+      <div class="sec-t" style="margin:0;margin-right:2px">mensual:</div>
+      <button class="vtog act" id="vt-rev" onclick="togChart('rev')">Facturación</button>
+      <button class="vtog act" id="vt-cost" onclick="togChart('cost')">Gastos</button>
+      <span style="width:.5px;background:var(--color-border-secondary);height:14px;margin:0 2px;display:inline-block"></span>
+      <button class="vtog act" id="vt-pn1" onclick="togChart('pn1')">Maxi</button>
+      <button class="vtog act" id="vt-pn2" onclick="togChart('pn2')">Pato</button>
+      <button class="vtog act" id="vt-pn3" onclick="togChart('pn3')">Julio</button>
+    </div>
+    <div style="position:relative;width:100%;height:220px"><canvas id="ch2"></canvas></div>
+    <div class="leg" id="leg2" style="margin-top:4px"></div>
+  </div>
 </div>
 </div>
 </div>
@@ -370,18 +385,24 @@ function calc(){
   const rev=scN+stN+pdN+buT+evT+toT;
   const fc=getFix(),sal=getSal(),costs=fc+sal,gain=rev-costs,inv=getInv();
   const rE=Math.max(P.rc,P.rs,P.po?P.rp:0,3);
-  const labels=[],cumD=[],netD=[],spD=[];
+  const labels=[],cumD=[],netD=[],spD=[],ftbD=[],escD=[],pdlD=[],addD=[],gfxD=[],salD=[],pn1D=[],pn2D=[],pn3D=[];
+  const sp2=(1-P.sp1/100)/2;
   let cum=-inv,be=null,fp=null;
   for(let m=1;m<=P.meses;m++){
     const cf=Math.min(1,m/P.rc),sf=Math.min(1,m/P.rs),pf=P.po?Math.min(1,m/P.rp):0,of=Math.min(1,m/3);
-    const mN=(scN*cf+stN*sf+pdN*pf+(buT+evT+toT)*of)-costs;
+    const ftbM=scN*cf,escM=stN*sf,pdlM=pdN*pf,addM=(buT+evT+toT)*of;
+    const mN=ftbM+escM+pdlM+addM-costs;
     cum+=mN;if(!fp&&mN>0)fp=m;if(!be&&cum>=0)be=m;
     labels.push(m);cumD.push(Math.round(cum));netD.push(Math.round(mN));
     spD.push(Math.round(inv*(Math.pow(1+0.10/12,m)-1)));
+    ftbD.push(Math.round(ftbM));escD.push(Math.round(escM));pdlD.push(Math.round(pdlM));addD.push(Math.round(addM));
+    gfxD.push(-Math.round(fc));salD.push(-Math.round(sal));
+    const div=Math.max(0,mN);
+    pn1D.push(Math.round(div*P.sp1/100));pn2D.push(Math.round(div*sp2));pn3D.push(Math.round(div*sp2));
   }
   const c2=Math.round(cum),sp=Math.round(inv*(Math.pow(1+0.10,P.meses/12)-1));
   const roi=Math.round((c2/inv)*100),rsp=Math.round((sp/inv)*100);
-  return{scN:Math.round(scN),stN:Math.round(stN),pdN:Math.round(pdN),bu:Math.round(buT),ev:Math.round(evT),to:Math.round(toT),fc:Math.round(fc),sal:Math.round(sal),gain:Math.round(gain),inv:Math.round(inv),be,fp,cum:c2,roi,rsp,spMult:rsp>0?(roi/rsp).toFixed(1)+'×':'>>',labels,cumD,netD,spD,rE};
+  return{scN:Math.round(scN),stN:Math.round(stN),pdN:Math.round(pdN),bu:Math.round(buT),ev:Math.round(evT),to:Math.round(toT),fc:Math.round(fc),sal:Math.round(sal),gain:Math.round(gain),inv:Math.round(inv),be,fp,cum:c2,roi,rsp,spMult:rsp>0?(roi/rsp).toFixed(1)+'×':'>>',labels,cumD,netD,spD,rE,ftbD,escD,pdlD,addD,gfxD,salD,pn1D,pn2D,pn3D};
 }
 let chart=null,gRE=8;
 Chart.register({id:'rp',beforeDraw(c){const{ctx,chartArea:ca,scales}=c;if(!ca)return;ctx.save();ctx.fillStyle='rgba(136,135,128,.09)';const x0=scales.x.getPixelForValue(0),x1=scales.x.getPixelForValue(gRE);ctx.fillRect(x0,ca.top,Math.max(0,x1-x0),ca.bottom-ca.top);ctx.restore();}});
@@ -419,7 +440,7 @@ function render(){
   ].map(k=>`<div class="kc ${k.c}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div></div>`).join('');
   e('rg').innerHTML=[{l:'Fútbol',v:r.scN},{l:'Escuelita',v:r.stN},{l:'Paddle',v:r.pdN},{l:'Buffet',v:r.bu},{l:'Eventos',v:r.ev},{l:'Torneos',v:r.to},{l:'Gastos fijos',v:-r.fc},{l:'Sueldos',v:-r.sal}]
     .map(c=>`<div class="rc"><div class="rl">${c.l}</div><div class="rv${c.v<0?' ng':''}">${fmtKU(c.v)}</div></div>`).join('');
-  renderPartners(r);
+  renderPartners(r);updateChart2(r);
   const G='#639922',B='#378add',GR='#888780';
   if(!chart){
     chart=new Chart(e('ch').getContext('2d'),{type:'line',data:{labels:r.labels,datasets:[
@@ -498,6 +519,47 @@ function loadSlot(i){
   document.getElementById('n-ebl').value=P.eBlanco;document.getElementById('n-ecg').value=P.eCarg;
   document.querySelectorAll('#cw [data-fmt]').forEach(el=>{const v=parseFloat(el.getAttribute('data-raw'))||0;el.value=fmtByType(v,el.getAttribute('data-fmt'));});
   aSlot=i;rfr();render();
+}
+let chart2=null,chartVis={rev:true,cost:true,pn1:true,pn2:true,pn3:true};
+function togChart(k){chartVis[k]=!chartVis[k];const b=document.getElementById('vt-'+k);if(b)b.className='vtog'+(chartVis[k]?' act':'');updateChart2(lastR);}
+function updateChart2(r){
+  if(!r)return;const el=document.getElementById('ch2');if(!el)return;
+  const C={ftb:'rgba(99,153,34,.75)',esc:'rgba(130,180,55,.6)',pdl:'rgba(55,138,221,.55)',add:'rgba(55,138,221,.3)',gfx:'rgba(163,45,45,.6)',sal:'rgba(163,45,45,.4)',pn1:'#378add',pn2:'#639922',pn3:'#c8821a'};
+  const ds=[
+    {type:'bar',label:'Fútbol',stack:'S',data:r.ftbD,backgroundColor:C.ftb,hidden:!chartVis.rev},
+    {type:'bar',label:'Escuelita',stack:'S',data:r.escD,backgroundColor:C.esc,hidden:!chartVis.rev},
+    {type:'bar',label:'Paddle',stack:'S',data:r.pdlD,backgroundColor:C.pdl,hidden:!chartVis.rev},
+    {type:'bar',label:'Adicionales',stack:'S',data:r.addD,backgroundColor:C.add,hidden:!chartVis.rev},
+    {type:'bar',label:'Gastos fijos',stack:'S',data:r.gfxD,backgroundColor:C.gfx,hidden:!chartVis.cost},
+    {type:'bar',label:'Sueldos',stack:'S',data:r.salD,backgroundColor:C.sal,hidden:!chartVis.cost},
+    {type:'line',label:P.pn1,data:r.pn1D,borderColor:C.pn1,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,hidden:!chartVis.pn1},
+    {type:'line',label:P.pn2,data:r.pn2D,borderColor:C.pn2,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,hidden:!chartVis.pn2},
+    {type:'line',label:P.pn3,data:r.pn3D,borderColor:C.pn3,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,hidden:!chartVis.pn3},
+  ];
+  if(!chart2){
+    chart2=new Chart(el.getContext('2d'),{type:'bar',data:{labels:r.labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+fmtKU(c.parsed.y)}}},
+      scales:{x:{stacked:true,grid:{color:'rgba(128,128,128,.1)'},ticks:{color:'#888780',font:{size:10},maxTicksLimit:10}},
+        y:{stacked:true,grid:{color:'rgba(128,128,128,.1)'},ticks:{color:'#888780',font:{size:10},callback:v=>fmtKU(v)}}}}});
+  }else{
+    chart2.data.labels=r.labels;
+    ds.forEach((d,i)=>{chart2.data.datasets[i].data=d.data;chart2.data.datasets[i].hidden=d.hidden;chart2.data.datasets[i].label=d.label;});
+    chart2.update('none');
+  }
+  // update toggle button partner names
+  [{k:'pn1',n:P.pn1},{k:'pn2',n:P.pn2},{k:'pn3',n:P.pn3}].forEach(({k,n})=>{const b=document.getElementById('vt-'+k);if(b)b.textContent=n;});
+  // legend
+  const leg=document.getElementById('leg2');if(!leg)return;
+  const items=[
+    {c:C.ftb,l:'Fútbol',on:chartVis.rev,bar:true},{c:C.esc,l:'Escuelita',on:chartVis.rev,bar:true},
+    {c:C.pdl,l:'Paddle',on:chartVis.rev,bar:true},{c:C.add,l:'Adicionales',on:chartVis.rev,bar:true},
+    {c:C.gfx,l:'Gastos fijos',on:chartVis.cost,bar:true},{c:C.sal,l:'Sueldos',on:chartVis.cost,bar:true},
+    {c:C.pn1,l:P.pn1,on:chartVis.pn1,bar:false},{c:C.pn2,l:P.pn2,on:chartVis.pn2,bar:false},{c:C.pn3,l:P.pn3,on:chartVis.pn3,bar:false},
+  ].filter(i=>i.on);
+  leg.innerHTML=items.map(i=>i.bar
+    ?`<span class="lgit"><span style="width:10px;height:10px;border-radius:2px;background:${i.c};flex-shrink:0;display:inline-block"></span>${i.l}</span>`
+    :`<span class="lgit"><span class="lgl" style="background:${i.c}"></span>${i.l} (dividendo)</span>`
+  ).join('');
 }
 const SB_URL  = 'https://kbatdnrxfrltcmqvsmyy.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtiYXRkbnJ4ZnJsdGNtcXZzbXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjYzMjcsImV4cCI6MjA5MzUwMjMyN30.4HUYkjuCk3doWShF-h0CzHS-9pC4ST5uz9yd2HHbayc';
