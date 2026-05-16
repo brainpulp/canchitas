@@ -4,6 +4,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Canchitas — Proyección de Factibilidad</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -149,6 +150,10 @@ h1 span{font-size:11px;color:var(--color-text-tertiary);font-weight:400}
   <div class="sec-t">escenarios — cambios se graban automáticamente en el slot activo (borde azul)</div>
   <div class="sca" id="scRow"><div class="sc-slot emp"><div class="scn" style="font-weight:400;color:#888780">Slot 1</div><div class="scm">vacío</div></div><div class="sc-slot emp"><div class="scn" style="font-weight:400;color:#888780">Slot 2</div><div class="scm">vacío</div></div><div class="sc-slot emp"><div class="scn" style="font-weight:400;color:#888780">Slot 3</div><div class="scm">vacío</div></div><div class="sc-slot emp"><div class="scn" style="font-weight:400;color:#888780">Slot 4</div><div class="scm">vacío</div></div><div class="sc-wrap"><input type="text" id="scName" placeholder="nombre del slot" value="" onkeydown="if(event.key===&#39;Enter&#39;&amp;&amp;this.value.trim()){if(aSlot&gt;=0&amp;&amp;slots[aSlot])slots[aSlot].name=this.value.trim();else newSlot(this.value.trim());render();}"><button class="sc-btn" onclick="newSlot(document.getElementById(&#39;scName&#39;).value.trim()||&#39;Nuevo&#39;)">Nuevo slot</button></div></div>
 </div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+  <div class="sec-t">métricas clave</div>
+  <button class="sc-btn" id="viewBtn" onclick="cycleView()" style="font-size:9px;padding:0 8px;height:20px">👁 Total</button>
+</div>
 <div class="krow" id="kRow"><div class="kc g"><div class="kl">Primer mes<br>con ganancia</div><div class="kv">mes 2</div></div><div class="kc g"><div class="kl">Break-even<br>acumulado</div><div class="kv">mes 10</div></div><div class="kc g"><div class="kl">Ganancia mensual<br>(estabilizada)</div><div class="kv">USD 39k</div></div><div class="kc g"><div class="kl">Acumulado<br>al vencimiento</div><div class="kv">USD 1,9 M</div></div><div class="kc g"><div class="kl">ROI del proyecto</div><div class="kv">1086%</div></div><div class="kc g"><div class="kl">vs S&amp;P500 hodl<br>(misma plata)</div><div class="kv">17.8× el S&amp;P</div></div></div>
 <div class="main">
 <div class="lp">
@@ -265,15 +270,8 @@ h1 span{font-size:11px;color:var(--color-text-tertiary);font-weight:400}
   <div class="acc">
     <div class="ahdr" onclick="tog(&#39;gfx&#39;)"><span class="atit">📊 Gastos fijos<span class="hvl neg" id="hd-gfx"> USD 7k/mes</span></span><span class="ach" id="ach-gfx">▾</span></div>
     <div class="abdy" id="abdy-gfx">
-      <div class="gt">En ARS</div>
-      <div class="r2">
-        <div><span class="fl">Alquiler</span><input data-fmt="ars" id="n-gA" value="ARS 4.600.000" data-raw="4600000"></div>
-        <div><span class="fl">Servicios</span><input data-fmt="ars" id="n-gB" value="ARS 1.500.000" data-raw="1500000"></div>
-        <div><span class="fl">Marketing</span><input data-fmt="ars" id="n-gC" value="ARS 1.800.000" data-raw="1800000"></div>
-        <div><span class="fl">Mantenimiento + otros</span><input data-fmt="ars" id="n-gD" value="ARS 1.750.000" data-raw="1750000"></div>
-      </div>
-      <div class="gt">Gastos extra (USD)</div>
-      <span class="fl">One-offs / promo</span><input data-fmt="usd" id="n-gE" value="USD 0" data-raw="0">
+      <div id="gfxRows"></div>
+      <button class="add-btn" onclick="addGfx()">+ agregar gasto</button>
       <div class="dv"></div>
       <div class="tot-row"><span class="tot-l">Total gastos fijos (USD/mes)</span><span class="tot-v" id="v-gft">-USD 7.148</span></div>
     </div>
@@ -309,9 +307,10 @@ h1 span{font-size:11px;color:var(--color-text-tertiary);font-weight:400}
 </div>
 
 <script>
-let P={co:4,ohd:7,oc:60,pr:48,rc:8,st:450,fe:60000,rs:12,po:true,pn:2,pod:8,pa:50,pp:30,rp:6,buOn:true,evOn:true,toOn:true,eBlanco:40,eCarg:60,fx:1350,meses:60,negro:50,sp1:55};
+let P={co:4,ohd:7,oc:60,pr:48,rc:8,st:450,fe:60000,rs:12,po:true,pn:2,pod:8,pa:50,pp:30,rp:6,buOn:true,evOn:true,toOn:true,eBlanco:40,eCarg:60,fx:1350,meses:60,negro:50,sp1:55,pn1:'Maxi',pn2:'Pato',pn3:'Julio'};
 let EMP=[{n:'Encargado',q:1,s:2000000},{n:'Administrativo',q:1,s:800000},{n:'Sereno/casero',q:1,s:700000}];
-let slots=[null,null,null,null],aSlot=-1,openSecs={ftb:true},editP1=false;
+let GFIX=[{n:'Alquiler',v:4600000,cur:'ars'},{n:'Servicios',v:1500000,cur:'ars'},{n:'Marketing',v:1800000,cur:'ars'},{n:'Mantenimiento + otros',v:1750000,cur:'ars'},{n:'One-offs / promo',v:0,cur:'usd'}];
+let slots=[null,null,null,null],aSlot=-1,openSecs={ftb:true},editP1=false,viewIdx=-1,lastR=null;
 const sep=n=>Math.round(n).toLocaleString('es-AR').replace(/,/g,'.');
 const fmtU=v=>(v<0?'-':'')+'USD '+sep(Math.abs(Math.round(v)));
 const fmtA=v=>(v<0?'-':'')+'ARS '+sep(Math.abs(Math.round(v)));
@@ -358,7 +357,7 @@ function tog(id){
   if(c)c.className='ach'+(openSecs[id]?' op':'');
 }
 const getInv=()=>['n-iA','n-iB','n-iC','n-iH'].reduce((s,id)=>s+gR(id),0)+['n-iD','n-iE','n-iF','n-iG'].reduce((s,id)=>s+gR(id),0)/P.fx;
-const getFix=()=>['n-gA','n-gB','n-gC','n-gD'].reduce((s,id)=>s+gR(id),0)/P.fx+gR('n-gE');
+const getFix=()=>GFIX.reduce((s,g)=>s+(g.cur==='ars'?g.v/P.fx:g.v),0);
 const getSal=()=>{const r=EMP.reduce((s,e)=>s+e.q*e.s,0);return(r+r*(P.eBlanco/100)*(P.eCarg/100))/P.fx;};
 const getAdd=()=>({bu:P.buOn?gR('n-bu')*(gN('n-bm')||20)/100:0,ev:P.evOn?gN('n-ev')*(gR('n-ep')||400):0,to:P.toOn?gR('n-to')*0.5:0});
 function calc(){
@@ -402,16 +401,19 @@ function render(){
   if(e('v-ivt'))e('v-ivt').textContent=fmtU(-r.inv);
   if(e('v-gft'))e('v-gft').textContent=fmtU(-r.fc);
   if(e('v-suel'))e('v-suel').textContent=fmtU(-r.sal);
-  updateHeaders(r);renderEmp();
-  if(aSlot>=0){slots[aSlot]={name:slots[aSlot]?.name||('Esc. '+(aSlot+1)),P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),roi:r.roi,be:r.be,cum:r.cum};saveSlot(aSlot);}
+  updateHeaders(r);renderEmp();renderGfx();lastR=r;
+  if(aSlot>=0){slots[aSlot]={name:slots[aSlot]?.name||('Esc. '+(aSlot+1)),P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),GFIX:JSON.parse(JSON.stringify(GFIX)),roi:r.roi,be:r.be,cum:r.cum};saveSlot(aSlot);}
   const bec=typeof r.be==='number'?(r.be<=24?'g':r.be<=36?'y':'r'):'r';
   const fpc=typeof r.fp==='number'?(r.fp<=6?'g':r.fp<=12?'y':'r'):'r';
   const spF=parseFloat(r.spMult),spC=spF>=2?'g':spF>=1?'y':'r';
+  const vm=viewMult(),pnms=[P.pn1,P.pn2,P.pn3];
+  const vn=viewIdx<0?'':`<br><span style="font-size:7px;font-weight:400;opacity:.8">${pnms[viewIdx]}</span>`;
+  const vb=document.getElementById('viewBtn');if(vb)vb.textContent='👁 '+(viewIdx<0?'Total':pnms[viewIdx]);
   e('kRow').innerHTML=[
     {l:'Primer mes<br>con ganancia',v:bef(r.fp),c:fpc},
     {l:'Break-even<br>acumulado',v:bef(r.be),c:bec},
-    {l:'Ganancia mensual<br>(estabilizada)',v:fmtKU(r.gain),c:r.gain>0?'g':'r'},
-    {l:'Acumulado<br>al vencimiento',v:fmtKU(r.cum),c:r.cum>0?'g':'r'},
+    {l:'Ganancia mensual<br>(estabilizada)'+vn,v:fmtKU(r.gain*vm),c:r.gain>0?'g':'r'},
+    {l:'Acumulado<br>al vencimiento'+vn,v:fmtKU(r.cum*vm),c:r.cum>0?'g':'r'},
     {l:'ROI del proyecto',v:r.roi+'%',c:r.roi>r.rsp?'g':r.roi>0?'y':'r'},
     {l:'vs S&P500 hodl<br>(misma plata)',v:r.spMult+' el S&P',c:spC}
   ].map(k=>`<div class="kc ${k.c}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div></div>`).join('');
@@ -440,10 +442,28 @@ function renderEmp(){
 }
 function addEmp(){EMP.push({n:'Empleado',q:1,s:600000});renderEmp();render();}
 function removeEmp(i){EMP.splice(i,1);renderEmp();render();}
+function renderGfx(){
+  const div=document.getElementById('gfxRows');if(!div)return;
+  div.innerHTML=GFIX.map((g,i)=>{
+    const fmtFn=g.cur==='ars'?'fmtA':'fmtU';
+    const fmt=g.cur==='ars'?fmtA(g.v):fmtU(g.v);
+    return `<div class="ec"><div class="ec-r1" style="grid-template-columns:1fr 52px 20px;gap:3px"><input type="text" placeholder="Concepto" value="${g.n}" style="min-width:0" onblur="GFIX[${i}].n=this.value;"><select onchange="GFIX[${i}].cur=this.value;renderGfx();render();" style="font-size:9px;font-family:var(--font-mono);color:var(--color-text-primary);background:var(--color-background-primary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);height:22px;padding:0 3px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none"><option value="ars"${g.cur==='ars'?' selected':''}>ARS</option><option value="usd"${g.cur==='usd'?' selected':''}>USD</option></select><button class="rm-btn" onclick="removeGfx(${i})">×</button></div><input type="text" value="${fmt}" data-raw="${g.v}" style="margin-top:3px" onfocus="this.value=this.getAttribute('data-raw');this.classList.add('dirty')" oninput="this.classList.add('dirty')" onkeydown="if(event.key==='Enter'){var v=parseFloat(this.value.replace(/[^\\d.]/g,''))||0;this.setAttribute('data-raw',v);GFIX[${i}].v=v;this.value=${fmtFn}(v);this.classList.remove('dirty');render();this.blur();}" onblur="if(this.classList.contains('dirty')){var v=parseFloat(this.value.replace(/[^\\d.]/g,''))||0;this.setAttribute('data-raw',v);GFIX[${i}].v=v;this.value=${fmtFn}(v);this.classList.remove('dirty');render();}else{this.value=${fmtFn}(GFIX[${i}].v);}"></div>`;
+  }).join('');
+}
+function addGfx(){GFIX.push({n:'Gasto',v:0,cur:'ars'});renderGfx();render();}
+function removeGfx(i){GFIX.splice(i,1);renderGfx();render();}
+const viewMult=()=>viewIdx<0?1:[P.sp1/100,(1-P.sp1/100)/2,(1-P.sp1/100)/2][viewIdx];
+function cycleView(){viewIdx++;if(viewIdx>=3)viewIdx=-1;render();}
 function renderPartners(r){
+  if(r)lastR=r;else r=lastR;if(!r)return;
   const pr=document.getElementById('prow');if(!pr||editP1)return;
   const sp2=(1-P.sp1/100)/2;
-  pr.innerHTML=`<div class="pcard" onclick="startEditP1()"><div class="pl">Socio principal — editar %</div><div class="pv">${P.sp1}%</div><div style="font-size:9px;font-family:var(--font-mono);margin-top:2px">${fmtKU(r.cum*P.sp1/100)}</div></div><div class="pcard nd"><div class="pl">Socio 2 (${(sp2*100).toFixed(0)}%)</div><div class="pv">${fmtKU(r.cum*sp2)}</div></div><div class="pcard nd"><div class="pl">Socio 3 (${(sp2*100).toFixed(0)}%)</div><div class="pv">${fmtKU(r.cum*sp2)}</div></div>`;
+  const pcts=[P.sp1/100,sp2,sp2],nms=[P.pn1,P.pn2,P.pn3],pnk=['pn1','pn2','pn3'];
+  pr.innerHTML=nms.map((nm,i)=>{
+    const bd=viewIdx===i?' style="border-color:#378add"':'';
+    const isMain=i===0;
+    return `<div class="pcard${isMain?'':' nd'}"${bd}${isMain?' onclick="startEditP1()"':''}><div class="pl" style="display:flex;align-items:center;justify-content:space-between"><span contenteditable="true" spellcheck="false" style="outline:none;cursor:text;flex:1" onblur="P.${pnk[i]}=this.textContent.trim();render();" onclick="event.stopPropagation()">${nm}</span>${isMain?`<span style="font-size:7px;color:var(--color-text-tertiary);cursor:pointer;flex-shrink:0;margin-left:4px" onclick="event.stopPropagation();startEditP1()">✎%</span>`:''}</div><div class="pv">${(pcts[i]*100).toFixed(0)}%</div><div style="font-size:9px;font-family:var(--font-mono);margin-top:2px">${fmtKU(r.cum*pcts[i])}</div></div>`;
+  }).join('');
 }
 function startEditP1(){
   editP1=true;
@@ -467,9 +487,10 @@ function renderSlots(r){
   }
   row.appendChild(sw);
 }
-function newSlot(name){let idx=slots.findIndex(s=>!s);if(idx<0)idx=0;slots[idx]={name,P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),roi:0,be:null,cum:0};aSlot=idx;render();}
+function newSlot(name){let idx=slots.findIndex(s=>!s);if(idx<0)idx=0;slots[idx]={name,P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),GFIX:JSON.parse(JSON.stringify(GFIX)),roi:0,be:null,cum:0};aSlot=idx;render();}
 function loadSlot(i){
   P={...slots[i].P};EMP=JSON.parse(JSON.stringify(slots[i].EMP));
+  if(slots[i].GFIX)GFIX=JSON.parse(JSON.stringify(slots[i].GFIX));
   Object.entries({co:'s-co',ohd:'s-ohd',oc:'s-oc',pr:'s-pr',rc:'s-rc',st:'s-st',fe:'s-fe',rs:'s-rs',pn:'s-pn',pod:'s-pod',pa:'s-pa',pp:'s-pp',rp:'s-rp',fx:'s-fx',meses:'s-meses',negro:'s-negro'})
     .forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.value=P[k];});
   document.getElementById('pdOn').checked=P.po;
@@ -489,6 +510,7 @@ async function saveSlot(i) {
     name: slots[i].name,
     params: slots[i].P,
     employees: slots[i].EMP,
+    fixed_expenses: slots[i].GFIX,
     updated_at: new Date().toISOString()
   }, { onConflict: 'slot_index' });
 }
@@ -498,7 +520,7 @@ async function loadFromSupabase() {
   if (data) {
     data.forEach(row => {
       if (row.params) {
-        slots[row.slot_index] = { name: row.name, P: row.params, EMP: row.employees || [], roi: 0, be: null, cum: 0 };
+        slots[row.slot_index] = { name: row.name, P: row.params, EMP: row.employees || [], GFIX: row.fixed_expenses || null, roi: 0, be: null, cum: 0 };
       }
     });
   }
