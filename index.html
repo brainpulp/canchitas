@@ -2,16 +2,57 @@
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('canchitas_theme')||'dark');})();</script>
 <title>Canchitas — Proyección de Factibilidad</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
 <style>
 :root{
-  /* OKLCH forced dark — physical scene: investor at desk, dim light, making a big call */
+  /* Light theme */
+  --bg:oklch(97% 0.004 245);
+  --sf:oklch(99.5% 0.003 245);
+  --sf2:oklch(94% 0.006 245);
+  --sf3:oklch(89% 0.009 245);
+  --bd:oklch(76% 0.01 245);
+  --bd-s:oklch(86% 0.007 245);
+  --tx:oklch(16% 0.012 245);
+  --tx2:oklch(38% 0.009 245);
+  --tx3:oklch(56% 0.007 245);
+  --green:oklch(38% 0.2 145);
+  --green-bg:oklch(93% 0.065 145);
+  --red:oklch(46% 0.19 22);
+  --red-bg:oklch(94% 0.055 22);
+  --amber:oklch(50% 0.18 65);
+  --amber-bg:oklch(94% 0.055 65);
+  --blue:oklch(44% 0.16 240);
+  --color-background-primary:var(--sf);
+  --color-background-secondary:var(--sf2);
+  --color-background-tertiary:var(--sf3);
+  --color-background-success:var(--green-bg);
+  --color-background-danger:var(--red-bg);
+  --color-background-warning:var(--amber-bg);
+  --color-text-primary:var(--tx);
+  --color-text-secondary:var(--tx2);
+  --color-text-tertiary:var(--tx3);
+  --color-text-success:var(--green);
+  --color-text-danger:var(--red);
+  --color-text-warning:var(--amber);
+  --color-border-tertiary:var(--bd-s);
+  --color-border-secondary:var(--bd);
+  --color-border-primary:oklch(62% 0.016 245);
+  --color-surface:var(--sf);
+  --color-surface-2:var(--sf2);
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'SF Mono','Fira Code','Roboto Mono',monospace;
+  --border-radius-md:6px;--border-radius-lg:10px;
+  --r:6px;--r-lg:10px;
+}
+[data-theme="dark"]{
   --bg:oklch(10% 0.008 245);
   --sf:oklch(14.5% 0.009 245);
   --sf2:oklch(19% 0.011 245);
+  --sf3:oklch(17% 0.009 245);
   --bd:oklch(28% 0.014 245);
   --bd-s:oklch(22% 0.012 245);
   --tx:oklch(90% 0.005 240);
@@ -24,28 +65,7 @@
   --amber:oklch(73% 0.18 65);
   --amber-bg:oklch(17% 0.04 65);
   --blue:oklch(64% 0.16 240);
-  /* backward-compat aliases — every existing component picks these up */
-  --color-background-primary:var(--sf);
-  --color-background-secondary:var(--sf2);
-  --color-background-tertiary:var(--bg);
-  --color-background-success:var(--green-bg);
-  --color-background-danger:var(--red-bg);
-  --color-background-warning:var(--amber-bg);
-  --color-text-primary:var(--tx);
-  --color-text-secondary:var(--tx2);
-  --color-text-tertiary:var(--tx3);
-  --color-text-success:var(--green);
-  --color-text-danger:var(--red);
-  --color-text-warning:var(--amber);
-  --color-border-tertiary:var(--bd-s);
-  --color-border-secondary:var(--bd);
   --color-border-primary:oklch(34% 0.016 245);
-  --color-surface:var(--sf);
-  --color-surface-2:var(--sf2);
-  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --font-mono:'SF Mono','Fira Code','Roboto Mono',monospace;
-  --border-radius-md:6px;--border-radius-lg:10px;
-  --r:6px;--r-lg:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--tx);font-family:var(--font-sans);padding:0;min-height:100vh}
@@ -90,18 +110,20 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .sc-wrap{display:flex;gap:4px;align-items:center;flex-shrink:0}
 .sc-btn{padding:0 10px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);width:auto !important;height:27px}
 .sc-btn:hover{background:var(--color-background-secondary)}
-.krow{display:flex;gap:0;margin-bottom:5px;border:.5px solid var(--bd-s);border-radius:var(--r);overflow:hidden;background:var(--sf)}
-.krow.sub{background:oklch(12% 0.008 245);margin-bottom:10px}
-.kc{flex:1;min-width:0;padding:10px 14px;border-right:.5px solid var(--bd-s)}
-.kc:last-child{border-right:none}
-.kc.sep{border-right:.5px solid var(--bd)}
-.krow.sub .kc{padding:7px 14px}
-.kl{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3);margin-top:4px;line-height:1.3}
-.krow.sub .kl{font-size:8.5px}
-.kv{font-size:17px;font-weight:700;font-family:var(--font-mono);line-height:1}
-.krow.sub .kv{font-size:13px}
-.kc.g .kv{color:var(--green)}.kc.r .kv{color:var(--red)}.kc.y .kv{color:var(--amber)}.kc.n .kv{color:var(--tx)}
-.krow.sub .kc.g .kv{color:oklch(56% 0.14 145)}.krow.sub .kc.r .kv{color:oklch(50% 0.13 22)}.krow.sub .kc.n .kv{color:var(--tx3)}
+/* Dashboard panel — typographic hierarchy, no item boxes */
+.dash-panel{padding:12px 0 14px;margin-bottom:10px;border-bottom:.5px solid var(--bd-s)}
+.dp-row1{display:flex;align-items:flex-end;gap:0;flex-wrap:wrap}
+.dp-m{padding:0 22px;position:relative}
+.dp-m:first-child{padding-left:0}
+.dp-m+.dp-m{border-left:.5px solid var(--bd-s)}
+.dp-v{font-size:14px;font-weight:700;font-family:var(--font-mono);line-height:1;color:var(--tx)}
+.dp-v.hero{font-size:30px;letter-spacing:-.01em}
+.dp-v.g{color:var(--green)}.dp-v.r{color:var(--red)}.dp-v.y{color:var(--amber)}
+.dp-l{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3);margin-top:4px}
+.dp-row2{margin-top:10px;font-size:11px;color:var(--tx3);display:flex;gap:0;flex-wrap:wrap;align-items:center}
+.dp-ctx{white-space:nowrap}
+.dp-ctx b{color:var(--tx2);font-weight:600;font-family:var(--font-mono)}
+.dp-dot{padding:0 10px;color:var(--bd)}
 .main{display:grid;grid-template-columns:280px 1fr;gap:12px}
 .lp{padding-right:2px}
 .acc{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:5px;overflow:hidden}
@@ -224,7 +246,7 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .cdot:nth-child(2){animation-delay:.18s}.cdot:nth-child(3){animation-delay:.36s}
 @keyframes cdotb{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
 @keyframes numSlotIn{0%{opacity:.4;transform:translateY(4px)}100%{opacity:1;transform:translateY(0)}}
-.kv-anim{animation:numSlotIn .4s ease-out}
+.kv-anim,.dp-anim{animation:numSlotIn .4s ease-out}
 /* Partner visibility checkboxes */
 .pvis-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
 .pcb{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:4px 8px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
@@ -285,10 +307,12 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 <div class="sc-bar">
   <div class="sc-brand">CANCHITAS <span>proyección de factibilidad</span></div>
   <div id="scRow"></div>
+  <div class="sc-bar-tools">
+    <button class="sc-tool-btn" id="themeToggle" onclick="toggleTheme()" title="Cambiar tema">☾</button>
+  </div>
   <input type="file" id="importFile" accept=".json" style="display:none" onchange="importState(this)">
 </div>
-<div class="krow" id="kRow2"></div>
-<div class="krow" id="kRow"></div>
+<div id="dashPanel" class="dash-panel"></div>
 <div style="margin-bottom:10px">
   <div class="chart-top">
     <div id="prow" class="prow"></div>
@@ -1001,17 +1025,40 @@ function calc(){
 }
 let gRE=8,gBE=null;
 let prevCalcResult=null,isSlotSwitch=false,numAnimId=null;
+function renderDashPanel(r){
+  const el=document.getElementById('dashPanel');if(!el)return;
+  const totalGfx=r.fc+r.sal+(r.teacher||0)+(r.ib||0)+(r.cheque||0)+(r.indem||0)+(r.gan||0);
+  const totalRev=r.scN+r.stN+r.pdN+r.bu+r.ev+r.to;
+  const bec=typeof r.be==='number'?(r.be<=24?'g':r.be<=36?'y':'r'):'r';
+  const roiC=r.roi>r.rsp?'g':r.roi>0?'y':'r';
+  const spF=parseFloat(r.spMult),spC=spF>=2?'g':spF>=1?'y':'r';
+  const gainC=r.gain>0?'g':'r';
+  el.innerHTML=`
+    <div class="dp-row1">
+      <div class="dp-m"><div class="dp-v hero ${gainC}">${fmtKU(r.gain)}<span style="font-size:16px;font-weight:400;opacity:.55">/mes</span></div><div class="dp-l">Ganancia mensual</div></div>
+      <div class="dp-m"><div class="dp-v ${bec}">${bef(r.be)}</div><div class="dp-l">Break-even acum.</div></div>
+      <div class="dp-m"><div class="dp-v">${fmtKU(r.capitalTotal)}</div><div class="dp-l">Capital necesario</div></div>
+      <div class="dp-m"><div class="dp-v ${roiC}">${r.roi}%</div><div class="dp-l">ROI anualizado</div></div>
+      <div class="dp-m"><div class="dp-v ${spC}">${r.spMult}</div><div class="dp-l">vs S&amp;P 500</div></div>
+    </div>
+    <div class="dp-row2">
+      <span class="dp-ctx"><b>${fmtKU(totalRev)}/mes</b> facturación</span>
+      <span class="dp-dot">·</span>
+      <span class="dp-ctx"><b>${fmtKU(totalGfx)}/mes</b> gastos</span>
+      <span class="dp-dot">·</span>
+      <span class="dp-ctx"><b>${fmtKU(Math.abs(r.minCum))}</b> exposición máx.</span>
+      <span class="dp-dot">·</span>
+      <span class="dp-ctx"><b>${fmtKU(r.cum)}</b> acumulado mes ${P.meses||60}</span>
+    </div>`;
+}
 function animateSlotNumbers(from,to){
   if(numAnimId){cancelAnimationFrame(numAnimId);numAnimId=null;}
-  // Trigger slide-in animation on all number elements
-  document.querySelectorAll('#kRow .kv,#kRow2 .kv,#rg .rv').forEach(el=>{
-    el.classList.remove('kv-anim');void el.offsetWidth;el.classList.add('kv-anim');
+  document.querySelectorAll('#dashPanel .dp-v,#rg .rv').forEach(el=>{
+    el.classList.remove('dp-anim');void el.offsetWidth;el.classList.add('dp-anim');
   });
   const dur=1000,start=performance.now();
   const fromGfx=from.fc+from.sal+(from.teacher||0)+(from.ib||0)+(from.cheque||0)+(from.indem||0)+(from.gan||0);
   const toGfx=to.fc+to.sal+(to.teacher||0)+(to.ib||0)+(to.cheque||0)+(to.indem||0)+(to.gan||0);
-  const fromFp=typeof from.fp==='number'?from.fp:P.meses+1;
-  const toFp=typeof to.fp==='number'?to.fp:null;
   const fromBe=typeof from.be==='number'?from.be:P.meses+1;
   const toBe=typeof to.be==='number'?to.be:null;
   const fromSp=parseFloat(from.spMult)||0,toSp=parseFloat(to.spMult)||0;
@@ -1019,25 +1066,15 @@ function animateSlotNumbers(from,to){
   function step(now){
     const raw=Math.min(1,(now-start)/dur);
     const t=1-Math.pow(1-raw,3); // ease-out cubic
-    const kr=document.getElementById('kRow');
-    if(kr){
-      const kvs=kr.querySelectorAll('.kv');
-      if(kvs[0])kvs[0].textContent=toFp!==null?'mes '+Math.round(lerp(fromFp,toFp,t)):bef(to.fp);
+    const dp=document.getElementById('dashPanel');
+    if(dp){
+      const kvs=dp.querySelectorAll('.dp-v');
+      // [0]=gain hero, [1]=be, [2]=capitalTotal, [3]=roi, [4]=spMult
+      if(kvs[0]){const v=fmtKU(lerp(from.gain,to.gain,t));kvs[0].innerHTML=`${v}<span style="font-size:16px;font-weight:400;opacity:.55">/mes</span>`;}
       if(kvs[1])kvs[1].textContent=toBe!==null?'mes '+Math.round(lerp(fromBe,toBe,t)):bef(to.be);
-      if(kvs[2])kvs[2].textContent=fmtKU(lerp(from.gain,to.gain,t));
-      if(kvs[3])kvs[3].textContent=fmtKU(lerp(from.cum,to.cum,t));
-      if(kvs[4])kvs[4].textContent=Math.round(lerp(from.roi,to.roi,t))+'%';
-      if(kvs[5])kvs[5].textContent=(toSp>0?lerp(fromSp,toSp,t).toFixed(1)+'×':to.spMult)+' el S&P';
-    }
-    const kr2=document.getElementById('kRow2');
-    if(kr2){
-      const kvs=kr2.querySelectorAll('.kv');
-      const fromRev=from.scN+from.stN+from.pdN+from.bu+from.ev+from.to;
-      const toRev=to.scN+to.stN+to.pdN+to.bu+to.ev+to.to;
-      if(kvs[0])kvs[0].textContent=fmtKU(lerp(fromRev,toRev,t))+'/mes';
-      if(kvs[1])kvs[1].textContent=fmtKU(lerp(fromGfx,toGfx,t))+'/mes';
-      if(kvs[2])kvs[2].textContent=fmtKU(lerp(from.gain,to.gain,t))+'/mes';
-      if(kvs[3])kvs[3].textContent=fmtKU(lerp(from.capitalTotal,to.capitalTotal,t));
+      if(kvs[2])kvs[2].textContent=fmtKU(lerp(from.capitalTotal,to.capitalTotal,t));
+      if(kvs[3])kvs[3].textContent=Math.round(lerp(from.roi,to.roi,t))+'%';
+      if(kvs[4])kvs[4].textContent=toSp>0?lerp(fromSp,toSp,t).toFixed(1)+'×':to.spMult;
     }
     const rg=document.getElementById('rg');
     if(rg){
@@ -1164,17 +1201,7 @@ function render(){
   if(e('v-suel'))e('v-suel').textContent=fmtU(-r.sal);
   updateHeaders(r);renderEmp();
   if(aSlot>=0)slots[aSlot]={name:slots[aSlot]?.name||('Esc. '+(aSlot+1)),P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),roi:r.roi,be:r.be,cum:r.cum};
-  const bec=typeof r.be==='number'?(r.be<=24?'g':r.be<=36?'y':'r'):'r';
-  const fpc=typeof r.fp==='number'?(r.fp<=6?'g':r.fp<=12?'y':'r'):'r';
-  const spF=parseFloat(r.spMult),spC=spF>=2?'g':spF>=1?'y':'r';
-  e('kRow').className='krow';
-  e('kRow').innerHTML=[
-    {l:'Ganancia mensual',v:fmtKU(r.gain)+'/mes',c:r.gain>0?'g':'r'},
-    {l:'Break-even acum.',v:bef(r.be),c:bec},
-    {l:'Capital necesario',v:fmtKU(r.capitalTotal),c:'n'},
-    {l:'ROI anualizado',v:r.roi+'%',c:r.roi>r.rsp?'g':r.roi>0?'y':'r'},
-    {l:'vs S&P500',v:r.spMult+'×',c:spC}
-  ].map(k=>`<div class="kc ${k.c}"><div class="kv">${k.v}</div><div class="kl">${k.l}</div></div>`).join('');
+  renderDashPanel(r);
   e('rg').innerHTML=[{l:'Fútbol',v:r.scN},{l:'Escuelita',v:r.stN},{l:'Paddle',v:r.pdN},{l:'Buffet',v:r.bu},{l:'Eventos',v:r.ev},{l:'Torneos',v:r.to},{l:'Gastos',v:-(r.fc+r.sal+(r.teacher||0)+(r.ib||0)+(r.cheque||0)+(r.indem||0)+(r.gan||0))},{l:'Neto mensual',v:r.gain}]
     .map(c=>`<div class="rc"><div class="rl">${c.l}</div><div class="rv${c.v<0?' ng':''}">${fmtKU(c.v)}</div></div>`).join('');
   if(prevCalcResult)animateSlotNumbers(prevCalcResult,r);
@@ -1187,13 +1214,6 @@ function render(){
   renderCustomIngresos();
   renderCustomCapex();
   if(chart2&&chart2.chartArea&&chart2.chartArea.left>0){renderOccChart();initOccChartEvents();}else{requestAnimationFrame(()=>{renderOccChart();initOccChartEvents();});}
-  const totalGfx=r.fc+r.sal+(r.teacher||0)+(r.ib||0)+(r.cheque||0)+(r.indem||0)+(r.gan||0);
-  const totalRev=r.scN+r.stN+r.pdN+r.bu+r.ev+r.to;
-  if(e('kRow2')){
-    e('kRow2').className='krow sub';
-    e('kRow2').style.gridTemplateColumns='';
-    e('kRow2').innerHTML=`<div class="kc g"><div class="kv">${fmtKU(totalRev)}/mes</div><div class="kl">Facturación</div></div><div class="kc r sep"><div class="kv">${fmtKU(totalGfx)}/mes</div><div class="kl">Gastos totales</div></div><div class="kc n"><div class="kv">${fmtKU(Math.abs(r.minCum))}</div><div class="kl">Exposición máx.</div></div><div class="kc n"><div class="kv">${fmtKU(r.cum)}</div><div class="kl">Acumulado mes ${P.meses||60}</div></div>`;
-  }
   renderFin();
   renderSlots();
   renderRealityCheck(r);
@@ -1258,7 +1278,7 @@ function renderOccChart(){
   const padT=10,padB=14,plotW=W-padL-padR,plotH=H-padT-padB;
   const xOf=i=>padL+(n<=1?plotW/2:(i/(n-1))*plotW);
   const yOf=v=>padT+plotH*(1-Math.max(0,Math.min(100,v))/100); // y-axis: 0-100%
-  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle=isDark?'rgba(30,30,28,.85)':'rgba(243,242,238,.85)';
   ctx.fillRect(0,0,W,H);
@@ -2164,6 +2184,20 @@ function updateChart2(r){
   }
 }
 // ─── SAVE ─────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const next=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('canchitas_theme',next);
+  const btn=document.getElementById('themeToggle');
+  if(btn)btn.textContent=next==='dark'?'☾':'☀';
+  renderOccChart();
+}
+function initTheme(){
+  const t=document.documentElement.getAttribute('data-theme')||'dark';
+  const btn=document.getElementById('themeToggle');
+  if(btn)btn.textContent=t==='dark'?'☾':'☀';
+}
 function saveLS(){
   localStorage.setItem('canchitas',JSON.stringify({P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,DEVAL_EVENTS,OCC_PTS,slots,aSlot}));
   localStorage.setItem('canchitas_chat',JSON.stringify({chatHistory,chartEvents}));
@@ -2205,6 +2239,7 @@ async function sbLoad(){
     return changed;
   }catch(e){return false;}
 }
+initTheme();
 const _lsOk=loadLS();
 if(!_lsOk||slots.every(s=>!s)){
   sbLoad().then(sbOk=>{
