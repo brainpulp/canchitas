@@ -91,12 +91,17 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .sc-btn{padding:0 10px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);width:auto !important;height:27px}
 .sc-btn:hover{background:var(--color-background-secondary)}
 .krow{display:flex;gap:0;margin-bottom:5px;border:.5px solid var(--bd-s);border-radius:var(--r);overflow:hidden;background:var(--sf)}
+.krow.sub{background:oklch(12% 0.008 245);margin-bottom:10px}
 .kc{flex:1;min-width:0;padding:10px 14px;border-right:.5px solid var(--bd-s)}
 .kc:last-child{border-right:none}
 .kc.sep{border-right:.5px solid var(--bd)}
+.krow.sub .kc{padding:7px 14px}
 .kl{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3);margin-top:4px;line-height:1.3}
+.krow.sub .kl{font-size:8.5px}
 .kv{font-size:17px;font-weight:700;font-family:var(--font-mono);line-height:1}
+.krow.sub .kv{font-size:13px}
 .kc.g .kv{color:var(--green)}.kc.r .kv{color:var(--red)}.kc.y .kv{color:var(--amber)}.kc.n .kv{color:var(--tx)}
+.krow.sub .kc.g .kv{color:oklch(56% 0.14 145)}.krow.sub .kc.r .kv{color:oklch(50% 0.13 22)}.krow.sub .kc.n .kv{color:var(--tx3)}
 .main{display:grid;grid-template-columns:280px 1fr;gap:12px}
 .lp{padding-right:2px}
 .acc{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:5px;overflow:hidden}
@@ -291,7 +296,7 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
       <button class="cv-btn" id="cv-rev" style="border-color:#639922;color:#639922" onclick="chartVis2.rev=!chartVis2.rev;this.classList.toggle('off',!chartVis2.rev);updateChart2(lastR2)">Facturación</button>
       <button class="cv-btn" id="cv-cost" style="border-color:#a32d2d;color:#a32d2d" onclick="chartVis2.cost=!chartVis2.cost;this.classList.toggle('off',!chartVis2.cost);updateChart2(lastR2)">Gastos</button>
       <button class="cv-btn" id="cv-net" style="border-color:#378add;color:#378add" onclick="chartVis2.net=!chartVis2.net;this.classList.toggle('off',!chartVis2.net);updateChart2(lastR2)">Ganancia</button>
-      <button class="cv-btn" id="cv-acum" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.acum=!chartVis2.acum;this.classList.toggle('off',!chartVis2.acum);updateChart2(lastR2)">Acumulado</button>
+      <button class="cv-btn" id="cv-acum" style="border-color:#888780;color:#888780" onclick="chartVis2.acum=!chartVis2.acum;this.classList.toggle('off',!chartVis2.acum);updateChart2(lastR2)">Acumulado</button>
       <button class="cv-btn" id="cv-sp" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.sp=!chartVis2.sp;this.classList.toggle('off',!chartVis2.sp);updateChart2(lastR2)">S&amp;P500</button>
     </div>
   </div>
@@ -746,7 +751,7 @@ function getOccFactor(m){
 }
 let slots=[{"name":"basico","P":{"co":4,"ohd":11,"oc":26,"pr":38,"rc":10,"st":300,"fe":70000,"rs":12,"po":true,"pn":2,"pod":8,"pa":50,"pp":30,"rp":7,"buOn":true,"evOn":true,"toOn":true,"eBlanco":40,"eCarg":60,"fx":1350,"meses":60,"negro":50,"sp1":10,"obra":0,"pInvM":4,"startMonth":3,"seas":80,"startYear":2026,"ibRate":3.5,"indemFam":45,"stRatio":75,"stSalArs":700000,"chequeRate":0.6,"ganRate":35,"finCOn":false,"finCCuotas":24,"finCTasa":8,"finPdOn":false,"finPdCuotas":18,"finPdTasa":8,"pn1":"Maxi","pn2":"Pato","pn3":"Julio","trig1Pct":100,"trig1Sp1":55,"trig2Pct":200,"trig2Sp1":35,"devalOn":false,"devalMonthly":3},"EMP":[{"n":"Encargado","q":1,"s":2500000,"m":1},{"n":"Administrativo","q":1,"s":800000,"m":1},{"n":"Sereno/casero","q":1,"s":700000,"m":1},{"n":"Julio","q":1,"s":1000000,"m":3},{"n":"Pato","q":1,"s":1000000,"m":4}],"roi":23,"be":27,"cum":403289},null,null,null],aSlot=0,openSecs={ftb:true},editP1=false;
 let partVis={p1:true,p2:true,p3:true};
-let chartVis2={rev:true,cost:true,p1:true,p2:true,p3:true,acum:false,net:true,sp:false};
+let chartVis2={rev:true,cost:true,p1:true,p2:true,p3:true,acum:true,net:true,sp:false};
 let chart2=null,lastR2=null;
 const sep=n=>Math.round(n).toLocaleString('es-AR').replace(/,/g,'.');
 const fmtU=v=>(v<0?'-':'')+'USD '+sep(Math.abs(Math.round(v)));
@@ -1164,12 +1169,11 @@ function render(){
   const spF=parseFloat(r.spMult),spC=spF>=2?'g':spF>=1?'y':'r';
   e('kRow').className='krow';
   e('kRow').innerHTML=[
-    {l:'1er positivo',v:bef(r.fp),c:fpc},
-    {l:'Break-even',v:bef(r.be),c:bec},
-    {l:'Ganancia',v:fmtKU(r.gain),c:r.gain>0?'g':'r'},
-    {l:'Acumulado',v:fmtKU(r.cum),c:r.cum>0?'g':'r'},
-    {l:'ROI anual',v:r.roi+'%',c:r.roi>r.rsp?'g':r.roi>0?'y':'r'},
-    {l:'vs S&P',v:r.spMult+'×',c:spC}
+    {l:'Ganancia mensual',v:fmtKU(r.gain)+'/mes',c:r.gain>0?'g':'r'},
+    {l:'Break-even acum.',v:bef(r.be),c:bec},
+    {l:'Capital necesario',v:fmtKU(r.capitalTotal),c:'n'},
+    {l:'ROI anualizado',v:r.roi+'%',c:r.roi>r.rsp?'g':r.roi>0?'y':'r'},
+    {l:'vs S&P500',v:r.spMult+'×',c:spC}
   ].map(k=>`<div class="kc ${k.c}"><div class="kv">${k.v}</div><div class="kl">${k.l}</div></div>`).join('');
   e('rg').innerHTML=[{l:'Fútbol',v:r.scN},{l:'Escuelita',v:r.stN},{l:'Paddle',v:r.pdN},{l:'Buffet',v:r.bu},{l:'Eventos',v:r.ev},{l:'Torneos',v:r.to},{l:'Gastos',v:-(r.fc+r.sal+(r.teacher||0)+(r.ib||0)+(r.cheque||0)+(r.indem||0)+(r.gan||0))},{l:'Neto mensual',v:r.gain}]
     .map(c=>`<div class="rc"><div class="rl">${c.l}</div><div class="rv${c.v<0?' ng':''}">${fmtKU(c.v)}</div></div>`).join('');
@@ -1185,14 +1189,10 @@ function render(){
   if(chart2&&chart2.chartArea&&chart2.chartArea.left>0){renderOccChart();initOccChartEvents();}else{requestAnimationFrame(()=>{renderOccChart();initOccChartEvents();});}
   const totalGfx=r.fc+r.sal+(r.teacher||0)+(r.ib||0)+(r.cheque||0)+(r.indem||0)+(r.gan||0);
   const totalRev=r.scN+r.stN+r.pdN+r.bu+r.ev+r.to;
-  const gainC=r.gain>0?'g':'r';
-  const capitalItem=r.anyFin
-    ?`<div class="kc n"><div class="kv">${fmtKU(r.capitalTotal)}</div><div class="kl">Capital <span style="font-weight:400;opacity:.55">${fmtKU(r.capitalNoFin)} s/financ.</span></div></div>`
-    :`<div class="kc n"><div class="kv">${fmtKU(r.capitalTotal)}</div><div class="kl">Capital nec.</div></div>`;
   if(e('kRow2')){
-    e('kRow2').className='krow';
+    e('kRow2').className='krow sub';
     e('kRow2').style.gridTemplateColumns='';
-    e('kRow2').innerHTML=`<div class="kc g"><div class="kv">${fmtKU(totalRev)}/mes</div><div class="kl">Facturación</div></div><div class="kc r"><div class="kv">${fmtKU(totalGfx)}/mes</div><div class="kl">Gastos</div></div><div class="kc ${gainC} sep"><div class="kv">${fmtKU(r.gain)}/mes</div><div class="kl">Ganancia · mes ${r.rE}</div></div>${capitalItem}<div class="kc r"><div class="kv">${fmtKU(Math.abs(r.minCum))}</div><div class="kl">Exposición máx.</div></div>`;
+    e('kRow2').innerHTML=`<div class="kc g"><div class="kv">${fmtKU(totalRev)}/mes</div><div class="kl">Facturación</div></div><div class="kc r sep"><div class="kv">${fmtKU(totalGfx)}/mes</div><div class="kl">Gastos totales</div></div><div class="kc n"><div class="kv">${fmtKU(Math.abs(r.minCum))}</div><div class="kl">Exposición máx.</div></div><div class="kc n"><div class="kv">${fmtKU(r.cum)}</div><div class="kl">Acumulado mes ${P.meses||60}</div></div>`;
   }
   renderFin();
   renderSlots();
@@ -1364,7 +1364,7 @@ function initOccChartEvents(){
 function renderPartners(r){
   const pr=document.getElementById('prow');if(!pr||editP1)return;
   const sp2=(1-P.sp1/100)/2;
-  const PCOLS=['#f5a623','#a78bfa','#fb923c'];
+  const PCOLS=['#f59e0b','#38bdf8','#fb7185'];
   const names=[P.pn1||'Maxi',P.pn2||'Pato',P.pn3||'Julio'];
   const shares=[P.sp1/100,sp2,sp2];
   const vis=[partVis.p1,partVis.p2,partVis.p3];
@@ -1431,7 +1431,7 @@ function renderFin(){
 function startEditP1(){
   editP1=true;
   const card=document.querySelector('.pcard-new');if(!card)return;
-  card.innerHTML=`<div style="padding:4px 0"><div class="pcard-top" style="margin-bottom:6px"><span class="pcard-name" style="color:#f5a623">${P.pn1||'Maxi'}</span><span class="pcard-pct">% del total</span></div><div class="p1e"><input type="number" id="sp1in" value="${P.sp1}" min="10" max="95"><button class="sc-btn" onclick="confirmP1()">OK</button></div></div>`;
+  card.innerHTML=`<div style="padding:4px 0"><div class="pcard-top" style="margin-bottom:6px"><span class="pcard-name" style="color:#f59e0b">${P.pn1||'Maxi'}</span><span class="pcard-pct">% del total</span></div><div class="p1e"><input type="number" id="sp1in" value="${P.sp1}" min="10" max="95"><button class="sc-btn" onclick="confirmP1()">OK</button></div></div>`;
   const inp=document.getElementById('sp1in');inp.focus();inp.select();
   inp.addEventListener('keydown',ev=>{if(ev.key==='Enter')confirmP1();});
 }
@@ -2127,27 +2127,25 @@ function renderPartnerNames(){
   const wn3=document.getElementById('wf-pn3');if(wn3)wn3.textContent=n3;
 }
 // ─── BAR CHART (dividends + revenue + costs) ─────────────────────────
-const C2_COLS={rev:'#639922',cost:'#a32d2d',p1:'#f5a623',p2:'#a78bfa',p3:'#fb923c',acumP1:'#f5a623',acumP2:'#a78bfa',acumP3:'#fb923c'};
+const C2_COLS={rev:'#639922',cost:'#a32d2d',p1:'#f59e0b',p2:'#38bdf8',p3:'#fb7185',acumP1:'#f59e0b',acumP2:'#38bdf8',acumP3:'#fb7185'};
 function updateChart2(r){
   if(!r)return;lastR2=r;
   const n1=P.pn1||'Maxi',n2=P.pn2||'Pato',n3=P.pn3||'Julio';
   const datasets=[];
-  if(chartVis2.rev)datasets.push({label:'Facturación',data:r.grossD,backgroundColor:'rgba(99,153,34,.55)',borderColor:C2_COLS.rev,borderWidth:1,stack:'rev',order:3,type:'bar'});
-  if(chartVis2.cost)datasets.push({label:'Gastos',data:r.costsD,backgroundColor:'rgba(163,45,45,.45)',borderColor:C2_COLS.cost,borderWidth:1,stack:'cost',order:3,type:'bar'});
-  if(chartVis2.p1&&partVis.p1)datasets.push({label:'Div. '+n1,data:r.pn1D,backgroundColor:'rgba(245,166,35,.7)',borderColor:C2_COLS.p1,borderWidth:1,stack:'div',order:2,type:'bar'});
-  if(chartVis2.p2&&partVis.p2)datasets.push({label:'Div. '+n2,data:r.pn2D,backgroundColor:'rgba(167,139,250,.7)',borderColor:C2_COLS.p2,borderWidth:1,stack:'div',order:2,type:'bar'});
-  if(chartVis2.p3&&partVis.p3)datasets.push({label:'Div. '+n3,data:r.pn3D,backgroundColor:'rgba(251,146,60,.7)',borderColor:C2_COLS.p3,borderWidth:1,stack:'div',order:2,type:'bar'});
-  if(chartVis2.acum){
-    if(partVis.p1)datasets.push({label:'Acum. '+n1,data:r.pn1CumD,borderColor:C2_COLS.p1,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
-    if(partVis.p2)datasets.push({label:'Acum. '+n2,data:r.pn2CumD,borderColor:C2_COLS.p2,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
-    if(partVis.p3)datasets.push({label:'Acum. '+n3,data:r.pn3CumD,borderColor:C2_COLS.p3,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
-  }
+  if(chartVis2.rev)datasets.push({label:'Facturación',data:r.grossD,backgroundColor:'rgba(99,153,34,.45)',borderColor:C2_COLS.rev,borderWidth:1,stack:'rev',order:3,type:'bar'});
+  if(chartVis2.cost)datasets.push({label:'Gastos',data:r.costsD,backgroundColor:'rgba(163,45,45,.4)',borderColor:C2_COLS.cost,borderWidth:1,stack:'cost',order:3,type:'bar'});
+  if(partVis.p1)datasets.push({label:'Div. '+n1,data:r.pn1D,backgroundColor:'rgba(245,158,11,.65)',borderColor:C2_COLS.p1,borderWidth:1,stack:'d1',order:2,type:'bar'});
+  if(partVis.p2)datasets.push({label:'Div. '+n2,data:r.pn2D,backgroundColor:'rgba(56,189,248,.55)',borderColor:C2_COLS.p2,borderWidth:1,stack:'d2',order:2,type:'bar'});
+  if(partVis.p3)datasets.push({label:'Div. '+n3,data:r.pn3D,backgroundColor:'rgba(251,113,133,.55)',borderColor:C2_COLS.p3,borderWidth:1,stack:'d3',order:2,type:'bar'});
+  if(partVis.p1&&chartVis2.acum)datasets.push({label:'Acum. '+n1,data:r.pn1CumD,borderColor:C2_COLS.p1,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
+  if(partVis.p2&&chartVis2.acum)datasets.push({label:'Acum. '+n2,data:r.pn2CumD,borderColor:C2_COLS.p2,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
+  if(partVis.p3&&chartVis2.acum)datasets.push({label:'Acum. '+n3,data:r.pn3CumD,borderColor:C2_COLS.p3,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
   if(chartVis2.net)datasets.push({label:'Ganancia mensual',data:r.netD,borderColor:'#378add',backgroundColor:'transparent',borderWidth:2,pointRadius:0,pointHoverRadius:5,tension:0.35,type:'line',yAxisID:'y',order:0});
   if(chartVis2.sp)datasets.push({label:'S&P500',data:r.spD,borderColor:'#888780',backgroundColor:'transparent',borderWidth:1.5,borderDash:[5,4],pointRadius:0,tension:0.35,type:'line',yAxisID:'ya',order:0});
   const cvBtn=document.getElementById('cv-acum');if(cvBtn)cvBtn.classList.toggle('off',!chartVis2.acum);
   const cvNet=document.getElementById('cv-net');if(cvNet)cvNet.classList.toggle('off',!chartVis2.net);
   const cvSp=document.getElementById('cv-sp');if(cvSp)cvSp.classList.toggle('off',!chartVis2.sp);
-  const hasAcum=(chartVis2.acum&&(partVis.p1||partVis.p2||partVis.p3))||chartVis2.sp;
+  const hasAcum=(chartVis2.acum&&(partVis.p1||partVis.p2||partVis.p3))||chartVis2.sp||false;
   if(!chart2){
     const ctx=document.getElementById('ch2');if(!ctx)return;
     chart2=new Chart(ctx.getContext('2d'),{type:'bar',data:{labels:r.labels,datasets},
