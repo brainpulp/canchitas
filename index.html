@@ -620,21 +620,23 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
     <div class="ahdr" onclick="tog('wf')"><span class="atit">🏦 Distribución de ganancias — waterfall<span class="hvl" id="hd-wf"></span></span><span class="ach" id="ach-wf">▾</span></div>
     <div class="abdy" id="abdy-wf">
       <div class="note">Socios: <strong id="wf-pn1">Maxi</strong> (inversor principal, recupera inversión primero), <strong id="wf-pn2">Pato</strong> y <strong id="wf-pn3">Julio</strong> (no reciben dividendos hasta que Maxi recupere el capital).</div>
-      <div class="wf-phase"><div class="wf-phase-hdr">Fase 0 — hasta recuperar 1ª parte</div>
-        <div class="wf-row">
-          <div><span class="fl">% inversión que recibe Maxi</span><input type="number" id="n-trig1Pct" value="100" min="1" max="500" style="text-align:center" onblur="P.trig1Pct=+this.value||100;renderWfHdr();render()"></div>
-          <div><span class="fl" style="color:#639922">% Maxi en T1</span><input type="number" id="n-trig1Sp1" value="55" min="1" max="99" style="text-align:center;color:#639922" onblur="P.trig1Sp1=+this.value||55;renderWfHdr();render()"></div>
-          <div><span class="fl" style="color:#378add">% Pato/Julio c/u en T1</span><input type="number" id="n-trig1Sp23" value="22.5" min="0" max="49" step="0.5" style="text-align:center;color:#378add" disabled readonly></div>
+      <div class="wf-phase"><div class="wf-phase-hdr">Fase 0 → Trigger 1 — Maxi recupera capital</div>
+        <div class="wf-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+          <div><span class="fl">% inversión Maxi (T1)</span><input type="number" id="n-trig1Pct" value="100" min="1" max="500" style="text-align:center" onblur="P.trig1Pct=+this.value||100;renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#f59e0b">% Maxi en T1</span><input type="number" id="n-trig1Sp1" value="55" min="1" max="98" style="text-align:center;color:#f59e0b" onblur="P.trig1Sp1=Math.min(98,Math.max(1,+this.value||55));renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#38bdf8">% Pato en T1</span><input type="number" id="n-trig1Sp2" value="22.5" min="0" max="97" step="0.5" style="text-align:center;color:#38bdf8" onblur="P.trig1Sp2=Math.max(0,+this.value||0);renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#fb7185">% Julio en T1</span><input type="number" id="n-trig1Sp3" value="22.5" style="text-align:center;color:#fb7185" disabled readonly></div>
         </div>
       </div>
-      <div class="wf-phase"><div class="wf-phase-hdr">Fase 1 → Trigger 2 — hasta recuperar 2ª parte</div>
-        <div class="wf-row">
-          <div><span class="fl">% inversión que recibe Maxi</span><input type="number" id="n-trig2Pct" value="200" min="1" max="1000" style="text-align:center" onblur="P.trig2Pct=+this.value||200;renderWfHdr();render()"></div>
-          <div><span class="fl" style="color:#639922">% Maxi en T2</span><input type="number" id="n-trig2Sp1" value="35" min="1" max="99" style="text-align:center;color:#639922" onblur="P.trig2Sp1=+this.value||35;renderWfHdr();render()"></div>
-          <div><span class="fl" style="color:#378add">% Pato/Julio c/u en T2</span><input type="number" id="n-trig2Sp23" value="32.5" min="0" max="49" step="0.5" style="text-align:center;color:#378add" disabled readonly></div>
+      <div class="wf-phase"><div class="wf-phase-hdr">Fase 1 → Trigger 2 — split permanente</div>
+        <div class="wf-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+          <div><span class="fl">% inversión Maxi (T2)</span><input type="number" id="n-trig2Pct" value="200" min="1" max="1000" style="text-align:center" onblur="P.trig2Pct=+this.value||200;renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#f59e0b">% Maxi en T2</span><input type="number" id="n-trig2Sp1" value="35" min="1" max="98" style="text-align:center;color:#f59e0b" onblur="P.trig2Sp1=Math.min(98,Math.max(1,+this.value||35));renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#38bdf8">% Pato en T2</span><input type="number" id="n-trig2Sp2" value="32.5" min="0" max="97" step="0.5" style="text-align:center;color:#38bdf8" onblur="P.trig2Sp2=Math.max(0,+this.value||0);renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#fb7185">% Julio en T2</span><input type="number" id="n-trig2Sp3" value="32.5" style="text-align:center;color:#fb7185" disabled readonly></div>
         </div>
       </div>
-      <div class="note">Fase 2 (después del trigger 2): split del T2 se mantiene indefinidamente.</div>
+      <div class="note">Fase 2 (después del trigger 2): split del T2 se mantiene indefinidamente. Julio = 100 − Maxi − Pato.</div>
       <div id="wf-status" class="note" style="margin-top:4px"></div>
     </div>
   </div>
@@ -958,6 +960,9 @@ function calc(){
   let maxiCumDiv=0,pn1Cum=0,pn2Cum=0,pn3Cum=0;
   const trig1Pct=(P.trig1Pct||100)/100,trig2Pct=(P.trig2Pct||200)/100;
   const trig1Sp1=(P.trig1Sp1||55)/100,trig2Sp1=(P.trig2Sp1||35)/100;
+  const t1Rem=1-trig1Sp1,t2Rem=1-trig2Sp1;
+  const trig1Sp2=P.trig1Sp2!=null?P.trig1Sp2/100:t1Rem/2;
+  const trig2Sp2=P.trig2Sp2!=null?P.trig2Sp2/100:t2Rem/2;
   for(let m=1;m<=P.meses;m++){
     if(pInvM>0&&m===pInvM&&P.po){cum-=pdInvAmt;if(cum<minCum)minCum=cum;cumNF-=finPdRaw;if(cumNF<minCumNF)minCumNF=cumNF;}
     const fxM=calcFxAt(m);
@@ -999,8 +1004,8 @@ function calc(){
     let mP1=0,mP2=0,mP3=0;
     if(mN>0){
       if(maxiCumDiv<trig1Pct*totalInv){mP1=mN;mP2=0;mP3=0;}
-      else if(maxiCumDiv<trig2Pct*totalInv){mP1=mN*trig1Sp1;mP2=mN*(1-trig1Sp1)/2;mP3=mN*(1-trig1Sp1)/2;}
-      else{mP1=mN*trig2Sp1;mP2=mN*(1-trig2Sp1)/2;mP3=mN*(1-trig2Sp1)/2;}
+      else if(maxiCumDiv<trig2Pct*totalInv){mP1=mN*trig1Sp1;mP2=mN*trig1Sp2;mP3=mN*Math.max(0,1-trig1Sp1-trig1Sp2);}
+      else{mP1=mN*trig2Sp1;mP2=mN*trig2Sp2;mP3=mN*Math.max(0,1-trig2Sp1-trig2Sp2);}
       maxiCumDiv+=mP1;
     }
     pn1CumD.push(Math.round(pn1Cum+=mP1));
@@ -2130,16 +2135,18 @@ function applyDevalPreset(rate,name){
 }
 // ─── WATERFALL UI ────────────────────────────────────────────────────
 function renderWfHdr(){
-  const sp23_1=((1-(P.trig1Sp1||55)/100)/2*100).toFixed(1);
-  const sp23_2=((1-(P.trig2Sp1||35)/100)/2*100).toFixed(1);
-  const el1=document.getElementById('n-trig1Sp23');if(el1)el1.value=sp23_1;
-  const el2=document.getElementById('n-trig2Sp23');if(el2)el2.value=sp23_2;
+  const t1Sp1=P.trig1Sp1||55, t2Sp1=P.trig2Sp1||35;
+  const t1Sp2=P.trig1Sp2!=null?P.trig1Sp2:(100-t1Sp1)/2;
+  const t2Sp2=P.trig2Sp2!=null?P.trig2Sp2:(100-t2Sp1)/2;
+  const t1Sp3=Math.max(0,100-t1Sp1-t1Sp2);
+  const t2Sp3=Math.max(0,100-t2Sp1-t2Sp2);
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=typeof v==='number'?+v.toFixed(2):v;};
+  set('n-trig1Pct',P.trig1Pct||100);set('n-trig2Pct',P.trig2Pct||200);
+  set('n-trig1Sp1',t1Sp1);set('n-trig2Sp1',t2Sp1);
+  set('n-trig1Sp2',+t1Sp2.toFixed(2));set('n-trig2Sp2',+t2Sp2.toFixed(2));
+  set('n-trig1Sp3',+t1Sp3.toFixed(2));set('n-trig2Sp3',+t2Sp3.toFixed(2));
   const hd=document.getElementById('hd-wf');
-  if(hd){hd.textContent=` — T1@${P.trig1Pct||100}% → ${P.trig1Sp1||55}/${sp23_1}/${sp23_1}`;hd.className='hvl';}
-  const p1=document.getElementById('n-trig1Pct');if(p1)p1.value=P.trig1Pct||100;
-  const p2=document.getElementById('n-trig2Pct');if(p2)p2.value=P.trig2Pct||200;
-  const s1=document.getElementById('n-trig1Sp1');if(s1)s1.value=P.trig1Sp1||55;
-  const s2=document.getElementById('n-trig2Sp1');if(s2)s2.value=P.trig2Sp1||35;
+  if(hd){hd.textContent=` T2: ${t2Sp1}/${+t2Sp2.toFixed(1)}/${+t2Sp3.toFixed(1)}`;hd.className='hvl';}
   const wn1=document.getElementById('wf-pn1');if(wn1)wn1.textContent=P.pn1||'Maxi';
   const wn2=document.getElementById('wf-pn2');if(wn2)wn2.textContent=P.pn2||'Pato';
   const wn3=document.getElementById('wf-pn3');if(wn3)wn3.textContent=P.pn3||'Julio';
