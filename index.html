@@ -224,6 +224,22 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .chart-vis-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center}
 .cv-btn{font-size:10px;padding:3px 8px;border-radius:3px;border:.5px solid;cursor:pointer;font-weight:500;transition:opacity .15s}
 .cv-btn.off{opacity:.35}
+/* dashboard chart header */
+.chart-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.prow{display:flex!important;gap:6px;flex:1;flex-wrap:wrap;align-items:stretch}
+.pcard-new{flex:1;min-width:130px;border-left:3px solid;border-radius:var(--border-radius-md);padding:8px 12px;cursor:pointer;border-top:.5px solid var(--color-border-tertiary);border-right:.5px solid var(--color-border-tertiary);border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);transition:opacity .15s,background .12s;position:relative}
+.pcard-new:hover{background:var(--color-background-primary)}
+.pcard-new.off{opacity:.32}
+.pcard-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3px}
+.pcard-name{font-size:12px;font-weight:600}
+.pcard-pct{font-size:11px;color:var(--color-text-tertiary)}
+.pcard-val{font-size:16px;font-weight:700;font-family:var(--font-mono);color:var(--color-text-primary);line-height:1}
+.pcard-sub{font-size:10px;color:var(--color-text-tertiary);font-family:var(--font-mono);margin-top:2px}
+.pcard-edit{position:absolute;top:5px;right:6px;font-size:10px;color:var(--color-text-tertiary);background:none;border:.5px solid var(--color-border-tertiary);cursor:pointer;padding:1px 5px;border-radius:3px;line-height:1.4}
+.pcard-edit:hover{color:var(--color-text-primary);border-color:var(--color-border-secondary)}
+.series-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex-shrink:0;align-self:flex-end;padding-bottom:2px}
+/* crisis events */
+.cev-row{display:grid;grid-template-columns:55px 65px 72px 1fr 24px;gap:4px;align-items:end;margin-bottom:5px;padding:6px 8px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary)}
 /* compact scenario bar */
 .sc-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
 .sc-bar-lbl{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
@@ -260,25 +276,17 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 <div class="krow" id="kRow2" style="grid-template-columns: repeat(2, minmax(0px, 1fr)); margin-bottom: 4px;"><div class="kc" style="background:var(--color-surface-2)"><div style="display:flex;align-items:center;justify-content:space-around;gap:4px;flex-wrap:wrap"><div style="text-align:center"><div class="kl" style="color:#639922">Facturación</div><div class="kv" style="color:#639922">USD 36k/mes</div></div><div style="font-size:20px;opacity:.4;font-weight:300">−</div><div style="text-align:center"><div class="kl" style="color:#a32d2d">Gastos totales</div><div class="kv" style="color:#a32d2d">USD 23k/mes</div></div><div style="font-size:20px;opacity:.4;font-weight:300">=</div><div style="text-align:center"><div class="kl" style="color:#639922">Ganancia mensual</div><div class="kv" style="color:#639922">USD 15k/mes</div></div></div><div style="text-align:center;font-size:9px;opacity:.55;margin-top:3px">estabilizada · mes 12</div></div><div class="kc n"><table style="border-collapse:collapse"><tbody><tr><td style="font-size:10px;white-space:nowrap;opacity:.75">Capital necesario</td><td style="font-weight:700;font-family:var(--font-mono);font-size:14px;white-space:nowrap;padding-left:12px">USD 290k</td></tr><tr><td style="font-size:10px;white-space:nowrap;color:var(--color-text-danger)">Exposición máxima</td><td style="font-weight:700;font-family:var(--font-mono);font-size:14px;white-space:nowrap;padding-left:12px;color:var(--color-text-danger)">USD 250k</td></tr></tbody></table></div></div>
 <div class="krow" id="kRow"><div class="kc g"><div class="kl">Primer mes<br>con ganancia</div><div class="kv">mes 6</div></div><div class="kc y"><div class="kl">Break-even<br>acumulado</div><div class="kv">mes 27</div></div><div class="kc g"><div class="kl">Ganancia mensual<br>(estabilizada)</div><div class="kv">USD 15k</div></div><div class="kc g"><div class="kl">Acumulado<br>al vencimiento</div><div class="kv">USD 403k</div></div><div class="kc g"><div class="kl">ROI anualizado</div><div class="kv">23%</div></div><div class="kc g"><div class="kl">vs S&amp;P500 hodl<br>(misma plata)</div><div class="kv">2.3× el S&amp;P</div></div></div>
 <div style="margin-bottom:10px">
-  <div class="pvis-row" id="partVisRow">
-    <span style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-right:4px">Socios visibles:</span>
-    <label class="pcb" id="pcb-p1"><input type="checkbox" checked onchange="partVis.p1=this.checked;document.getElementById('pcb-p1').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p1-name">Maxi</span></label>
-    <label class="pcb" id="pcb-p2"><input type="checkbox" checked onchange="partVis.p2=this.checked;document.getElementById('pcb-p2').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p2-name">Pato</span></label>
-    <label class="pcb" id="pcb-p3"><input type="checkbox" checked onchange="partVis.p3=this.checked;document.getElementById('pcb-p3').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p3-name">Julio</span></label>
+  <div class="chart-top">
+    <div id="prow" class="prow"></div>
+    <div class="series-row">
+      <button class="cv-btn" id="cv-rev" style="border-color:#639922;color:#639922" onclick="chartVis2.rev=!chartVis2.rev;this.classList.toggle('off',!chartVis2.rev);updateChart2(lastR2)">Facturación</button>
+      <button class="cv-btn" id="cv-cost" style="border-color:#a32d2d;color:#a32d2d" onclick="chartVis2.cost=!chartVis2.cost;this.classList.toggle('off',!chartVis2.cost);updateChart2(lastR2)">Gastos</button>
+      <button class="cv-btn" id="cv-net" style="border-color:#378add;color:#378add" onclick="chartVis2.net=!chartVis2.net;this.classList.toggle('off',!chartVis2.net);updateChart2(lastR2)">Ganancia</button>
+      <button class="cv-btn" id="cv-acum" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.acum=!chartVis2.acum;this.classList.toggle('off',!chartVis2.acum);updateChart2(lastR2)">Acumulado</button>
+      <button class="cv-btn" id="cv-sp" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.sp=!chartVis2.sp;this.classList.toggle('off',!chartVis2.sp);updateChart2(lastR2)">S&amp;P500</button>
+    </div>
   </div>
-  <div class="prow" id="prow"><div style="grid-column:1/-1;font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">División de socios — acumulado mes 60 · hover en curva para años 1/2/3</div><div class="pcard" onclick="startEditP1()"><div class="pl">Socio principal (10%) — clic para editar</div><div class="pv">USD 40k</div><div class="p-sub">USD 1k/mes estabilizado</div></div><div class="pcard nd"><div class="pl">Socio 2 (45%)</div><div class="pv">USD 181k</div><div class="p-sub">USD 7k/mes estabilizado</div></div><div class="pcard nd"><div class="pl">Socio 3 (45%)</div><div class="pv">USD 181k</div><div class="p-sub">USD 7k/mes estabilizado</div></div></div>
-  <div class="chart-vis-row" id="chartVisRow2" style="margin-top:10px">
-    <span style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-right:4px">Gráfico mensual:</span>
-    <button class="cv-btn" id="cv-rev" style="border-color:#639922;color:#639922" onclick="chartVis2.rev=!chartVis2.rev;this.classList.toggle('off',!chartVis2.rev);updateChart2(lastR2)">Facturación</button>
-    <button class="cv-btn" id="cv-cost" style="border-color:#a32d2d;color:#a32d2d" onclick="chartVis2.cost=!chartVis2.cost;this.classList.toggle('off',!chartVis2.cost);updateChart2(lastR2)">Gastos</button>
-    <button class="cv-btn" id="cv-p1" style="border-color:#f5a623;color:#f5a623" onclick="chartVis2.p1=!chartVis2.p1;this.classList.toggle('off',!chartVis2.p1);updateChart2(lastR2)">Div. Maxi</button>
-    <button class="cv-btn" id="cv-p2" style="border-color:#a78bfa;color:#a78bfa" onclick="chartVis2.p2=!chartVis2.p2;this.classList.toggle('off',!chartVis2.p2);updateChart2(lastR2)">Div. Pato</button>
-    <button class="cv-btn" id="cv-p3" style="border-color:#fb923c;color:#fb923c" onclick="chartVis2.p3=!chartVis2.p3;this.classList.toggle('off',!chartVis2.p3);updateChart2(lastR2)">Div. Julio</button>
-    <button class="cv-btn" id="cv-acum" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.acum=!chartVis2.acum;this.classList.toggle('off',!chartVis2.acum);updateChart2(lastR2)">Acumulado</button>
-    <button class="cv-btn" id="cv-net" style="border-color:#378add;color:#378add" onclick="chartVis2.net=!chartVis2.net;this.classList.toggle('off',!chartVis2.net);updateChart2(lastR2)">Ganancia</button>
-    <button class="cv-btn" id="cv-sp" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.sp=!chartVis2.sp;this.classList.toggle('off',!chartVis2.sp);updateChart2(lastR2)">S&amp;P500</button>
-  </div>
-  <div style="position:relative;width:100%;height:340px;margin-top:6px"><canvas id="ch2"></canvas></div>
+  <div style="position:relative;width:100%;height:340px"><canvas id="ch2"></canvas></div>
 </div>
 <div class="main">
 <div class="lp">
@@ -559,6 +567,11 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
           <button class="dv-preset" onclick="applyDevalPreset(15,'Colapso')">Colapso (15%/m)</button>
         </div>
         <div class="note" id="note-deval">A 3%/mes → dólar ×2.4 en año 1, ×5.6 en año 2. Los costos ARS se abaratan proporcionalmente en USD.</div>
+        <div style="margin-top:8px">
+          <div style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">Crisis puntuales</div>
+          <div id="deval-events"></div>
+          <button class="add-btn" onclick="DEVAL_EVENTS.push({month:12,jump:40,postRate:P.devalMonthly||3});renderDevalEvents();render()">+ agregar crisis puntual</button>
+        </div>
       </div>
     </div>
   </div>
@@ -623,9 +636,7 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 </div>
 <div class="rp">
   <div class="rg8" id="rg"><div class="rc"><div class="rl">Fútbol</div><div class="rv">USD 11k</div></div><div class="rc"><div class="rl">Escuelita</div><div class="rv">USD 14k</div></div><div class="rc"><div class="rl">Paddle</div><div class="rv">USD 6k</div></div><div class="rc"><div class="rl">Buffet</div><div class="rv">USD 895</div></div><div class="rc"><div class="rl">Eventos</div><div class="rv">USD 4k</div></div><div class="rc"><div class="rl">Torneos</div><div class="rv">USD 358</div></div><div class="rc"><div class="rl">Gastos</div><div class="rv ng">-USD 23k</div></div><div class="rc"><div class="rl">Neto mensual</div><div class="rv">USD 15k</div></div></div>
-  <div style="font-size:9px;color:var(--color-text-tertiary);margin-bottom:3px;letter-spacing:.04em">Demanda relativa mensual vs. base anual — 100% = promedio típico del año</div>
-  <div class="seas12" id="seasStrip"><div class="s12m g open" title="Mar: Fútbol 104% · Escuelita 112% · Paddle 102%"><div class="s12n">Mar</div><div class="s12v">106%</div></div><div class="s12m g" title="Abr: Fútbol 110% · Escuelita 112% · Paddle 106%"><div class="s12n">Abr</div><div class="s12v">109%</div></div><div class="s12m g" title="May: Fútbol 106% · Escuelita 108% · Paddle 102%"><div class="s12n">May</div><div class="s12v">105%</div></div><div class="s12m n" title="Jun: Fútbol 90% · Escuelita 96% · Paddle 94%"><div class="s12n">Jun</div><div class="s12v">93%</div></div><div class="s12m y" title="Jul: Fútbol 86% · Escuelita 64% · Paddle 90%"><div class="s12n">Jul</div><div class="s12v">80%</div></div><div class="s12m n" title="Ago: Fútbol 92% · Escuelita 104% · Paddle 96%"><div class="s12n">Ago</div><div class="s12v">97%</div></div><div class="s12m g" title="Sep: Fútbol 110% · Escuelita 106% · Paddle 110%"><div class="s12n">Sep</div><div class="s12v">109%</div></div><div class="s12m g" title="Oct: Fútbol 110% · Escuelita 106% · Paddle 110%"><div class="s12n">Oct</div><div class="s12v">109%</div></div><div class="s12m n" title="Nov: Fútbol 104% · Escuelita 100% · Paddle 104%"><div class="s12n">Nov</div><div class="s12v">103%</div></div><div class="s12m r" title="Dic: Fútbol 82% · Escuelita 56% · Paddle 82%"><div class="s12n">Dic</div><div class="s12v">74%</div></div><div class="s12m r" title="Ene: Fútbol 76% · Escuelita 42% · Paddle 78%"><div class="s12n">Ene</div><div class="s12v">65%</div></div><div class="s12m r" title="Feb: Fútbol 84% · Escuelita 64% · Paddle 86%"><div class="s12n">Feb</div><div class="s12v">78%</div></div></div>
-  <div style="font-size:9px;color:var(--color-text-tertiary);margin-bottom:2px;letter-spacing:.04em">Ocupación efectiva de canchas (estacionalidad + shock manual) — arrastrá los puntos para simular crisis o boom</div>
+  <div style="font-size:9px;color:var(--color-text-tertiary);margin-bottom:2px;letter-spacing:.04em">Ocupación efectiva — demanda estacional × ajuste manual. Arrastrá los puntos. La demanda base de cada trimestre aparece en la curva.</div>
   <canvas id="occChart" style="width: 1108px; height: 90px; display: block; cursor: ns-resize; border-radius: 6px;" width="1385" height="112"></canvas>
   <div id="riskText" class="risk"><strong>Riesgos no modelados:</strong> Inflación diferencial ARS/USD (costos en pesos subiendo más rápido que los ingresos en dólares), habilitaciones municipales renovables, app de turnos / comisiones de plataforma. El break-even a mes 27 es tardío y exige reservas operativas durante toda la rampa. <strong>Contexto argentino 2025:</strong> los costos en ARS (sueldos, alquiler, servicios) tienden a subir más rápido que la capacidad de ajustar precios en USD; ajustar el slider de obra para ver el impacto real del colchón necesario. <strong>Lo que puede faltar:</strong> contingencias de equipamiento no previstas — la reposición de césped y otros CAPEX puntuales se pueden modelar en la sección Inversión inicial.</div>
   <div id="gaugeWrap" style="margin:14px 0 6px"><div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
@@ -698,6 +709,7 @@ let P={"co":4,"ohd":11,"oc":26,"pr":38,"rc":10,"st":300,"fe":70000,"rs":12,"po":
 let EMP=[{"n":"Encargado","q":1,"s":2500000,"m":1},{"n":"Administrativo","q":1,"s":800000,"m":1},{"n":"Sereno/casero","q":1,"s":700000,"m":1},{"n":"Julio","q":1,"s":1000000,"m":3},{"n":"Pato","q":1,"s":1000000,"m":4}];
 let CUSTOM_GASTOS=[];
 let CUSTOM_INGRESOS=[];
+let DEVAL_EVENTS=[];
 let CUSTOM_CAPEX=[{"n":"Reposición césped sintético","usd":90000,"month":61,"freq":0},{"n":"Cancha extra de paddle","usd":20000,"month":30,"freq":0}];
 let OCC_PTS=[104,90,110,82,104,90,110,82,104,90,110,82,104,90,110,82,104,90,110,82,104];
 // OCC_PTS stores PURE SEASONAL MULTIPLIERS (100 = average month, ~70-115 range).
@@ -831,6 +843,20 @@ function renderSeasBars(){
     return`<div class="sbar-row"><div class="sbar-lbl" style="color:${r.col}">${r.lbl}</div><div class="sbar-cols">${bars}</div><div class="sbar-names">${lbls}</div></div>`;
   }).join('')+'<div class="note" style="margin-top:6px">Modelo: estacionalidad modifica la ocupación de canchas. Fútbol y paddle tienen su propio patrón estacional; buffet, eventos y torneos siguen el tráfico de canchas (no tienen factor independiente). Escuelita sigue el calendario escolar GCBA. Fuentes: ADEF zona norte GBA, variación de demanda paddle Arg. 2022-2024.</div></div>';
 }
+function calcFxAt(m){
+  if(!P.devalOn)return P.fx;
+  const evs=(DEVAL_EVENTS||[]).slice().sort((a,b)=>a.month-b.month);
+  let rate=(P.devalMonthly||0)/100,fx=P.fx,prev=0;
+  for(const ev of evs){
+    if(ev.month>m)break;
+    fx*=Math.pow(1+rate,ev.month-prev);
+    fx*=1+(ev.jump||0)/100;
+    rate=((ev.postRate!=null?ev.postRate:P.devalMonthly)||0)/100;
+    prev=ev.month;
+  }
+  fx*=Math.pow(1+rate,m-prev);
+  return fx;
+}
 function calc(){
   const tf=taxFactor();
   // Base revenues at full capacity (for display / steady-state estimates)
@@ -890,12 +916,11 @@ function calc(){
   let cum=-invBase,be=null,fp=null,minCum=-invBase;
   let cumNF=-invBaseNF,minCumNF=-invBaseNF;
   let maxiCumDiv=0,pn1Cum=0,pn2Cum=0,pn3Cum=0;
-  const devalOn=!!P.devalOn,devalRate=(P.devalMonthly||0)/100;
   const trig1Pct=(P.trig1Pct||100)/100,trig2Pct=(P.trig2Pct||200)/100;
   const trig1Sp1=(P.trig1Sp1||55)/100,trig2Sp1=(P.trig2Sp1||35)/100;
   for(let m=1;m<=P.meses;m++){
     if(pInvM>0&&m===pInvM&&P.po){cum-=pdInvAmt;if(cum<minCum)minCum=cum;cumNF-=finPdRaw;if(cumNF<minCumNF)minCumNF=cumNF;}
-    const fxM=devalOn?P.fx*Math.pow(1+devalRate,m):P.fx;
+    const fxM=calcFxAt(m);
     const fxRatio=P.fx/Math.max(1,fxM); // ARS costs get cheaper in USD as peso weakens
     const mOp=Math.max(0,m-obraM);
     const cf=Math.min(1,mOp/Math.max(1,P.rc));
@@ -1162,6 +1187,7 @@ function render(){
   renderSlots();
   renderRealityCheck(r);
   renderDevalHdr();
+  renderDevalEvents();
   renderWfHdr();
   renderPartnerNames();
   updateChart2(r);
@@ -1259,9 +1285,12 @@ function renderOccChart(){
     ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
     ctx.fillStyle=v>=P.oc*0.9?'#f5a623':v>=P.oc*0.65?'#f5c542':'#a32d2d';
     ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    const effLabelY=Math.max(padT+16,y-7);
     ctx.fillStyle=v>=P.oc*0.9?'#888780':v>=P.oc*0.65?'#854f0b':'#a32d2d';
     ctx.font='bold 8px sans-serif';ctx.textAlign='center';
-    ctx.fillText(Math.round(v)+'%',x,Math.max(padT+9,y-8));
+    ctx.fillText(Math.round(v)+'%',x,effLabelY);
+    ctx.fillStyle='rgba(136,135,128,.65)';ctx.font='6.5px sans-serif';
+    ctx.fillText(OCC_PTS[i]+'%',x,Math.max(padT+7,effLabelY-8));
     if(i%2===0){
       ctx.fillStyle='#888780';ctx.font='7px sans-serif';
       ctx.fillText(MES_NOM[((P.startMonth-1)+i*3)%12],x,H-2);
@@ -1324,8 +1353,23 @@ function initOccChartEvents(){
 function renderPartners(r){
   const pr=document.getElementById('prow');if(!pr||editP1)return;
   const sp2=(1-P.sp1/100)/2;
-  const psub=(share)=>`<div class="p-sub">${fmtKU(r.gain*share)}/mes estabilizado</div>`;
-  pr.innerHTML=`<div style="grid-column:1/-1;font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">División de socios — acumulado mes ${P.meses} · hover en curva para años 1/2/3</div><div class="pcard" onclick="startEditP1()"><div class="pl">Socio principal (${P.sp1}%) — clic para editar</div><div class="pv">${fmtKU(r.cum*P.sp1/100)}</div>${psub(P.sp1/100)}</div><div class="pcard nd"><div class="pl">Socio 2 (${(sp2*100).toFixed(0)}%)</div><div class="pv">${fmtKU(r.cum*sp2)}</div>${psub(sp2)}</div><div class="pcard nd"><div class="pl">Socio 3 (${(sp2*100).toFixed(0)}%)</div><div class="pv">${fmtKU(r.cum*sp2)}</div>${psub(sp2)}</div>`;
+  const PCOLS=['#f5a623','#a78bfa','#fb923c'];
+  const names=[P.pn1||'Maxi',P.pn2||'Pato',P.pn3||'Julio'];
+  const shares=[P.sp1/100,sp2,sp2];
+  const vis=[partVis.p1,partVis.p2,partVis.p3];
+  pr.innerHTML=names.map((name,i)=>{
+    const col=PCOLS[i],off=!vis[i];
+    const val=fmtKU(r.cum*shares[i]),sub=fmtKU(r.gain*shares[i]);
+    const editBtn=i===0?`<button class="pcard-edit" onclick="event.stopPropagation();startEditP1()" title="Editar % del socio principal">✏</button>`:'';
+    return`<div class="pcard-new${off?' off':''}" style="border-left-color:${col}" onclick="togglePartner(${i+1})">${editBtn}<div class="pcard-top"><span class="pcard-name" style="color:${col}">${name}</span><span class="pcard-pct">${(shares[i]*100).toFixed(0)}%</span></div><div class="pcard-val">${val}</div><div class="pcard-sub">${sub}/mes</div></div>`;
+  }).join('');
+}
+function togglePartner(n){
+  const k='p'+n;
+  partVis[k]=!partVis[k];
+  chartVis2[k]=partVis[k];
+  if(lastR2)renderPartners(lastR2);
+  updateChart2(lastR2);
 }
 function renderRisk(r){
   const el=document.getElementById('riskText');if(!el)return;
@@ -1375,7 +1419,8 @@ function renderFin(){
 }
 function startEditP1(){
   editP1=true;
-  document.querySelector('.pcard').innerHTML=`<div class="pl">Socio principal %</div><div class="p1e"><input type="number" id="sp1in" value="${P.sp1}" min="10" max="95"><button class="sc-btn" onclick="confirmP1()">OK</button></div>`;
+  const card=document.querySelector('.pcard-new');if(!card)return;
+  card.innerHTML=`<div style="padding:4px 0"><div class="pcard-top" style="margin-bottom:6px"><span class="pcard-name" style="color:#f5a623">${P.pn1||'Maxi'}</span><span class="pcard-pct">% del total</span></div><div class="p1e"><input type="number" id="sp1in" value="${P.sp1}" min="10" max="95"><button class="sc-btn" onclick="confirmP1()">OK</button></div></div>`;
   const inp=document.getElementById('sp1in');inp.focus();inp.select();
   inp.addEventListener('keydown',ev=>{if(ev.key==='Enter')confirmP1();});
 }
@@ -1827,6 +1872,7 @@ function shareHTML(){
   html=html.replace(/let CUSTOM_INGRESOS=\[.*?\];/,()=>'let CUSTOM_INGRESOS='+s(CUSTOM_INGRESOS)+';');
   html=html.replace(/let CUSTOM_CAPEX=\[.*?\];/,()=>'let CUSTOM_CAPEX='+s(CUSTOM_CAPEX)+';');
   html=html.replace(/let OCC_PTS=\[.*?\];/,()=>'let OCC_PTS='+s(OCC_PTS)+';');
+  html=html.replace(/let DEVAL_EVENTS=\[.*?\];/,()=>'let DEVAL_EVENTS='+s(DEVAL_EVENTS)+';');
   html=html.replace(/let slots=.+,aSlot=-?\d+,openSecs=\{ftb:true\}/,()=>'let slots='+s(slots)+',aSlot='+aSlot+',openSecs={ftb:true}');
   const blob=new Blob([html],{type:'text/html'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -1834,7 +1880,7 @@ function shareHTML(){
   a.click();URL.revokeObjectURL(a.href);
 }
 function exportJSON(){
-  const data={P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,OCC_PTS,slots,aSlot};
+  const data={P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,OCC_PTS,DEVAL_EVENTS,slots,aSlot};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='canchitas-'+new Date().toISOString().slice(0,10)+'.json';
@@ -1852,6 +1898,7 @@ function importState(input){
       if(d.CUSTOM_INGRESOS)CUSTOM_INGRESOS=d.CUSTOM_INGRESOS;
       if(d.CUSTOM_CAPEX)CUSTOM_CAPEX=d.CUSTOM_CAPEX;
       if(d.OCC_PTS&&d.OCC_PTS.length&&d.OCC_PTS.every(v=>v>=60&&v<=140))OCC_PTS=d.OCC_PTS;
+      if(d.DEVAL_EVENTS)DEVAL_EVENTS=d.DEVAL_EVENTS;
       if(d.slots)slots=d.slots;
       if(d.aSlot!=null)aSlot=d.aSlot;
       Object.entries({co:'s-co',ohd:'s-ohd',oc:'s-oc',pr:'s-pr',rc:'s-rc',st:'s-st',fe:'s-fe',rs:'s-rs',pn:'s-pn',pod:'s-pod',pa:'s-pa',pp:'s-pp',rp:'s-rp',fx:'s-fx',meses:'s-meses',negro:'s-negro',obra:'s-obra',pInvM:'s-pInvM',seas:'s-seas',startMonth:'s-startMonth',startYear:'s-startYear',ibRate:'s-ibRate',indemFam:'s-indemFam',stRatio:'s-stRatio',stSalArs:'s-stSalArs',chequeRate:'s-chequeRate',ganRate:'s-ganRate'})
@@ -1887,6 +1934,7 @@ function _bakedHTML(){
   html=html.replace(/let CUSTOM_INGRESOS=\[.*?\];/,()=>'let CUSTOM_INGRESOS='+s(CUSTOM_INGRESOS)+';');
   html=html.replace(/let CUSTOM_CAPEX=\[.*?\];/,()=>'let CUSTOM_CAPEX='+s(CUSTOM_CAPEX)+';');
   html=html.replace(/let OCC_PTS=\[.*?\];/,()=>'let OCC_PTS='+s(OCC_PTS)+';');
+  html=html.replace(/let DEVAL_EVENTS=\[.*?\];/,()=>'let DEVAL_EVENTS='+s(DEVAL_EVENTS)+';');
   html=html.replace(/let slots=.+,aSlot=-?\d+,openSecs=\{ftb:true\}/,()=>'let slots='+s(slots)+',aSlot='+aSlot+',openSecs={ftb:true}');
   return '<!DOCTYPE html>\n'+html;
 }
@@ -1999,6 +2047,7 @@ function _applyD(d){
   if(d.CUSTOM_GASTOS)CUSTOM_GASTOS=d.CUSTOM_GASTOS;
   if(d.CUSTOM_INGRESOS)CUSTOM_INGRESOS=d.CUSTOM_INGRESOS;
   if(d.CUSTOM_CAPEX)CUSTOM_CAPEX=d.CUSTOM_CAPEX;
+  if(d.DEVAL_EVENTS)DEVAL_EVENTS=d.DEVAL_EVENTS;
   if(d.OCC_PTS&&d.OCC_PTS.length&&d.OCC_PTS.every(v=>v>=60&&v<=140))OCC_PTS=d.OCC_PTS;
   if(d.slots)slots=d.slots;
   if(d.aSlot!=null)aSlot=d.aSlot;
@@ -2010,6 +2059,20 @@ function _applyD(d){
   if(e('n-ebl'))e('n-ebl').value=P.eBlanco;if(e('n-ecg'))e('n-ecg').value=P.eCarg;
 }
 // ─── DEVALUATION UI ──────────────────────────────────────────────────
+function renderDevalEvents(){
+  const el=document.getElementById('deval-events');if(!el)return;
+  if(!DEVAL_EVENTS.length){
+    el.innerHTML='<div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;font-style:italic">Sin eventos de crisis — el peso devalúa al ritmo base uniformemente.</div>';
+    return;
+  }
+  el.innerHTML=DEVAL_EVENTS.map((ev,i)=>`<div class="cev-row">
+    <div><span class="fl">Mes</span><input type="number" value="${ev.month}" min="1" style="text-align:center" onblur="DEVAL_EVENTS[${i}].month=Math.max(1,+this.value||1);renderDevalEvents();render()"></div>
+    <div><span class="fl">Shock +%</span><input type="number" value="${ev.jump}" min="0" max="1000" style="text-align:center" onblur="DEVAL_EVENTS[${i}].jump=Math.max(0,+this.value||0);renderDevalEvents();render()"></div>
+    <div><span class="fl">Post %/mes</span><input type="number" value="${ev.postRate}" min="0" max="30" step="0.5" style="text-align:center" onblur="DEVAL_EVENTS[${i}].postRate=Math.max(0,+this.value||0);renderDevalEvents();render()"></div>
+    <div style="font-size:10px;color:var(--color-text-tertiary);align-self:center;line-height:1.3">mes ${ev.month}: +${ev.jump}% y luego ${ev.postRate}%/m</div>
+    <button class="rm-btn" onclick="DEVAL_EVENTS.splice(${i},1);renderDevalEvents();render()">×</button>
+  </div>`).join('');
+}
 function renderDevalHdr(){
   const on=!!P.devalOn;
   const sw=document.getElementById('sw-deval');if(sw)sw.checked=on;
@@ -2048,13 +2111,9 @@ function renderWfHdr(){
 // ─── PARTNER NAMES UI ────────────────────────────────────────────────
 function renderPartnerNames(){
   const n1=P.pn1||'Maxi',n2=P.pn2||'Pato',n3=P.pn3||'Julio';
-  const e=id=>document.getElementById(id);
-  if(e('pcb-p1-name'))e('pcb-p1-name').textContent=n1;
-  if(e('pcb-p2-name'))e('pcb-p2-name').textContent=n2;
-  if(e('pcb-p3-name'))e('pcb-p3-name').textContent=n3;
-  const c1=document.getElementById('cv-p1');if(c1)c1.textContent='Div. '+n1;
-  const c2=document.getElementById('cv-p2');if(c2)c2.textContent='Div. '+n2;
-  const c3=document.getElementById('cv-p3');if(c3)c3.textContent='Div. '+n3;
+  const wn1=document.getElementById('wf-pn1');if(wn1)wn1.textContent=n1;
+  const wn2=document.getElementById('wf-pn2');if(wn2)wn2.textContent=n2;
+  const wn3=document.getElementById('wf-pn3');if(wn3)wn3.textContent=n3;
 }
 // ─── BAR CHART (dividends + revenue + costs) ─────────────────────────
 const C2_COLS={rev:'#639922',cost:'#a32d2d',p1:'#f5a623',p2:'#a78bfa',p3:'#fb923c',acumP1:'#f5a623',acumP2:'#a78bfa',acumP3:'#fb923c'};
@@ -2097,7 +2156,7 @@ function updateChart2(r){
 }
 // ─── SAVE ─────────────────────────────────────────────────────────────
 function saveLS(){
-  localStorage.setItem('canchitas',JSON.stringify({P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,OCC_PTS,slots,aSlot}));
+  localStorage.setItem('canchitas',JSON.stringify({P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,DEVAL_EVENTS,OCC_PTS,slots,aSlot}));
   localStorage.setItem('canchitas_chat',JSON.stringify({chatHistory,chartEvents}));
   _writeFile();
   sbSave();
