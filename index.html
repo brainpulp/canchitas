@@ -224,25 +224,62 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .chart-vis-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center}
 .cv-btn{font-size:10px;padding:3px 8px;border-radius:3px;border:.5px solid;cursor:pointer;font-weight:500;transition:opacity .15s}
 .cv-btn.off{opacity:.35}
+/* compact scenario bar */
+.sc-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.sc-bar-lbl{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+#scRow{display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1}
+.sc-pill{display:inline-flex;align-items:center;height:26px;padding:0 8px 0 10px;border:.5px solid var(--color-border-tertiary);border-radius:13px;background:var(--color-background-secondary);cursor:pointer;font-size:12px;font-weight:500;color:var(--color-text-primary);transition:border-color .12s,background .12s;white-space:nowrap;user-select:none;max-width:160px}
+.sc-pill:hover{border-color:var(--color-border-secondary);background:var(--color-background-primary)}
+.sc-pill.act{border-color:#378add;background:var(--color-background-primary)}
+.sc-pill.emp{opacity:.4}.sc-pill.emp:hover{opacity:.7}
+.sc-pill-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.sc-pill-x{background:transparent;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:13px;line-height:1;padding:0;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-left:3px;flex-shrink:0}
+.sc-pill-x:hover{color:var(--color-text-danger);background:var(--color-background-danger)}
+.sc-pill-inp{border:none;outline:none;background:transparent;font-size:12px;font-weight:500;color:#378add;width:90px;font-family:var(--font-sans)}
+.sc-add-btn{height:26px;padding:0 10px;border:.5px solid var(--color-border-secondary);border-radius:13px;background:transparent;color:var(--color-text-secondary);font-size:12px;cursor:pointer;flex-shrink:0;font-family:var(--font-sans)}
+.sc-add-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.sc-bar-tools{display:flex;gap:4px;align-items:center;margin-left:auto;flex-shrink:0}
+.sc-tool-btn{height:24px;padding:0 8px;border:.5px solid var(--color-border-tertiary);border-radius:4px;background:transparent;color:var(--color-text-tertiary);font-size:11px;cursor:pointer;font-family:var(--font-sans)}
+.sc-tool-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-secondary)}
 </style>
 </head>
 <body>
 <div style="font-size:28px;font-weight:700;letter-spacing:.05em;margin-bottom:8px">CANCHITAS</div>
 <h1>⚽ Canchitas <span>— proyección de factibilidad</span></h1>
 <div id="cw">
-<div style="margin-bottom:6px">
-  <div class="sec-t">escenarios — cambios se graban automáticamente en el slot activo (borde azul)</div>
-  <div class="sca" id="scRow"><div class="sc-slot act"><div class="sc-info"><div class="scn">basico</div><div class="scm">ROI 23% · BE mes 27</div><div class="scm">USD 403k al vencimiento</div></div><button class="sc-del" onclick="event.stopPropagation();deleteSlot(0)" title="Borrar escenario">×</button></div><div class="sc-slot emp"><div class="sc-info"><div class="scn" style="font-weight:400;color:#888780;font-size:11px">Slot 2</div><div class="scm">vacío</div></div></div><div class="sc-slot emp"><div class="sc-info"><div class="scn" style="font-weight:400;color:#888780;font-size:11px">Slot 3</div><div class="scm">vacío</div></div></div><div class="sc-slot emp"><div class="sc-info"><div class="scn" style="font-weight:400;color:#888780;font-size:11px">Slot 4</div><div class="scm">vacío</div></div></div><div class="sc-wrap"><input type="text" id="scName" placeholder="nombre del escenario" style="width:180px;text-align:right" onkeydown="if(event.key==='Enter'&amp;&amp;this.value.trim()){newSlot(this.value.trim());this.value='';}"><button class="sc-btn" onclick="const n=document.getElementById('scName');newSlot(n.value.trim()||'Escenario '+(slots.filter(Boolean).length+1));n.value=''">+ nuevo</button></div></div>
-  <div style="display:flex;gap:6px;margin-top:5px">
-    <button class="sc-btn" onclick="shareHTML()" title="Descarga el HTML con todos tus datos adentro — subilo a Netlify o mandalo directamente">↓ descargar página</button>
-    <button id="btnHF" class="sc-btn" onclick="saveHTMLFile()" title="Vincular index.html del proyecto para sobreescribirlo directamente">💾 guardar en proyecto</button>
-    <button class="sc-btn" onclick="document.getElementById('importFile').click()" title="Cargar un JSON exportado previamente">↑ importar JSON</button>
+<div class="sc-bar">
+  <span class="sc-bar-lbl">Escenarios</span>
+  <div id="scRow"></div>
+  <div class="sc-bar-tools">
+    <button class="sc-tool-btn" onclick="shareHTML()" title="Descarga el HTML con todos tus datos — subilo a Netlify o mandalo directamente">↓ descargar</button>
+    <button id="btnHF" class="sc-tool-btn" onclick="saveHTMLFile()" title="Vincular index.html del proyecto para sobreescribirlo directamente">💾 proyecto</button>
+    <button class="sc-tool-btn" onclick="document.getElementById('importFile').click()" title="Cargar un JSON exportado previamente">↑ importar</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importState(this)">
-    <span style="font-size:10px;color:var(--color-text-tertiary);align-self:center">el HTML incluye tus escenarios y ajustes — funciona en cualquier dispositivo sin configurar nada</span>
   </div>
 </div>
 <div class="krow" id="kRow2" style="grid-template-columns: repeat(2, minmax(0px, 1fr)); margin-bottom: 4px;"><div class="kc" style="background:var(--color-surface-2)"><div style="display:flex;align-items:center;justify-content:space-around;gap:4px;flex-wrap:wrap"><div style="text-align:center"><div class="kl" style="color:#639922">Facturación</div><div class="kv" style="color:#639922">USD 36k/mes</div></div><div style="font-size:20px;opacity:.4;font-weight:300">−</div><div style="text-align:center"><div class="kl" style="color:#a32d2d">Gastos totales</div><div class="kv" style="color:#a32d2d">USD 23k/mes</div></div><div style="font-size:20px;opacity:.4;font-weight:300">=</div><div style="text-align:center"><div class="kl" style="color:#639922">Ganancia mensual</div><div class="kv" style="color:#639922">USD 15k/mes</div></div></div><div style="text-align:center;font-size:9px;opacity:.55;margin-top:3px">estabilizada · mes 12</div></div><div class="kc n"><table style="border-collapse:collapse"><tbody><tr><td style="font-size:10px;white-space:nowrap;opacity:.75">Capital necesario</td><td style="font-weight:700;font-family:var(--font-mono);font-size:14px;white-space:nowrap;padding-left:12px">USD 290k</td></tr><tr><td style="font-size:10px;white-space:nowrap;color:var(--color-text-danger)">Exposición máxima</td><td style="font-weight:700;font-family:var(--font-mono);font-size:14px;white-space:nowrap;padding-left:12px;color:var(--color-text-danger)">USD 250k</td></tr></tbody></table></div></div>
 <div class="krow" id="kRow"><div class="kc g"><div class="kl">Primer mes<br>con ganancia</div><div class="kv">mes 6</div></div><div class="kc y"><div class="kl">Break-even<br>acumulado</div><div class="kv">mes 27</div></div><div class="kc g"><div class="kl">Ganancia mensual<br>(estabilizada)</div><div class="kv">USD 15k</div></div><div class="kc g"><div class="kl">Acumulado<br>al vencimiento</div><div class="kv">USD 403k</div></div><div class="kc g"><div class="kl">ROI anualizado</div><div class="kv">23%</div></div><div class="kc g"><div class="kl">vs S&amp;P500 hodl<br>(misma plata)</div><div class="kv">2.3× el S&amp;P</div></div></div>
+<div style="margin-bottom:10px">
+  <div class="pvis-row" id="partVisRow">
+    <span style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-right:4px">Socios visibles:</span>
+    <label class="pcb" id="pcb-p1"><input type="checkbox" checked onchange="partVis.p1=this.checked;document.getElementById('pcb-p1').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p1-name">Maxi</span></label>
+    <label class="pcb" id="pcb-p2"><input type="checkbox" checked onchange="partVis.p2=this.checked;document.getElementById('pcb-p2').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p2-name">Pato</span></label>
+    <label class="pcb" id="pcb-p3"><input type="checkbox" checked onchange="partVis.p3=this.checked;document.getElementById('pcb-p3').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p3-name">Julio</span></label>
+  </div>
+  <div class="prow" id="prow"><div style="grid-column:1/-1;font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">División de socios — acumulado mes 60 · hover en curva para años 1/2/3</div><div class="pcard" onclick="startEditP1()"><div class="pl">Socio principal (10%) — clic para editar</div><div class="pv">USD 40k</div><div class="p-sub">USD 1k/mes estabilizado</div></div><div class="pcard nd"><div class="pl">Socio 2 (45%)</div><div class="pv">USD 181k</div><div class="p-sub">USD 7k/mes estabilizado</div></div><div class="pcard nd"><div class="pl">Socio 3 (45%)</div><div class="pv">USD 181k</div><div class="p-sub">USD 7k/mes estabilizado</div></div></div>
+  <div class="chart-vis-row" id="chartVisRow2" style="margin-top:10px">
+    <span style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-right:4px">Gráfico mensual:</span>
+    <button class="cv-btn" id="cv-rev" style="border-color:#639922;color:#639922" onclick="chartVis2.rev=!chartVis2.rev;this.classList.toggle('off',!chartVis2.rev);updateChart2(lastR2)">Facturación</button>
+    <button class="cv-btn" id="cv-cost" style="border-color:#a32d2d;color:#a32d2d" onclick="chartVis2.cost=!chartVis2.cost;this.classList.toggle('off',!chartVis2.cost);updateChart2(lastR2)">Gastos</button>
+    <button class="cv-btn" id="cv-p1" style="border-color:#f5a623;color:#f5a623" onclick="chartVis2.p1=!chartVis2.p1;this.classList.toggle('off',!chartVis2.p1);updateChart2(lastR2)">Div. Maxi</button>
+    <button class="cv-btn" id="cv-p2" style="border-color:#a78bfa;color:#a78bfa" onclick="chartVis2.p2=!chartVis2.p2;this.classList.toggle('off',!chartVis2.p2);updateChart2(lastR2)">Div. Pato</button>
+    <button class="cv-btn" id="cv-p3" style="border-color:#fb923c;color:#fb923c" onclick="chartVis2.p3=!chartVis2.p3;this.classList.toggle('off',!chartVis2.p3);updateChart2(lastR2)">Div. Julio</button>
+    <button class="cv-btn" id="cv-acum" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.acum=!chartVis2.acum;this.classList.toggle('off',!chartVis2.acum);updateChart2(lastR2)">Acumulado</button>
+    <button class="cv-btn" id="cv-net" style="border-color:#378add;color:#378add" onclick="chartVis2.net=!chartVis2.net;this.classList.toggle('off',!chartVis2.net);updateChart2(lastR2)">Ganancia</button>
+    <button class="cv-btn" id="cv-sp" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.sp=!chartVis2.sp;this.classList.toggle('off',!chartVis2.sp);updateChart2(lastR2)">S&amp;P500</button>
+  </div>
+  <div style="position:relative;width:100%;height:340px;margin-top:6px"><canvas id="ch2"></canvas></div>
+</div>
 <div class="main">
 <div class="lp">
 
@@ -629,27 +666,6 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
     </div>
   </div>
 </div></div>
-  <div class="pvis-row" id="partVisRow">
-    <span style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-right:4px">Socios visibles:</span>
-    <label class="pcb" id="pcb-p1"><input type="checkbox" checked onchange="partVis.p1=this.checked;document.getElementById('pcb-p1').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p1-name">Maxi</span></label>
-    <label class="pcb" id="pcb-p2"><input type="checkbox" checked onchange="partVis.p2=this.checked;document.getElementById('pcb-p2').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p2-name">Pato</span></label>
-    <label class="pcb" id="pcb-p3"><input type="checkbox" checked onchange="partVis.p3=this.checked;document.getElementById('pcb-p3').classList.toggle('off',!this.checked);updateChart2(lastR2)"> <span id="pcb-p3-name">Julio</span></label>
-  </div>
-  <div class="prow" id="prow"><div style="grid-column:1/-1;font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">División de socios — acumulado mes 60 · hover en curva para años 1/2/3</div><div class="pcard" onclick="startEditP1()"><div class="pl">Socio principal (10%) — clic para editar</div><div class="pv">USD 40k</div><div class="p-sub">USD 1k/mes estabilizado</div></div><div class="pcard nd"><div class="pl">Socio 2 (45%)</div><div class="pv">USD 181k</div><div class="p-sub">USD 7k/mes estabilizado</div></div><div class="pcard nd"><div class="pl">Socio 3 (45%)</div><div class="pv">USD 181k</div><div class="p-sub">USD 7k/mes estabilizado</div></div></div>
-  <div style="margin-top:14px">
-    <div class="chart-vis-row" id="chartVisRow2">
-      <span style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-right:4px">Gráfico mensual:</span>
-      <button class="cv-btn" id="cv-rev" style="border-color:#639922;color:#639922" onclick="chartVis2.rev=!chartVis2.rev;this.classList.toggle('off',!chartVis2.rev);updateChart2(lastR2)">Facturación</button>
-      <button class="cv-btn" id="cv-cost" style="border-color:#a32d2d;color:#a32d2d" onclick="chartVis2.cost=!chartVis2.cost;this.classList.toggle('off',!chartVis2.cost);updateChart2(lastR2)">Gastos</button>
-      <button class="cv-btn" id="cv-p1" style="border-color:#f5a623;color:#f5a623" onclick="chartVis2.p1=!chartVis2.p1;this.classList.toggle('off',!chartVis2.p1);updateChart2(lastR2)">Div. Maxi</button>
-      <button class="cv-btn" id="cv-p2" style="border-color:#a78bfa;color:#a78bfa" onclick="chartVis2.p2=!chartVis2.p2;this.classList.toggle('off',!chartVis2.p2);updateChart2(lastR2)">Div. Pato</button>
-      <button class="cv-btn" id="cv-p3" style="border-color:#fb923c;color:#fb923c" onclick="chartVis2.p3=!chartVis2.p3;this.classList.toggle('off',!chartVis2.p3);updateChart2(lastR2)">Div. Julio</button>
-      <button class="cv-btn" id="cv-acum" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.acum=!chartVis2.acum;this.classList.toggle('off',!chartVis2.acum);updateChart2(lastR2)">Acumulado</button>
-      <button class="cv-btn" id="cv-net" style="border-color:#378add;color:#378add" onclick="chartVis2.net=!chartVis2.net;this.classList.toggle('off',!chartVis2.net);updateChart2(lastR2)">Ganancia</button>
-      <button class="cv-btn" id="cv-sp" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.sp=!chartVis2.sp;this.classList.toggle('off',!chartVis2.sp);updateChart2(lastR2)">S&amp;P500</button>
-    </div>
-    <div style="position:relative;width:100%;height:300px"><canvas id="ch2"></canvas></div>
-  </div>
 </div>
 </div>
 <button class="chat-fab" onclick="toggleChat()" title="Hablar con Roberto"><span>🧉</span><span class="chat-fab-badge"></span></button>
@@ -1143,7 +1159,7 @@ function render(){
   const eqPill=`<div class="kc" style="background:var(--color-surface-2)"><div style="display:flex;align-items:center;justify-content:space-around;gap:4px;flex-wrap:wrap"><div style="text-align:center"><div class="kl" style="color:#639922">Facturación</div><div class="kv" style="color:#639922">${fmtKU(totalRev)}/mes</div></div><div style="font-size:20px;opacity:.4;font-weight:300">−</div><div style="text-align:center"><div class="kl" style="color:#a32d2d">Gastos totales</div><div class="kv" style="color:#a32d2d">${fmtKU(totalGfx)}/mes</div></div><div style="font-size:20px;opacity:.4;font-weight:300">=</div><div style="text-align:center"><div class="kl" style="color:${gainC}">Ganancia mensual</div><div class="kv" style="color:${gainC}">${fmtKU(r.gain)}/mes</div></div></div><div style="text-align:center;font-size:9px;opacity:.55;margin-top:3px">estabilizada · mes ${r.rE}</div></div>`;
   if(e('kRow2')){e('kRow2').style.gridTemplateColumns='repeat(2,minmax(0,1fr))';e('kRow2').innerHTML=eqPill+combinedPill;}
   renderFin();
-  renderSlots(r);
+  renderSlots();
   renderRealityCheck(r);
   renderDevalHdr();
   renderWfHdr();
@@ -1547,25 +1563,50 @@ function renderRealityCheck(r){
   h+=`<div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-top:1px"><span>Margen sobre facturación</span><span>${margen}%</span></div>`;
   el.innerHTML=h;
 }
-function renderSlots(r){
+function renderSlots(){
   const row=document.getElementById('scRow');
   row.innerHTML='';
   for(let i=0;i<4;i++){
     const s=slots[i],el=document.createElement('div');
-    el.className='sc-slot'+(s?'':' emp')+(i===aSlot?' act':'');
+    el.className='sc-pill'+(s?'':' emp')+(i===aSlot?' act':'');
     if(s){
-      // Filled slot: [metrics left] [name input] [× button]
-      el.innerHTML=`<div class="sc-info"><div class="scn">${s.name.replace(/</g,'&lt;')}</div><div class="scm">ROI ${s.roi}% · BE ${bef(s.be)}</div><div class="scm">${fmtKU(s.cum)} al vencimiento</div></div><button class="sc-del" onclick="event.stopPropagation();deleteSlot(${i})" title="Borrar escenario">×</button>`;
+      el.title=`ROI ${s.roi}% · BE ${bef(s.be)} · ${fmtKU(s.cum)} al vencimiento`;
+      el.innerHTML=`<span class="sc-pill-n">${s.name.replace(/</g,'&lt;')}</span><button class="sc-pill-x" title="Borrar" onclick="event.stopPropagation();deleteSlot(${i})">×</button>`;
+      el.addEventListener('click',()=>{if(i===aSlot)aSlot=-1;else loadSlot(i);});
+      el.querySelector('.sc-pill-n').addEventListener('dblclick',e=>{e.stopPropagation();startRenameSlot(i,el);});
     } else {
-      el.innerHTML=`<div class="sc-info"><div class="scn" style="font-weight:400;color:#888780;font-size:11px">${i===aSlot?'grabando…':'Slot '+(i+1)}</div><div class="scm">${i===aSlot?'activo':'vacío'}</div></div>`;
+      el.innerHTML=`<span class="sc-pill-n" style="opacity:.5">${i===aSlot?'grabando…':'Slot '+(i+1)}</span>`;
+      el.addEventListener('click',()=>{aSlot=i;render();});
+      el.title='Grabar en este slot';
     }
-    el.onclick=(idx=>()=>{if(idx===aSlot)aSlot=-1;else if(slots[idx])loadSlot(idx);else{aSlot=idx;render();}})(i);
     row.appendChild(el);
   }
-  // New slot button
-  const sw=document.createElement('div');sw.className='sc-wrap';
-  sw.innerHTML=`<input type="text" id="scName" placeholder="nombre del escenario" style="width:180px;text-align:right" onkeydown="if(event.key==='Enter'&&this.value.trim()){newSlot(this.value.trim());this.value='';}"><button class="sc-btn" onclick="const n=document.getElementById('scName');newSlot(n.value.trim()||'Escenario '+(slots.filter(Boolean).length+1));n.value=''">+ nuevo</button>`;
-  row.appendChild(sw);
+  const ab=document.createElement('button');
+  ab.className='sc-add-btn';
+  ab.textContent='+ nuevo';
+  ab.title='Guardar escenario actual con nuevo nombre';
+  ab.addEventListener('click',()=>{
+    const cnt=slots.filter(Boolean).length;
+    newSlot('Escenario '+(cnt+1));
+    const newEl=document.getElementById('scRow').children[aSlot];
+    if(newEl) startRenameSlot(aSlot,newEl);
+  });
+  row.appendChild(ab);
+}
+function startRenameSlot(i,el){
+  const nameEl=el.querySelector('.sc-pill-n');
+  if(!nameEl) return;
+  const inp=document.createElement('input');
+  inp.className='sc-pill-inp';
+  inp.value=slots[i]?slots[i].name:'';
+  const done=(save)=>{
+    if(save&&slots[i]) slots[i].name=inp.value.trim()||slots[i].name;
+    renderSlots();saveLS();
+  };
+  inp.onkeydown=e=>{if(e.key==='Enter')done(true);else if(e.key==='Escape')done(false);};
+  inp.onblur=()=>done(true);
+  nameEl.replaceWith(inp);
+  inp.focus();inp.select();
 }
 function newSlot(name){let idx=slots.findIndex(s=>!s);if(idx<0)idx=0;slots[idx]={name,P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),roi:0,be:null,cum:0};aSlot=idx;render();}
 function loadSlot(i){
