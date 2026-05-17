@@ -300,6 +300,8 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .sc-bar-tools{display:flex;gap:4px;align-items:center;margin-left:auto;flex-shrink:0}
 .sc-tool-btn{height:24px;padding:0 8px;border:.5px solid var(--color-border-tertiary);border-radius:4px;background:transparent;color:var(--color-text-tertiary);font-size:11px;cursor:pointer;font-family:var(--font-sans)}
 .sc-tool-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-secondary)}
+#themeToggle{font-size:15px;border-color:var(--bd-s);color:var(--tx2)}
+#themeToggle:hover{color:var(--tx);border-color:var(--bd)}
 </style>
 </head>
 <body>
@@ -1383,16 +1385,19 @@ function initOccChartEvents(){
 }
 function renderPartners(r){
   const pr=document.getElementById('prow');if(!pr||editP1)return;
-  const sp2=(1-P.sp1/100)/2;
   const PCOLS=['#f59e0b','#38bdf8','#fb7185'];
   const names=[P.pn1||'Maxi',P.pn2||'Pato',P.pn3||'Julio'];
-  const shares=[P.sp1/100,sp2,sp2];
+  const cums=[r.pn1Cum,r.pn2Cum,r.pn3Cum];
+  const monthly=[r.pn1D?r.pn1D[r.pn1D.length-1]||0:0,r.pn2D?r.pn2D[r.pn2D.length-1]||0:0,r.pn3D?r.pn3D[r.pn3D.length-1]||0:0];
+  const totalCum=(r.pn1Cum||0)+(r.pn2Cum||0)+(r.pn3Cum||0);
   const vis=[partVis.p1,partVis.p2,partVis.p3];
+  // waterfall section anchor for edit button
+  const openWf=`event.stopPropagation();tog('wf');document.getElementById('abdy-wf')?.scrollIntoView({behavior:'smooth',block:'nearest'})`;
   pr.innerHTML=names.map((name,i)=>{
     const col=PCOLS[i],off=!vis[i];
-    const val=fmtKU(r.cum*shares[i]),sub=fmtKU(r.gain*shares[i]);
-    const editBtn=i===0?`<button class="pcard-edit" onclick="event.stopPropagation();startEditP1()" title="Editar % del socio principal">✏</button>`:'';
-    return`<div class="pcard-new${off?' off':''}" style="border-color:${col}${off?'28':'40'}" onclick="togglePartner(${i+1})">${editBtn}<div class="pcard-top"><span class="pcard-name" style="color:${col}">${name}</span><span class="pcard-pct">${(shares[i]*100).toFixed(0)}%</span></div><div class="pcard-val">${val}</div><div class="pcard-sub">${sub}/mes</div></div>`;
+    const pct=totalCum>0?((cums[i]/totalCum)*100).toFixed(0):'—';
+    const editBtn=`<button class="pcard-edit" onclick="${openWf}" title="Editar distribución de ganancias">✏</button>`;
+    return`<div class="pcard-new${off?' off':''}" style="border-color:${col}${off?'28':'40'}" onclick="togglePartner(${i+1})">${editBtn}<div class="pcard-top"><span class="pcard-name" style="color:${col}">${name}</span><span class="pcard-pct">${pct}% real</span></div><div class="pcard-val">${fmtKU(cums[i])}</div><div class="pcard-sub">${fmtKU(monthly[i])}/mes est.</div></div>`;
   }).join('');
 }
 function togglePartner(n){
@@ -2154,9 +2159,9 @@ function updateChart2(r){
   const datasets=[];
   if(chartVis2.rev)datasets.push({label:'Facturación',data:r.grossD,backgroundColor:'rgba(99,153,34,.45)',borderColor:C2_COLS.rev,borderWidth:1,stack:'rev',order:3,type:'bar'});
   if(chartVis2.cost)datasets.push({label:'Gastos',data:r.costsD,backgroundColor:'rgba(163,45,45,.4)',borderColor:C2_COLS.cost,borderWidth:1,stack:'cost',order:3,type:'bar'});
-  if(partVis.p1)datasets.push({label:'Div. '+n1,data:r.pn1D,backgroundColor:'rgba(245,158,11,.65)',borderColor:C2_COLS.p1,borderWidth:1,stack:'d1',order:2,type:'bar'});
-  if(partVis.p2)datasets.push({label:'Div. '+n2,data:r.pn2D,backgroundColor:'rgba(56,189,248,.55)',borderColor:C2_COLS.p2,borderWidth:1,stack:'d2',order:2,type:'bar'});
-  if(partVis.p3)datasets.push({label:'Div. '+n3,data:r.pn3D,backgroundColor:'rgba(251,113,133,.55)',borderColor:C2_COLS.p3,borderWidth:1,stack:'d3',order:2,type:'bar'});
+  if(partVis.p1)datasets.push({label:'Div. '+n1,data:r.pn1D,backgroundColor:'rgba(245,158,11,.65)',borderColor:C2_COLS.p1,borderWidth:1,stack:'div',order:2,type:'bar'});
+  if(partVis.p2)datasets.push({label:'Div. '+n2,data:r.pn2D,backgroundColor:'rgba(56,189,248,.55)',borderColor:C2_COLS.p2,borderWidth:1,stack:'div',order:2,type:'bar'});
+  if(partVis.p3)datasets.push({label:'Div. '+n3,data:r.pn3D,backgroundColor:'rgba(251,113,133,.55)',borderColor:C2_COLS.p3,borderWidth:1,stack:'div',order:2,type:'bar'});
   if(partVis.p1&&chartVis2.acum)datasets.push({label:'Acum. '+n1,data:r.pn1CumD,borderColor:C2_COLS.p1,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
   if(partVis.p2&&chartVis2.acum)datasets.push({label:'Acum. '+n2,data:r.pn2CumD,borderColor:C2_COLS.p2,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
   if(partVis.p3&&chartVis2.acum)datasets.push({label:'Acum. '+n3,data:r.pn3CumD,borderColor:C2_COLS.p3,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
