@@ -3,7 +3,7 @@
 **Live:** https://brainpulp.github.io/canchitas/  
 **Repo:** https://github.com/brainpulp/canchitas  
 **Working file:** `F:\codetests\cleanup\canchitas\index.html` (190 KB, single file, no build step)  
-**Last commit:** ba7a84d — 2026-05-17 — "Add independent Pato/Julio splits in waterfall"
+**Last commit:** b8a5bcf — 2026-05-18 — "Remove garbled edit buttons from partner cards, delete dead startEditP1 code"
 
 ---
 
@@ -111,10 +111,16 @@ git push origin main
 
 ---
 
-## Completed items (as of 2026-05-17)
+## Partner cards UX
+- Click a card → toggles that partner's data on/off in the chart (`partVis.p1/p2/p3`)
+- To edit the split %: open the **🏦 Distribución de ganancias** accordion in the left panel
+- No inline edit button on cards (removed — was overlapping and broken)
+
+## Completed items (as of 2026-05-18)
 - ✅ Consolidated to one chart (`ch2` bar + line overlays; `ch` line chart dropped)
+- ✅ Chart JS legend removed — partner cards are the sole visibility toggle
 - ✅ Acumulado lines react to partner checkboxes (`partVis`)
-- ✅ Independent Pato/Julio splits (`trig1Sp2`, `trig2Sp2`) — latest commit
+- ✅ Independent Pato/Julio splits (`trig1Sp2`, `trig2Sp2`)
 - ✅ Dark/light theme toggle
 - ✅ DEVAL_EVENTS crisis model
 - ✅ Full tax model (IB, cheque, ganancias)
@@ -122,6 +128,7 @@ git push origin main
 - ✅ Indem provision (indemFam)
 - ✅ Seasonality (seas), startMonth/startYear
 - ✅ Financing section
+- ✅ Removed dead startEditP1/confirmP1/editP1 code
 
 ## Next items / open questions
 1. **Waterfall UX clarity** — trigger labels still confusing (show Pato/Julio % explicitly in the accordion header, not just Maxi %)
