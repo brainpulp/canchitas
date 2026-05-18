@@ -276,8 +276,6 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .pcard-pct{font-size:10px;color:var(--tx3);font-family:var(--font-mono)}
 .pcard-val{font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--tx);line-height:1}
 .pcard-sub{font-size:10px;color:var(--tx3);font-family:var(--font-mono);margin-top:3px}
-.pcard-edit{position:absolute;top:8px;right:8px;font-size:10px;color:var(--tx3);background:none;border:.5px solid var(--bd-s);cursor:pointer;padding:1px 5px;border-radius:3px;line-height:1.4}
-.pcard-edit:hover{color:var(--tx);border-color:var(--bd)}
 .series-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex-shrink:0;align-self:flex-end;padding-bottom:2px}
 /* crisis events */
 .cev-row{display:grid;grid-template-columns:55px 65px 72px 1fr 24px;gap:4px;align-items:end;margin-bottom:5px;padding:6px 8px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary)}
@@ -777,7 +775,7 @@ function getOccFactor(m){
   const mult=(OCC_PTS[lo]||100)*(1-(fi-lo))+(OCC_PTS[hi]||100)*(fi-lo);
   return mult/100; // 1.0 = average month; 0.7 = low season; 1.15 = peak
 }
-let slots=[{"name":"basico","P":{"co":4,"ohd":11,"oc":26,"pr":38,"rc":10,"st":300,"fe":70000,"rs":12,"po":true,"pn":2,"pod":8,"pa":50,"pp":30,"rp":7,"buOn":true,"evOn":true,"toOn":true,"eBlanco":40,"eCarg":60,"fx":1350,"meses":60,"negro":50,"sp1":10,"obra":0,"pInvM":4,"startMonth":3,"seas":80,"startYear":2026,"ibRate":3.5,"indemFam":45,"stRatio":75,"stSalArs":700000,"chequeRate":0.6,"ganRate":35,"finCOn":false,"finCCuotas":24,"finCTasa":8,"finPdOn":false,"finPdCuotas":18,"finPdTasa":8,"pn1":"Maxi","pn2":"Pato","pn3":"Julio","trig1Pct":100,"trig1Sp1":55,"trig2Pct":200,"trig2Sp1":35,"devalOn":false,"devalMonthly":3},"EMP":[{"n":"Encargado","q":1,"s":2500000,"m":1},{"n":"Administrativo","q":1,"s":800000,"m":1},{"n":"Sereno/casero","q":1,"s":700000,"m":1},{"n":"Julio","q":1,"s":1000000,"m":3},{"n":"Pato","q":1,"s":1000000,"m":4}],"roi":23,"be":27,"cum":403289},null,null,null],aSlot=0,openSecs={ftb:true},editP1=false;
+let slots=[{"name":"basico","P":{"co":4,"ohd":11,"oc":26,"pr":38,"rc":10,"st":300,"fe":70000,"rs":12,"po":true,"pn":2,"pod":8,"pa":50,"pp":30,"rp":7,"buOn":true,"evOn":true,"toOn":true,"eBlanco":40,"eCarg":60,"fx":1350,"meses":60,"negro":50,"sp1":10,"obra":0,"pInvM":4,"startMonth":3,"seas":80,"startYear":2026,"ibRate":3.5,"indemFam":45,"stRatio":75,"stSalArs":700000,"chequeRate":0.6,"ganRate":35,"finCOn":false,"finCCuotas":24,"finCTasa":8,"finPdOn":false,"finPdCuotas":18,"finPdTasa":8,"pn1":"Maxi","pn2":"Pato","pn3":"Julio","trig1Pct":100,"trig1Sp1":55,"trig2Pct":200,"trig2Sp1":35,"devalOn":false,"devalMonthly":3},"EMP":[{"n":"Encargado","q":1,"s":2500000,"m":1},{"n":"Administrativo","q":1,"s":800000,"m":1},{"n":"Sereno/casero","q":1,"s":700000,"m":1},{"n":"Julio","q":1,"s":1000000,"m":3},{"n":"Pato","q":1,"s":1000000,"m":4}],"roi":23,"be":27,"cum":403289},null,null,null],aSlot=0,openSecs={ftb:true};
 let partVis={p1:true,p2:true,p3:true};
 let chartVis2={rev:true,cost:true,p1:true,p2:true,p3:true,acum:true,net:true,sp:false};
 let chart2=null,lastR2=null;
@@ -1389,20 +1387,17 @@ function initOccChartEvents(){
   canvas.addEventListener('touchend',onUp);
 }
 function renderPartners(r){
-  const pr=document.getElementById('prow');if(!pr||editP1)return;
+  const pr=document.getElementById('prow');if(!pr)return;
   const PCOLS=['#f59e0b','#38bdf8','#fb7185'];
   const names=[P.pn1||'Maxi',P.pn2||'Pato',P.pn3||'Julio'];
   const cums=[r.pn1Cum,r.pn2Cum,r.pn3Cum];
   const monthly=[r.pn1D?r.pn1D[r.pn1D.length-1]||0:0,r.pn2D?r.pn2D[r.pn2D.length-1]||0:0,r.pn3D?r.pn3D[r.pn3D.length-1]||0:0];
   const totalCum=(r.pn1Cum||0)+(r.pn2Cum||0)+(r.pn3Cum||0);
   const vis=[partVis.p1,partVis.p2,partVis.p3];
-  // waterfall section anchor for edit button
-  const openWf=`event.stopPropagation();tog('wf');document.getElementById('abdy-wf')?.scrollIntoView({behavior:'smooth',block:'nearest'})`;
   pr.innerHTML=names.map((name,i)=>{
     const col=PCOLS[i],off=!vis[i];
     const pct=totalCum>0?((cums[i]/totalCum)*100).toFixed(0):'—';
-    const editBtn=`<button class="pcard-edit" onclick="${openWf}" title="Editar distribución de ganancias">✏</button>`;
-    return`<div class="pcard-new${off?' off':''}" style="border-color:${col}${off?'28':'40'}" onclick="togglePartner(${i+1})">${editBtn}<div class="pcard-top"><span class="pcard-name" style="color:${col}">${name}</span><span class="pcard-pct">${pct}% real</span></div><div class="pcard-val">${fmtKU(cums[i])}</div><div class="pcard-sub">${fmtKU(monthly[i])}/mes est.</div></div>`;
+    return`<div class="pcard-new${off?' off':''}" style="border-color:${col}${off?'28':'40'}" onclick="togglePartner(${i+1})"><div class="pcard-top"><span class="pcard-name" style="color:${col}">${name}</span><span class="pcard-pct">${pct}% real</span></div><div class="pcard-val">${fmtKU(cums[i])}</div><div class="pcard-sub">${fmtKU(monthly[i])}/mes est.</div></div>`;
   }).join('');
 }
 function togglePartner(n){
@@ -1458,14 +1453,6 @@ function renderFin(){
   const hd=document.getElementById('hd-fin');
   if(hd){const parts=[];if(P.finCOn)parts.push('turf');if(P.finPdOn&&pdDeferred)parts.push('paddle');hd.textContent=parts.length?' '+parts.join(' + ')+' financiado':'';hd.className='hvl '+(parts.length?'neg':'');}
 }
-function startEditP1(){
-  editP1=true;
-  const card=document.querySelector('.pcard-new');if(!card)return;
-  card.innerHTML=`<div style="padding:4px 0"><div class="pcard-top" style="margin-bottom:6px"><span class="pcard-name" style="color:#f59e0b">${P.pn1||'Maxi'}</span><span class="pcard-pct">% del total</span></div><div class="p1e"><input type="number" id="sp1in" value="${P.sp1}" min="10" max="95"><button class="sc-btn" onclick="confirmP1()">OK</button></div></div>`;
-  const inp=document.getElementById('sp1in');inp.focus();inp.select();
-  inp.addEventListener('keydown',ev=>{if(ev.key==='Enter')confirmP1();});
-}
-function confirmP1(){const v=+document.getElementById('sp1in').value;if(v>=10&&v<=95)P.sp1=v;editP1=false;render();}
 function gaugeScore(r){
   let sc=0;
   if(r.gain>0)sc+=Math.min(40,20+r.roi/2);else if(r.gain>-300)sc+=8;
