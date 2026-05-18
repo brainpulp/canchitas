@@ -2183,7 +2183,7 @@ function updateChart2(r){
     chart2=new Chart(ctx.getContext('2d'),{type:'bar',data:{labels:r.labels,datasets},
       options:{responsive:true,maintainAspectRatio:false,
         interaction:{mode:'index',intersect:false},
-        plugins:{legend:{display:true,position:'top',labels:{font:{size:10},boxWidth:12,padding:8}},
+        plugins:{legend:{display:false},
           tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmtKU(c.parsed.y)}`}}},
         scales:{
           x:{stacked:true,grid:{color:'rgba(128,128,128,.1)'},ticks:{color:'#888780',font:{size:9},maxRotation:0,autoSkip:true,maxTicksLimit:10}},
