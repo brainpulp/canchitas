@@ -2,7 +2,8 @@
 
 **Live:** https://brainpulp.github.io/canchitas/  
 **Repo:** https://github.com/brainpulp/canchitas  
-**Local:** `F:\codetests\cleanup\canchitas\index.html` (~2164 lines, single file, no build step)
+**Working file:** `F:\codetests\cleanup\canchitas\index.html` (190 KB, single file, no build step)  
+**Last commit:** ba7a84d — 2026-05-17 — "Add independent Pato/Julio splits in waterfall"
 
 ---
 
@@ -15,56 +16,94 @@ Financial feasibility model for an Argentine sports complex (fútbol + paddle + 
 | Thing | Detail |
 |---|---|
 | Hosting | GitHub Pages (main branch → auto-deploy ~2 min) |
-| Persistence | Supabase project `kbatdnrxfrltcmqvsmyy`, table `canchitas_scenarios` — 4 slots, anon RLS |
-| Charts | Chart.js 4.4.4 — `ch` (line) + `ch2` (stacked bar) |
+| Persistence | Supabase `kbatdnrxfrltcmqvsmyy`, table `canchitas_scenarios` — 4 slots, anon RLS |
+| Chart | Chart.js 4.4.4 — `ch2` only (stacked bar + line overlays, toggles per dataset) |
 | Auth | None — shared anonymous state, same URL for everyone |
+| Theme | Light/dark toggle (`toggleTheme()`), stored in localStorage |
 
 ---
 
 ## Key globals
 ```js
-P            // all parameters (see P object section below)
-EMP[]        // employees: {n, q, s, m}  (name, qty, ARS salary, start month)
+P                // all parameters
+EMP[]            // employees: {n, q, s, m} (name, qty, ARS salary, start month)
 CUSTOM_GASTOS[], CUSTOM_INGRESOS[], CUSTOM_CAPEX[]
-OCC_PTS[]    // draggable occupancy curve (quarterly multipliers, 100 = P.oc base)
-slots[4]     // scenario slots; aSlot = active index
-partVis      // {p1, p2, p3}  partner checkbox state
-chartVis2    // {rev, cost, p1, p2, p3, acum}  bar chart visibility
+OCC_PTS[]        // draggable occupancy curve (quarterly multipliers, 100 = P.oc base)
+DEVAL_EVENTS[]   // crisis devaluation events: {month, jump, postRate}
+slots[4]         // scenario slots; aSlot = active index
+partVis          // {p1, p2, p3}  partner checkbox state
+chartVis2        // {rev, cost, p1, p2, p3, acum, net, sp}  bar chart visibility
+chatHistory[], chartEvents[]
 ```
 
-## Key P fields (additions beyond the original)
+## P object — full field reference
 ```js
-pn1, pn2, pn3          // partner names: "Maxi", "Pato", "Julio"
-trig1Pct, trig1Sp1     // Trigger 1: when Maxi cum divs = X% of inv → T1 split (Maxi gets trig1Sp1%)
-trig2Pct, trig2Sp1     // Trigger 2: when cum = Y% of inv → T2 split (permanent)
-devalOn, devalMonthly  // ARS devaluation: monthly FX crawl %, affects ARS-denominated costs
+// Fútbol
+co, ohd, oc, pr, rc
+
+// Escuelita
+st, fe, rs, stRatio, stSalArs
+
+// Paddle
+po, pn, pod, pa, pp, rp
+
+// Adicionales
+buOn, evOn, toOn, pInvM
+
+// Empleados
+eBlanco, eCarg, indemFam   // indemFam = % staff familia/amigos (lower dismissal risk)
+
+// Parámetros generales
+fx, meses, negro, obra, seas, startMonth, startYear
+
+// Impuestos
+ibRate, chequeRate, ganRate
+
+// Financiamiento
+finCOn, finCCuotas, finCTasa, finPdOn, finPdCuotas, finPdTasa
+
+// Socios
+pn1, pn2, pn3              // names: "Maxi", "Pato", "Julio"
+sp1                        // legacy (overridden by waterfall)
+
+// Waterfall (NEW: independent per-partner splits)
+trig1Pct                   // % of totalInv Maxi must accumulate → enters Phase 1
+trig1Sp1, trig1Sp2         // Maxi %, Pato % in Phase 1 (Julio gets remainder)
+trig2Pct                   // % of totalInv → enters Phase 2 (permanent)
+trig2Sp1, trig2Sp2         // Maxi %, Pato % in Phase 2 (Julio gets remainder)
+
+// Devaluación
+devalOn, devalMonthly
 ```
 
 ## Waterfall dividend logic (calc())
-- **Phase 0:** 100% of net profit → Maxi until `maxiCumDiv ≥ trig1Pct/100 × totalInv`
-- **Phase 1:** split `trig1Sp1 / ((1-trig1Sp1)/2) / ((1-trig1Sp1)/2)` until `maxiCumDiv ≥ trig2Pct/100 × totalInv`
-- **Phase 2:** `trig2Sp1` split, permanent
-- Pato/Julio = $0 during Phase 0. Both triggers are **cumulative from day 1**, not incremental.
-
-## calc() returns (key additions)
-```js
-pn1D, pn2D, pn3D       // monthly dividend arrays per partner
-pn1CumD, pn2CumD, pn3CumD  // cumulative per partner
-grossD, costsD          // monthly revenue and total costs arrays
-```
+- **Phase 0:** 100% → Maxi until `maxiCumDiv ≥ trig1Pct/100 × totalInv`
+- **Phase 1:** `trig1Sp1 / trig1Sp2 / (100-trig1Sp1-trig1Sp2)` until `maxiCumDiv ≥ trig2Pct/100 × totalInv`
+- **Phase 2:** `trig2Sp1 / trig2Sp2 / (100-trig2Sp1-trig2Sp2)`, permanent
+- Pato/Julio = $0 in Phase 0. Both triggers are **cumulative from day 1**, not incremental.
 
 ## Devaluation model
-Monthly FX = `P.fx × (1 + devalMonthly/100)^m`. ARS costs get cheaper in USD as peso weakens. USD revenues unaffected. `fxRatio = P.fx / fxM` applied to wages, rent, etc.
+- Smooth crawl: monthly FX = `P.fx × (1 + devalMonthly/100)^m`
+- Crisis events (`DEVAL_EVENTS`): each event has `{month, jump%, postRate%}` — FX jumps at that month then continues at the new rate
+- `fxRatio = P.fx / fxM` applied to ARS-denominated costs; USD revenues unaffected
 
-## Supabase
-- Auto-saves on every `saveLS()` call with 1.5s debounce (`sbSave`)
-- Load priority on startup: **localStorage → Supabase → scenarios.json fallback**
+## calc() key return values
+```js
+pn1D, pn2D, pn3D           // monthly dividends per partner
+pn1CumD, pn2CumD, pn3CumD // cumulative per partner
+grossD, costsD, netD        // monthly revenue, costs, net
+pn1Cum, pn2Cum, pn3Cum     // final cumulative totals
+```
+
+## Persistence
+- `saveLS()` → localStorage + Supabase (1.5s debounce via `sbSave`) + `_writeFile()`
+- Load order: localStorage → Supabase → `scenarios.json` fallback
 - Anon key embedded in file
 
 ## Deploy
 ```bash
 cd F:\codetests\cleanup\canchitas
-git add index.html
+git add index.html HANDOFF.md
 git commit -m "..."
 git push origin main
 # Pages live in ~2 min
@@ -72,10 +111,22 @@ git push origin main
 
 ---
 
-## Next items (agreed / in progress)
-1. **Consolidate to one chart** — drop `ch` (line chart), fold ganancia mensual + S&P + acumulado as optional line datasets onto `ch2` (bar chart) with visibility toggles. User confirmed one chart is enough.
-2. **Acumulado lines react to partner checkboxes** — show only visible partners.
-3. UX: waterfall trigger labels could be clearer (both say "% inversión que recibe Maxi" — user was confused).
+## Completed items (as of 2026-05-17)
+- ✅ Consolidated to one chart (`ch2` bar + line overlays; `ch` line chart dropped)
+- ✅ Acumulado lines react to partner checkboxes (`partVis`)
+- ✅ Independent Pato/Julio splits (`trig1Sp2`, `trig2Sp2`) — latest commit
+- ✅ Dark/light theme toggle
+- ✅ DEVAL_EVENTS crisis model
+- ✅ Full tax model (IB, cheque, ganancias)
+- ✅ Teacher salary model (stRatio, stSalArs, profN computed)
+- ✅ Indem provision (indemFam)
+- ✅ Seasonality (seas), startMonth/startYear
+- ✅ Financing section
+
+## Next items / open questions
+1. **Waterfall UX clarity** — trigger labels still confusing (show Pato/Julio % explicitly in the accordion header, not just Maxi %)
+2. **Reality check section** — verify it's computing correctly with the new independent splits
+3. **Supabase schema** — `trig1Sp2`/`trig2Sp2` may not be in saved slots yet; verify round-trip
 
 ---
 
@@ -83,4 +134,4 @@ git push origin main
 ⚽ Canchas fútbol · 🎓 Escuelita · 🏓 Paddle · 🍔 Otros ingresos · 💰 Inversión · 💳 Financiamiento · 🔧 CAPEX · 👥 Empleados · 📊 Gastos fijos · ⚙️ Parámetros · 📉 Devaluación · 🏦 Waterfall dividendos · 🔍 Reality Check
 
 ## UI sections (right panel)
-KPI pills (kRow2 + kRow) · Line chart (ch) · Seasonality strip · OCC draggable curve · Risk text · Gauge + pie · Partner checkboxes (partVis) · Partner cards (prow) · Bar chart toggles (chartVis2) · Bar chart (ch2)
+KPI strip (kRow2 + kRow) · Seasonality strip · OCC draggable curve · Partner checkboxes + cards · Bar chart toggles · `ch2` (stacked bar + line overlays)
