@@ -1235,7 +1235,10 @@ function renderEmp(){
 }
 function addEmp(){EMP.push({n:'Empleado',q:1,s:600000,m:1});renderEmp();render();}
 function removeEmp(i){EMP.splice(i,1);renderEmp();render();}
-function deleteSlot(i){slots[i]=null;if(aSlot===i)aSlot=-1;render();}
+let pendingDelete=-1;
+function askDeleteSlot(i){pendingDelete=i;renderSlots();}
+function cancelDelete(){pendingDelete=-1;renderSlots();}
+function deleteSlot(i){slots[i]=null;if(aSlot===i)aSlot=-1;pendingDelete=-1;saveLS();render();}
 function renderCustomIngresos(){
   const el=document.getElementById('customIngRows');if(!el)return;
   if(!CUSTOM_INGRESOS.length){el.innerHTML='<div class="note" style="margin:0">Roberto puede agregar ingresos vía chat con {{INGRESO|nombre|usd_mes}}</div>';return;}
@@ -1644,7 +1647,13 @@ function renderSlots(){
     el.className='sc-pill'+(s?'':' emp')+(i===aSlot?' act':'');
     if(s){
       el.title=`ROI ${s.roi}% · BE ${bef(s.be)} · ${fmtKU(s.cum)} al vencimiento`;
-      el.innerHTML=`<span class="sc-pill-n">${s.name.replace(/</g,'&lt;')}</span><button class="sc-pill-x" title="Borrar" onclick="event.stopPropagation();deleteSlot(${i})">×</button>`;
+      if(pendingDelete===i){
+        el.innerHTML=`<span class="sc-pill-n" style="color:var(--color-text-danger)">¿Borrar?</span><button class="sc-pill-x" style="color:var(--color-text-danger);border-color:var(--color-text-danger)" title="Confirmar borrado" onclick="event.stopPropagation();deleteSlot(${i})">✓</button><button class="sc-pill-x" title="Cancelar" onclick="event.stopPropagation();cancelDelete()">✗</button>`;
+        el.style.borderColor='var(--color-text-danger)';
+        el.style.background='var(--color-background-danger)';
+      } else {
+        el.innerHTML=`<span class="sc-pill-n">${s.name.replace(/</g,'&lt;')}</span><button class="sc-pill-x" title="Borrar escenario" onclick="event.stopPropagation();askDeleteSlot(${i})">×</button>`;
+      }
       el.addEventListener('click',()=>{if(i===aSlot)aSlot=-1;else loadSlot(i);});
       el.querySelector('.sc-pill-n').addEventListener('dblclick',e=>{e.stopPropagation();startRenameSlot(i,el);});
     } else {
