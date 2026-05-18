@@ -3,7 +3,7 @@
 **Live:** https://brainpulp.github.io/canchitas/  
 **Repo:** https://github.com/brainpulp/canchitas  
 **Working file:** `F:\codetests\cleanup\canchitas\index.html` (190 KB, single file, no build step)  
-**Last commit:** b8a5bcf — 2026-05-18 — "Remove garbled edit buttons from partner cards, delete dead startEditP1 code"
+**Last commit:** 0d963e9 — 2026-05-18 — "Two-step confirm before deleting a scenario"
 
 ---
 
@@ -113,12 +113,19 @@ git push origin main
 
 ## Partner cards UX
 - Click a card → toggles that partner's data on/off in the chart (`partVis.p1/p2/p3`)
-- To edit the split %: open the **🏦 Distribución de ganancias** accordion in the left panel
-- No inline edit button on cards (removed — was overlapping and broken)
+- To edit split %: open the **🏦 Distribución de ganancias** accordion in the left panel
+- No inline edit button on cards (removed — was overlapping/broken)
+
+## Scenario management
+- Click a slot pill → load it (active = blue border)
+- `×` on a pill → first click turns pill red + shows **¿Borrar? ✓ ✗** (two-step, no accidental deletes)
+- Double-click slot name → rename inline
+- `+ nuevo` button → saves current params as a new slot
+- Max 4 slots
 
 ## Completed items (as of 2026-05-18)
 - ✅ Consolidated to one chart (`ch2` bar + line overlays; `ch` line chart dropped)
-- ✅ Chart JS legend removed — partner cards are the sole visibility toggle
+- ✅ Chart.js legend removed — partner cards are the sole visibility toggle
 - ✅ Acumulado lines react to partner checkboxes (`partVis`)
 - ✅ Independent Pato/Julio splits (`trig1Sp2`, `trig2Sp2`)
 - ✅ Dark/light theme toggle
@@ -129,11 +136,12 @@ git push origin main
 - ✅ Seasonality (seas), startMonth/startYear
 - ✅ Financing section
 - ✅ Removed dead startEditP1/confirmP1/editP1 code
+- ✅ Two-step confirm on scenario delete (`pendingDelete` state, ¿Borrar? ✓ ✗)
 
 ## Next items / open questions
-1. **Waterfall UX clarity** — trigger labels still confusing (show Pato/Julio % explicitly in the accordion header, not just Maxi %)
-2. **Reality check section** — verify it's computing correctly with the new independent splits
-3. **Supabase schema** — `trig1Sp2`/`trig2Sp2` may not be in saved slots yet; verify round-trip
+1. **Waterfall UX clarity** — trigger labels still confusing; show all 3 partners' % in accordion header
+2. **Reality check section** — verify calcs with new independent splits (trig1Sp2/trig2Sp2)
+3. **Supabase schema** — verify trig1Sp2/trig2Sp2 round-trip through saved slots
 
 ---
 
