@@ -430,9 +430,11 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
       <div style="margin-bottom:4px"><span class="fl">Cartelería + herramientas</span><input data-fmt="ars" id="n-iF" value="ARS 10.000.000" data-raw="10000000"></div>
       <div style="margin-bottom:4px"><span class="fl">Permisos + Escribanía + Otros</span><input data-fmt="ars" id="n-iG" value="ARS 14.550.000" data-raw="14550000"></div>
       <div class="gt">Canchas paddle (USD)</div>
+      <div id="inv-pd-wrap">
       <div class="note">Estimado GBA 2025: piso sintético + malla metálica + vidrio templado + iluminación LED. Cubierta incluye estructura tipo carpa industrial con lona tensada (aprox. 15×10m).</div>
       <div style="margin-bottom:4px"><span class="fl">Cancha descubierta (piso + cerco + luces)</span><input data-fmt="usd" id="n-iPdA" value="USD 12.000" data-raw="12000"></div>
       <div style="margin-bottom:4px"><span class="fl">Cancha cubierta (ídem + estructura/lona)</span><input data-fmt="usd" id="n-iPdB" value="USD 28.000" data-raw="28000"></div>
+      </div>
       <div class="gt">One-offs lanzamiento (USD)</div>
       <div><span class="fl">Campaña inicial</span><input data-fmt="usd" id="n-iH" value="USD 0" data-raw="0"></div>
       <div class="dv"></div>
@@ -830,6 +832,7 @@ function rfr(){
   if(note)note.textContent=P.negro===100?'Todo en cash — IVA efectivo: 0%':P.negro===0?'Todo declarado — IVA efectivo: 21%':`${P.negro}% en cash → IVA efectivo ${ivaEf}% sobre el total`;
   const pd=document.getElementById('pdSliders');if(pd)pd.className=P.po?'':'dis';
   const b=document.getElementById('pdlbadge');if(b){b.textContent=P.po?' ON':' OFF';b.className='badge '+(P.po?'on':'off');}
+  const pdInv=document.getElementById('inv-pd-wrap');if(pdInv)pdInv.className=P.po?'':'dis';
   const tog2=(sw,det,on)=>{const s=document.getElementById(sw);if(s)s.checked=on;const d=document.getElementById(det);if(d)d.className='sw-detail'+(on?'':' dis');};
   tog2('sw-bu','det-bu',P.buOn);tog2('sw-ev','det-ev',P.evOn);tog2('sw-to','det-to',P.toOn);
 }
@@ -839,7 +842,7 @@ function tog(id){
   if(b)b.className='abdy'+(openSecs[id]?' op':'');
   if(c)c.className='ach'+(openSecs[id]?' op':'');
 }
-const getInv=()=>['n-iA','n-iB','n-iC','n-iH','n-iPdA','n-iPdB'].reduce((s,id)=>s+gR(id),0)+['n-iD','n-iE','n-iF','n-iG'].reduce((s,id)=>s+gR(id),0)/P.fx;
+const getInv=()=>['n-iA','n-iB','n-iC','n-iH',...(P.po?['n-iPdA','n-iPdB']:[])].reduce((s,id)=>s+gR(id),0)+['n-iD','n-iE','n-iF','n-iG'].reduce((s,id)=>s+gR(id),0)/P.fx;
 const getFix=()=>['n-gA','n-gB','n-gC','n-gD','n-gABL'].reduce((s,id)=>s+gR(id),0)/P.fx+gR('n-gE')+gR('n-gHono')+gR('n-gLeg')+gR('n-gSeg')+gR('n-mant6')/6+CUSTOM_GASTOS.reduce((s,g)=>s+g.usd,0);
 const getSal=()=>{const r=EMP.reduce((s,e)=>s+e.q*e.s,0);return(r+r*(P.eBlanco/100)*(P.eCarg/100))/P.fx;};
 const getSalAt=m=>{const r=EMP.reduce((s,e)=>s+((!e.m||e.m<=m)?e.q*e.s:0),0);return(r+r*(P.eBlanco/100)*(P.eCarg/100))/P.fx;};
