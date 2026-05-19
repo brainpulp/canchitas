@@ -613,7 +613,7 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
           <button class="dv-preset" onclick="applyDevalPreset(7,'Crisis')">Crisis (7%/m)</button>
           <button class="dv-preset" onclick="applyDevalPreset(15,'Colapso')">Colapso (15%/m)</button>
         </div>
-        <div class="note" id="note-deval">A 3%/mes → dólar ×2.4 en año 1, ×5.6 en año 2. Los costos ARS se abaratan proporcionalmente en USD.</div>
+        <div class="note" id="note-deval">A 3%/mes → dólar ×2.4 en año 1, ×5.6 en año 2. Sueldos y alquileres se renegocian con la inflación → estables en USD. Solo la cuota de la escuelita (fija en ARS) pierde valor real.</div>
         <div style="margin-top:8px">
           <div style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">Crisis puntuales</div>
           <div class="note" style="margin:0 0 5px">Cada crisis aplica un shock de demanda: caída de ocupación proporcional al salto cambiario (ej. +50% FX → −17% ocupación por 6 meses). La escuelita también pierde valor en USD al devaluar la cuota ARS.</div>
@@ -1010,12 +1010,12 @@ function calc(){
     const mGross=mCourt+mPdl+mEsc+mInsc+mExtra+custRev;
     const mIb=mGross*(1-P.negro/100)*ibRate; // IB on actual monthly revenue
     const mCheque=mGross*(1-P.negro/100)*chequeRate;
-    const salM=getSalAt(m)*fxRatio; // devaluation: ARS wages cheaper in USD
-    const mTeacher=teacherSalFull*sf*fxRatio; // teacher salaries also in ARS
+    const salM=getSalAt(m); // ARS wages renegotiated to track inflation → stable in USD
+    const mTeacher=teacherSalFull*sf; // idem
     const indemProvM=salM*(1-(P.indemFam!=null?P.indemFam:70)/100)*0.083;
     const mCapex=CUSTOM_CAPEX.reduce((s,c)=>{if(!c.month||c.month<1)return s;if(c.freq>0){if(m>=c.month&&(m-c.month)%c.freq===0)return s+(c.usd||0);}else{if(m===c.month)return s+(c.usd||0);}return s;},0);
     const mFin=(finCOn&&m>=finCStartM&&m<finCStartM+finCCuotas?finCMonthly:0)+(finPdActive&&m>=pInvM&&m<pInvM+finPdCuotas?finPdMonthly:0);
-    const fcM=fc_ars*fxRatio+fc_usd; // ARS fixed costs cheapen with devaluation; USD costs stay fixed
+    const fcM=fc_ars+fc_usd; // ARS fixed costs also indexed → stable in USD
     const mNetPreGan=mGross-(fcM+salM+mTeacher+indemProvM+mIb+mCheque)-mCapex-mFin;
     const mGan=Math.max(0,mNetPreGan)*(1-P.negro/100)*ganRate;
     const mN=mNetPreGan-mGan;
