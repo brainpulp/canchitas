@@ -111,7 +111,7 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .sc-btn{padding:0 10px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);width:auto !important;height:27px}
 .sc-btn:hover{background:var(--color-background-secondary)}
 /* Dashboard panel — typographic hierarchy, no item boxes */
-.dash-panel{padding:12px 0 14px;margin-bottom:10px;border-bottom:.5px solid var(--bd-s)}
+.dash-panel{flex:1;min-width:0}
 .dp-row1{display:flex;align-items:flex-end;gap:0;flex-wrap:wrap}
 .dp-m{padding:0 22px;position:relative}
 .dp-m:first-child{padding-left:0}
@@ -282,7 +282,9 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .sc-brand{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tx);white-space:nowrap;flex-shrink:0}
 .sc-brand span{font-size:10px;font-weight:400;color:var(--tx3);letter-spacing:.02em;text-transform:none;margin-left:8px}
 /* compact scenario bar */
-.sc-bar{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--sf);border-bottom:.5px solid var(--bd-s);margin-bottom:14px;flex-wrap:wrap}
+.sticky-top{position:sticky;top:0;z-index:50;background:var(--bg)}
+.sc-bar{display:flex;align-items:center;gap:8px;padding:8px 20px;background:var(--sf);border-bottom:.5px solid var(--bd-s);flex-wrap:wrap}
+.kpi-strip{display:flex;align-items:center;gap:20px;padding:10px 20px;border-bottom:.5px solid var(--bd-s)}
 .sc-bar-lbl{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
 #scRow{display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1}
 .sc-pill{display:inline-flex;align-items:center;height:26px;padding:0 8px 0 10px;border:.5px solid var(--color-border-tertiary);border-radius:13px;background:var(--color-background-secondary);cursor:pointer;font-size:12px;font-weight:500;color:var(--color-text-primary);transition:border-color .12s,background .12s;white-space:nowrap;user-select:none;max-width:160px}
@@ -304,15 +306,19 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 </head>
 <body>
 <div id="cw">
+<div class="sticky-top">
 <div class="sc-bar">
   <div class="sc-brand">CANCHITAS <span>proyección de factibilidad</span></div>
-  <div id="scRow"></div>
   <div class="sc-bar-tools">
     <button class="sc-tool-btn" id="themeToggle" onclick="toggleTheme()" title="Cambiar tema">☾</button>
   </div>
   <input type="file" id="importFile" accept=".json" style="display:none" onchange="importState(this)">
 </div>
-<div id="dashPanel" class="dash-panel"></div>
+<div class="kpi-strip">
+  <div id="dashPanel" class="dash-panel"></div>
+  <div id="scRow" style="flex-shrink:0"></div>
+</div>
+</div>
 <div style="margin-bottom:10px">
   <div class="chart-top">
     <div id="prow" class="prow"></div>
