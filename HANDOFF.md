@@ -2,8 +2,8 @@
 
 **Live:** https://brainpulp.github.io/canchitas/  
 **Repo:** https://github.com/brainpulp/canchitas  
-**Working file:** `F:\codetests\cleanup\canchitas\index.html` (190 KB, single file, no build step)  
-**Last commit:** 0d963e9 — 2026-05-18 — "Two-step confirm before deleting a scenario"
+**Working file:** `F:\code\canchitas\index.html` (single file, no build step)  
+**Last commit:** f1c1b1d — 2026-05-19 — repo moved to F:\code\canchitas
 
 ---
 
@@ -102,7 +102,7 @@ pn1Cum, pn2Cum, pn3Cum     // final cumulative totals
 
 ## Deploy
 ```bash
-cd F:\codetests\cleanup\canchitas
+cd F:\code\canchitas
 git add index.html HANDOFF.md
 git commit -m "..."
 git push origin main
