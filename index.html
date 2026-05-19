@@ -850,7 +850,9 @@ function tog(id){
   if(c)c.className='ach'+(openSecs[id]?' op':'');
 }
 const getInv=()=>['n-iA','n-iB','n-iC','n-iH',...(P.po?['n-iPdA','n-iPdB']:[])].reduce((s,id)=>s+gR(id),0)+['n-iD','n-iE','n-iF','n-iG'].reduce((s,id)=>s+gR(id),0)/P.fx;
-const getFix=()=>['n-gA','n-gB','n-gC','n-gD','n-gABL'].reduce((s,id)=>s+gR(id),0)/P.fx+gR('n-gE')+gR('n-gHono')+gR('n-gLeg')+gR('n-gSeg')+gR('n-mant6')/6+CUSTOM_GASTOS.reduce((s,g)=>s+g.usd,0);
+const getFixArs=()=>['n-gA','n-gB','n-gC','n-gD','n-gABL'].reduce((s,id)=>s+gR(id),0)/P.fx;
+const getFixUsd=()=>gR('n-gE')+gR('n-gHono')+gR('n-gLeg')+gR('n-gSeg')+gR('n-mant6')/6+CUSTOM_GASTOS.reduce((s,g)=>s+g.usd,0);
+const getFix=()=>getFixArs()+getFixUsd();
 const getSal=()=>{const r=EMP.reduce((s,e)=>s+e.q*e.s,0);return(r+r*(P.eBlanco/100)*(P.eCarg/100))/P.fx;};
 const getSalAt=m=>{const r=EMP.reduce((s,e)=>s+((!e.m||e.m<=m)?e.q*e.s:0),0);return(r+r*(P.eBlanco/100)*(P.eCarg/100))/P.fx;};
 const getAdd=()=>({bu:P.buOn?gR('n-bu')*(gN('n-bm')||20)/100:0,ev:P.evOn?gN('n-ev')*(gR('n-ep')||400):0,to:P.toOn?gR('n-to')*0.5:0});
@@ -915,7 +917,7 @@ function calc(){
   const pdN=P.po?P.pn*P.pod*7*4*(P.pa/100)*P.pp*tf:0;
   const{bu,ev,to}=getAdd();
   const buT=bu*tf,evT=ev*tf,toT=to*tf;
-  const fc=getFix(),sal=getSal();
+  const fc=getFix(),fc_ars=getFixArs(),fc_usd=getFixUsd(),sal=getSal();
   const ibRate=(P.ibRate!=null?P.ibRate:3.5)/100;
   const chequeRate=(P.chequeRate!=null?P.chequeRate:0.6)/100;
   const ganRate=(P.ganRate!=null?P.ganRate:35)/100;
@@ -990,8 +992,8 @@ function calc(){
     const spdl_=seasF('paddle',m);
     const mCourt=scN*cf*occF;         // futbol: seasonal already in OCC_PTS
     const mPdl=pdN*pf*spdl_*occF;    // paddle: own seasonal × same demand shock
-    const mEsc=stN*sf*sesc_;          // escuelita: school calendar only
-    const mInsc=(P.st||0)*stInscArs/12/P.fx*tf*sf; // inscripción amortizada mensualmente
+    const mEsc=P.st*(P.fe/fxM)*tf*sf*sesc_;  // escuelita: ARS cuota loses USD value with devaluation
+    const mInsc=(P.st||0)*stInscArs/12/fxM*tf*sf; // inscripción: ARS, devalues with FX
     const mExtra=(buT+evT+toT)*of*occF; // extras follow court traffic
     const mGross=mCourt+mPdl+mEsc+mInsc+mExtra+custRev;
     const mIb=mGross*(1-P.negro/100)*ibRate; // IB on actual monthly revenue
@@ -1001,7 +1003,7 @@ function calc(){
     const indemProvM=salM*(1-(P.indemFam!=null?P.indemFam:70)/100)*0.083;
     const mCapex=CUSTOM_CAPEX.reduce((s,c)=>{if(!c.month||c.month<1)return s;if(c.freq>0){if(m>=c.month&&(m-c.month)%c.freq===0)return s+(c.usd||0);}else{if(m===c.month)return s+(c.usd||0);}return s;},0);
     const mFin=(finCOn&&m>=finCStartM&&m<finCStartM+finCCuotas?finCMonthly:0)+(finPdActive&&m>=pInvM&&m<pInvM+finPdCuotas?finPdMonthly:0);
-    const fcM=fc*fxRatio; // ARS fixed costs cheaper with devaluation
+    const fcM=fc_ars*fxRatio+fc_usd; // ARS fixed costs cheapen with devaluation; USD costs stay fixed
     const mNetPreGan=mGross-(fcM+salM+mTeacher+indemProvM+mIb+mCheque)-mCapex-mFin;
     const mGan=Math.max(0,mNetPreGan)*(1-P.negro/100)*ganRate;
     const mN=mNetPreGan-mGan;
