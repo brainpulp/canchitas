@@ -965,7 +965,7 @@ function calc(){
   const pn1CumD=[],pn2CumD=[],pn3CumD=[];
   let cum=-invBase,be=null,fp=null,minCum=-invBase;
   let cumNF=-invBaseNF,minCumNF=-invBaseNF;
-  let maxiCumDiv=0,pn1Cum=0,pn2Cum=0,pn3Cum=0;
+  let maxiCumDiv=0,pn1Cum=0,pn2Cum=0,pn3Cum=0,pn1Post=0,pn2Post=0,pn3Post=0;
   const trig1Pct=(P.trig1Pct||100)/100,trig2Pct=(P.trig2Pct||200)/100;
   const trig1Sp1=(P.trig1Sp1||55)/100,trig2Sp1=(P.trig2Sp1||35)/100;
   const t1Rem=1-trig1Sp1,t2Rem=1-trig2Sp1;
@@ -1011,10 +1011,12 @@ function calc(){
     // Waterfall dividend logic
     let mP1=0,mP2=0,mP3=0;
     if(mN>0){
-      if(maxiCumDiv<trig1Pct*totalInv){mP1=mN;mP2=0;mP3=0;}
+      const inPhase0=maxiCumDiv<trig1Pct*totalInv;
+      if(inPhase0){mP1=mN;mP2=0;mP3=0;}
       else if(maxiCumDiv<trig2Pct*totalInv){mP1=mN*trig1Sp1;mP2=mN*trig1Sp2;mP3=mN*Math.max(0,1-trig1Sp1-trig1Sp2);}
       else{mP1=mN*trig2Sp1;mP2=mN*trig2Sp2;mP3=mN*Math.max(0,1-trig2Sp1-trig2Sp2);}
       maxiCumDiv+=mP1;
+      if(!inPhase0){pn1Post+=mP1;pn2Post+=mP2;pn3Post+=mP3;}
     }
     pn1CumD.push(Math.round(pn1Cum+=mP1));
     pn2CumD.push(Math.round(pn2Cum+=mP2));
@@ -1036,7 +1038,8 @@ function calc(){
   const rsp=totalInv>0?Math.round((Math.pow(1+sp/totalInv,1/years)-1)*100):0;
   return{scN:Math.round(scN),stN:Math.round(stN),pdN:Math.round(pdN),bu:Math.round(buT),ev:Math.round(evT),to:Math.round(toT),fc:Math.round(fc),sal:Math.round(sal),teacher:Math.round(teacherSalFull),ib:Math.round(ibAmtSteady),cheque:Math.round(chequeSteady),indem:Math.round(indemProv),gan:Math.round(ganSteady),gain:Math.round(gain),inv:Math.round(totalInv),colchon:Math.round(colchon),capitalTotal:Math.round(capitalTotal),minCum:Math.round(minCum),anyFin,capitalNoFin:Math.round(capitalNoFin),minCumNF:Math.round(minCumNF),be,fp,cum:c2,roi,rsp,spMult:rsp>0?(roi/rsp).toFixed(1)+'×':'>>',labels,cumD,netD,facD,spD,rE,
     pn1D,pn2D,pn3D,pn1CumD,pn2CumD,pn3CumD,grossD,costsD,
-    pn1Cum:Math.round(pn1Cum),pn2Cum:Math.round(pn2Cum),pn3Cum:Math.round(pn3Cum)};
+    pn1Cum:Math.round(pn1Cum),pn2Cum:Math.round(pn2Cum),pn3Cum:Math.round(pn3Cum),
+    pn1Post:Math.round(pn1Post),pn2Post:Math.round(pn2Post),pn3Post:Math.round(pn3Post)};
 }
 let gRE=8,gBE=null;
 let prevCalcResult=null,isSlotSwitch=false,numAnimId=null;
@@ -1405,11 +1408,12 @@ function renderPartners(r){
   const names=[P.pn1||'Maxi',P.pn2||'Pato',P.pn3||'Julio'];
   const cums=[r.pn1Cum,r.pn2Cum,r.pn3Cum];
   const monthly=[r.pn1D?r.pn1D[r.pn1D.length-1]||0:0,r.pn2D?r.pn2D[r.pn2D.length-1]||0:0,r.pn3D?r.pn3D[r.pn3D.length-1]||0:0];
-  const totalCum=(r.pn1Cum||0)+(r.pn2Cum||0)+(r.pn3Cum||0);
+  const posts=[r.pn1Post||0,r.pn2Post||0,r.pn3Post||0];
+  const postTotal=posts[0]+posts[1]+posts[2];
   const vis=[partVis.p1,partVis.p2,partVis.p3];
   pr.innerHTML=names.map((name,i)=>{
     const col=PCOLS[i],off=!vis[i];
-    const pct=totalCum>0?((cums[i]/totalCum)*100).toFixed(0):'—';
+    const pct=postTotal>0?((posts[i]/postTotal)*100).toFixed(0):'—';
     return`<div class="pcard-new${off?' off':''}" style="border-color:${col}${off?'28':'40'}" onclick="togglePartner(${i+1})"><div class="pcard-top"><span class="pcard-name" style="color:${col}">${name}</span><span class="pcard-pct">${pct}% real</span></div><div class="pcard-val">${fmtKU(cums[i])}</div><div class="pcard-sub">${fmtKU(monthly[i])}/mes est.</div></div>`;
   }).join('');
 }
