@@ -914,7 +914,7 @@ function calc(){
   const tf=taxFactor();
   // Base revenues at full capacity (for display / steady-state estimates)
   const scN=P.co*P.ohd*7*4*(P.oc/100)*P.pr*tf;
-  const stN=P.st*(P.fe/P.fx)*tf;
+  const stN=P.st*(P.fe/P.fx); // escuelita: IVA-exempt, no tf deduction
   const pdN=P.po?P.pn*P.pod*7*4*(P.pa/100)*P.pp*tf:0;
   const{bu,ev,to}=getAdd();
   const buT=bu*tf,evT=ev*tf,toT=to*tf;
@@ -930,7 +930,7 @@ function calc(){
   const stInscArs=gR('n-stInsc');
   const custRev=CUSTOM_INGRESOS.reduce((s,g)=>s+g.usd,0);
   // Enrollment revenue amortized (for steady-state display only)
-  const stInscMonthly=(P.st||0)*stInscArs/12/P.fx*tf;
+  const stInscMonthly=(P.st||0)*stInscArs/12/P.fx; // IVA-exempt
   const startYear=P.startYear||2025;
   // Steady-state display values (used for headers, not for simulation loop)
   const revSteady=scN+stN+stInscMonthly+pdN+buT+evT+toT;
@@ -1004,8 +1004,8 @@ function calc(){
     }
     const mCourt=scN*cf*occF*shockMult;
     const mPdl=pdN*pf*spdl_*occF*shockMult;
-    const mEsc=P.st*(P.fe/fxM)*tf*sf*sesc_;  // escuelita: ARS cuota loses USD value with devaluation
-    const mInsc=(P.st||0)*stInscArs/12/fxM*tf*sf; // inscripción: ARS, devalues with FX
+    const mEsc=P.st*(P.fe/fxM)*sf*sesc_; // escuelita: IVA-exempt, ARS cuota loses USD value with devaluation
+    const mInsc=(P.st||0)*stInscArs/12/fxM*sf; // inscripción: IVA-exempt, devalues with FX
     const mExtra=(buT+evT+toT)*of*occF*shockMult; // extras follow court traffic + crisis shock
     const mGross=mCourt+mPdl+mEsc+mInsc+mExtra+custRev;
     const mIb=mGross*(1-P.negro/100)*ibRate; // IB on actual monthly revenue
