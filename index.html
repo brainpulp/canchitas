@@ -616,6 +616,7 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
         <div class="note" id="note-deval">A 3%/mes → dólar ×2.4 en año 1, ×5.6 en año 2. Los costos ARS se abaratan proporcionalmente en USD.</div>
         <div style="margin-top:8px">
           <div style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">Crisis puntuales</div>
+          <div class="note" style="margin:0 0 5px">Cada crisis aplica un shock de demanda: caída de ocupación proporcional al salto cambiario (ej. +50% FX → −17% ocupación por 6 meses). La escuelita también pierde valor en USD al devaluar la cuota ARS.</div>
           <div id="deval-events"></div>
           <button class="add-btn" onclick="DEVAL_EVENTS.push({month:12,jump:40,postRate:P.devalMonthly||3});renderDevalEvents();render()">+ agregar crisis puntual</button>
         </div>
@@ -990,11 +991,22 @@ function calc(){
     const occF=getOccFactor(m);       // seasonal multiplier: 1.0=base(P.oc), 0.7=low, 1.15=peak
     const sesc_=seasF('escuela',m);
     const spdl_=seasF('paddle',m);
-    const mCourt=scN*cf*occF;         // futbol: seasonal already in OCC_PTS
-    const mPdl=pdN*pf*spdl_*occF;    // paddle: own seasonal × same demand shock
+    // Crisis demand shock: sudden devaluations reduce client purchasing power → lower occupancy
+    let shockMult=1;
+    if(P.devalOn){
+      for(const ev of (DEVAL_EVENTS||[])){
+        const dur=6,elapsed=m-ev.month;
+        if(elapsed>=0&&elapsed<dur){
+          const peak=Math.min(0.30,(ev.jump||0)/100*0.35); // 100% jump→30% drop, 50%→17.5%
+          shockMult*=(1-peak*(1-elapsed/dur)); // linear recovery over 6 months
+        }
+      }
+    }
+    const mCourt=scN*cf*occF*shockMult;
+    const mPdl=pdN*pf*spdl_*occF*shockMult;
     const mEsc=P.st*(P.fe/fxM)*tf*sf*sesc_;  // escuelita: ARS cuota loses USD value with devaluation
     const mInsc=(P.st||0)*stInscArs/12/fxM*tf*sf; // inscripción: ARS, devalues with FX
-    const mExtra=(buT+evT+toT)*of*occF; // extras follow court traffic
+    const mExtra=(buT+evT+toT)*of*occF*shockMult; // extras follow court traffic + crisis shock
     const mGross=mCourt+mPdl+mEsc+mInsc+mExtra+custRev;
     const mIb=mGross*(1-P.negro/100)*ibRate; // IB on actual monthly revenue
     const mCheque=mGross*(1-P.negro/100)*chequeRate;
