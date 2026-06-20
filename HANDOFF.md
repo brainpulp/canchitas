@@ -145,8 +145,23 @@ git push origin main
 
 ---
 
-## UI sections (left panel accordions)
-⚽ Canchas fútbol · 🎓 Escuelita · 🏓 Paddle · 🍔 Otros ingresos · 💰 Inversión · 💳 Financiamiento · 🔧 CAPEX · 👥 Empleados · 📊 Gastos fijos · ⚙️ Parámetros · 📉 Devaluación · 🏦 Waterfall dividendos · 🔍 Reality Check
+## UI layout (redesigned 2026-06 — clearer information architecture)
+**Top band (sticky):** verdict-led — `#veredictoKpi` (canonical VEREDICTO ring) leads, then `#dashPanel` (5 headline KPIs + context row), then `#scRow` (scenario pills). The duplicate giant verdict donut was removed.
 
-## UI sections (right panel)
-KPI strip (kRow2 + kRow) · Seasonality strip · OCC draggable curve · Partner checkboxes + cards · Bar chart toggles · `ch2` (stacked bar + line overlays)
+**Full-width chart:** partner cards (`#prow`) + series toggles + `ch2` (stacked bar + line overlays).
+
+**Left column — inputs, grouped into 5 labeled clusters** (`.lp-group` dividers):
+- 💵 Ingresos: ⚽ Fútbol · 🎓 Escuelita · 🏓 Paddle · 🍔 Otros ingresos
+- 🏗️ Inversión y financiamiento: 💰 Inversión · 💳 Financiamiento · 🔧 CAPEX
+- 💸 Costos operativos: 👥 Empleados · 📊 Gastos fijos
+- 🌎 Contexto macro: ⚙️ Parámetros · 📉 Devaluación
+- 🤝 Sociedad: 🏦 Waterfall dividendos
+
+**Right column — results as titled cards** (`.rcard`), stacked:
+- 📊 Resultado mensual estabilizado (`#rg` 4-col KPI grid; header shows margen/neto)
+- 🥧 Composición de ingresos (`#gaugeWrap` — horizontal bars, replaced the pie+donut)
+- 📈 Ocupación efectiva (`#occChart` draggable curve)
+- 🔍 Desglose completo (P&L) — collapsible (`#rcPnl` / `#rcContent`); **moved out of the left accordions**
+- ⚠️ Riesgos y supuestos — collapsible (`#rcRisk` / `#riskText`) — discrete `.risk-grid` cards
+
+Collapsible cards toggle via `toggleRcard(id)`. `renderGauge` now writes the verdict ring to `#veredictoKpi` and the revenue-mix bars to `#gaugeWrap` (no duplicate donut, dead A/B/C prototypes removed). `renderRisk` outputs `.risk-item` cards. `renderOccChart`/`initOccChartEvents` use fixed padding (42/12) instead of borrowing `ch2` geometry.

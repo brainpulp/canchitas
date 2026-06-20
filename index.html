@@ -302,6 +302,52 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 .sc-tool-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-secondary)}
 #themeToggle{font-size:15px;border-color:var(--bd-s);color:var(--tx2)}
 #themeToggle:hover{color:var(--tx);border-color:var(--bd)}
+/* ───── REDESIGN 2026: clearer information architecture ───── */
+/* Verdict-led top band */
+.verdict-lead{display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 18px 2px 0;border-right:1px solid var(--bd-s);flex-shrink:0}
+.vl-zone{font-size:20px;font-weight:800;line-height:1;letter-spacing:-.01em}
+.vl-score{font-size:10px;color:var(--tx3);font-family:var(--font-mono)}
+.vl-ring{display:block}
+/* Left column — grouped inputs */
+.lp-group{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin:14px 0 6px;padding-bottom:5px;border-bottom:1px solid var(--bd-s);display:flex;align-items:center;gap:6px}
+.lp-group:first-child{margin-top:2px}
+.lp-group .lpg-ico{font-size:13px}
+/* Right column — result cards */
+.rcard{background:var(--sf);border:.5px solid var(--bd-s);border-radius:var(--r-lg);overflow:hidden}
+.rcard-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 14px;cursor:default;user-select:none}
+.rcard-h.clk{cursor:pointer}.rcard-h.clk:hover{background:var(--sf2)}
+.rcard-t{font-size:12px;font-weight:600;color:var(--tx);letter-spacing:.01em;display:flex;align-items:center;gap:7px}
+.rcard-t .rc-ico{font-size:14px}
+.rcard-sub{font-size:11px;color:var(--tx3);font-family:var(--font-mono)}
+.rcard-b{padding:4px 14px 14px}
+.rcard-b.pad0{padding:0}
+.rcard-chev{font-size:11px;color:var(--tx3);transition:transform .15s}
+.rcard-chev.op{transform:rotate(180deg)}
+.rcard-collapse{display:none}.rcard-collapse.op{display:block}
+/* KPI result grid — refined */
+.rg8{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--bd-s);border-radius:var(--r);overflow:hidden}
+.rc{background:var(--sf);border-radius:0;padding:9px 11px}
+.rl{font-size:10px;color:var(--tx3);margin-bottom:3px;letter-spacing:.02em}
+.rv{font-size:16px;font-weight:700;font-family:var(--font-mono);color:var(--tx);line-height:1.1}
+.rv.ng{color:var(--red)}
+/* Revenue mix as horizontal bars (replaces redundant pie option) */
+.mix-row{display:flex;flex-direction:column;gap:7px}
+.mix-item{display:grid;grid-template-columns:66px 1fr 92px;align-items:center;gap:9px}
+.mix-lbl{font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mix-track{height:9px;border-radius:5px;background:var(--sf2);overflow:hidden}
+.mix-fill{height:100%;border-radius:5px;transition:width .4s ease}
+.mix-val{font-size:11px;font-family:var(--font-mono);color:var(--tx2);text-align:right;white-space:nowrap}
+.mix-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:11px;padding-top:9px;border-top:.5px solid var(--bd-s)}
+.mix-foot .mf-l{font-size:11px;color:var(--tx3)}
+.mix-foot .mf-v{font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--green)}
+/* Risk — discrete cards instead of a wall of text */
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.risk-item{background:var(--sf2);border:.5px solid var(--bd-s);border-radius:var(--r);padding:9px 11px}
+.risk-item.flag{border-color:var(--amber);background:var(--amber-bg)}
+.risk-item.good{border-color:var(--green);background:var(--green-bg)}
+.ri-h{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.ri-b{font-size:11px;line-height:1.5;color:var(--tx2)}
+@media(max-width:720px){.risk-grid{grid-template-columns:1fr}.rg8{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -315,8 +361,8 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
   <input type="file" id="importFile" accept=".json" style="display:none" onchange="importState(this)">
 </div>
 <div class="kpi-strip">
-  <div id="dashPanel" class="dash-panel"></div>
   <div id="veredictoKpi" style="flex-shrink:0;align-self:center"></div>
+  <div id="dashPanel" class="dash-panel"></div>
   <div id="scRow" style="flex-shrink:0"></div>
 </div>
 </div>
@@ -335,6 +381,8 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
 </div>
 <div class="main">
 <div class="lp">
+
+  <div class="lp-group"><span class="lpg-ico">💵</span> Ingresos</div>
 
   <div class="acc">
     <div class="ahdr" onclick="tog('ftb')"><span class="atit">⚽ Canchas fútbol<span class="hvl pos" id="hd-ftb"> USD 11k/mes</span></span><span class="ach op" id="ach-ftb">▾</span></div>
@@ -423,6 +471,8 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
       <button class="add-btn" onclick="CUSTOM_INGRESOS.push({n:'Ingreso extra',usd:500});renderCustomIngresos();render()">+ agregar ingreso</button>
     </div>
   </div>
+
+  <div class="lp-group"><span class="lpg-ico">🏗️</span> Inversión y financiamiento</div>
 
   <div class="acc">
     <div class="ahdr" onclick="tog('inv')"><span class="atit">💰 Inversión inicial<span class="hvl neg" id="hd-inv"> USD 219k</span></span><span class="ach" id="ach-inv">▾</span></div>
@@ -522,6 +572,8 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
     </div>
   </div>
 
+  <div class="lp-group"><span class="lpg-ico">💸</span> Costos operativos</div>
+
   <div class="acc">
     <div class="ahdr" onclick="tog('emp')"><span class="atit">👥 Empleados<span class="hvl neg" id="hd-emp"> (5) USD 6k/mes</span></span><span class="ach" id="ach-emp">▾</span></div>
     <div class="abdy" id="abdy-emp">
@@ -575,6 +627,8 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
     </div>
   </div>
 
+  <div class="lp-group"><span class="lpg-ico">🌎</span> Contexto macro</div>
+
   <div class="acc">
     <div class="ahdr" onclick="tog('par')"><span class="atit">⚙️ Parámetros</span><span class="ach" id="ach-par">▾</span></div>
     <div class="abdy" id="abdy-par">
@@ -624,6 +678,8 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
     </div>
   </div>
 
+  <div class="lp-group"><span class="lpg-ico">🤝</span> Sociedad</div>
+
   <div class="acc">
     <div class="ahdr" onclick="tog('wf')"><span class="atit">🏦 Distribución de ganancias — waterfall<span class="hvl" id="hd-wf"></span></span><span class="ach" id="ach-wf">▾</span></div>
     <div class="abdy" id="abdy-wf">
@@ -649,84 +705,33 @@ h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
     </div>
   </div>
 
-  <div class="acc">
-    <div class="ahdr" onclick="tog('rc')"><span class="atit">🔍 Reality Check — desglose completo</span><span class="ach" id="ach-rc">▾</span></div>
-    <div class="abdy" id="abdy-rc"><div id="rcContent" style="font-size:11px;line-height:1.6"><div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin:9px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--color-border-secondary)">Ingresos — estabilizados, netos de IVA</div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">⚽ Fútbol</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922">USD 11k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">🎓 Escuelita</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922">USD 14k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">🏓 Paddle</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922">USD 6k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">🍺 Buffet</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922">USD 895</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">🎉 Eventos</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922">USD 4k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">🏆 Torneos</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922">USD 358</span></div><div style="border-top:1px dashed var(--color-border-secondary);margin:3px 0"></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;font-weight:700;font-size:11px">
-    <span>Total facturación</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922;font-weight:700">USD 36k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">IVA no recibido (10.5% ef. sobre declarado — informativo)</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 4k</span></div><div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin:9px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--color-border-secondary)">Gastos fijos</div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Alquiler</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 3k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Servicios</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 1k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Marketing</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 1k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Mant. + otros</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 1k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Honorarios contables</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 400</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Fondo legal</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 200</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Seguros</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 300</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Mant. semestral ÷6</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 3k</span></div><div style="border-top:1px dashed var(--color-border-secondary);margin:3px 0"></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;font-weight:700;font-size:11px">
-    <span>Subtotal fijos</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger);font-weight:700">-USD 11k</span></div><div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin:9px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--color-border-secondary)">Personal</div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Empleados (5 pers.) — bruto</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 4k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Cargas patronales empleados (24% ef.)</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 1k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Profes (4 × ARS 700.000/mes, monotributistas)</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 2k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Inscripción anual (÷12 amort.) ARS 150.000/alumno</span><span style="font-family:var(--font-mono);font-size:10.5px;color:#639922">USD 3k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Provisión indemnizaciones</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 252</span></div><div style="border-top:1px dashed var(--color-border-secondary);margin:3px 0"></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;font-weight:700;font-size:11px">
-    <span>Subtotal personal</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger);font-weight:700">-USD 8k</span></div><div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin:9px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--color-border-secondary)">Impuestos y cargas fiscales</div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">IIBB 3.5% sobre declarado</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 668</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Imp. al cheque 0.6% sobre declarado</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 114</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0;padding-left:10px">
-    <span style="opacity:.75;font-size:10.5px">Ganancias SRL 35% sobre utilidad declarada</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger)">-USD 3k</span></div><div style="border-top:1px dashed var(--color-border-secondary);margin:3px 0"></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;font-weight:700;font-size:11px">
-    <span>Subtotal impuestos</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger);font-weight:700">-USD 4k</span></div><div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin:9px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--color-border-secondary)">Resultado mensual estabilizado</div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;font-weight:700;font-size:11px">
-    <span>Total gastos</span><span style="font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-danger);font-weight:700">-USD 23k</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-weight:700;font-size:13px;border-top:2px solid var(--color-border-secondary);margin-top:4px">
-    <span>Ganancia neta mensual</span><span style="font-family:var(--font-mono);color:#639922">USD 15k/mes</span></div><div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-top:1px"><span>Margen sobre facturación</span><span>42%</span></div></div></div>
-  </div>
 
 </div>
 <div class="rp">
-  <div class="rg8" id="rg"><div class="rc"><div class="rl">Fútbol</div><div class="rv">USD 11k</div></div><div class="rc"><div class="rl">Escuelita</div><div class="rv">USD 14k</div></div><div class="rc"><div class="rl">Paddle</div><div class="rv">USD 6k</div></div><div class="rc"><div class="rl">Buffet</div><div class="rv">USD 895</div></div><div class="rc"><div class="rl">Eventos</div><div class="rv">USD 4k</div></div><div class="rc"><div class="rl">Torneos</div><div class="rv">USD 358</div></div><div class="rc"><div class="rl">Gastos</div><div class="rv ng">-USD 23k</div></div><div class="rc"><div class="rl">Neto mensual</div><div class="rv">USD 15k</div></div></div>
-  <div style="font-size:9px;color:var(--color-text-tertiary);margin-bottom:2px;letter-spacing:.04em">Ocupación efectiva — demanda estacional × ajuste manual. Arrastrá los puntos. La demanda base de cada trimestre aparece en la curva.</div>
-  <canvas id="occChart" style="width: 1108px; height: 90px; display: block; cursor: ns-resize; border-radius: 6px;" width="1385" height="112"></canvas>
-  <div id="riskText" class="risk"><strong>Riesgos no modelados:</strong> Inflación diferencial ARS/USD (costos en pesos subiendo más rápido que los ingresos en dólares), habilitaciones municipales renovables, app de turnos / comisiones de plataforma. El break-even a mes 27 es tardío y exige reservas operativas durante toda la rampa. <strong>Contexto argentino 2025:</strong> los costos en ARS (sueldos, alquiler, servicios) tienden a subir más rápido que la capacidad de ajustar precios en USD; ajustar el slider de obra para ver el impacto real del colchón necesario. <strong>Lo que puede faltar:</strong> contingencias de equipamiento no previstas — la reposición de césped y otros CAPEX puntuales se pueden modelar en la sección Inversión inicial.</div>
-  <div id="gaugeWrap" style="margin:14px 0 6px"><div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-    <svg viewBox="0 0 220 220" width="200" style="display:block;margin:0 auto"><path d="M110 110 L110.00 20.00 A90 90 0 0 1 194.59 140.74Z" fill="#639922" stroke="var(--color-surface)" stroke-width="1.5"></path><path d="M110 110 L194.59 140.74 A90 90 0 0 1 25.16 140.04Z" fill="#378add" stroke="var(--color-surface)" stroke-width="1.5"></path><path d="M110 110 L25.16 140.04 A90 90 0 0 1 42.30 50.70Z" fill="#f5a623" stroke="var(--color-surface)" stroke-width="1.5"></path><path d="M110 110 L42.30 50.70 A90 90 0 0 1 52.45 40.81Z" fill="#a78bfa" stroke="var(--color-surface)" stroke-width="1.5"></path><path d="M110 110 L52.45 40.81 A90 90 0 0 1 104.33 20.18Z" fill="#fb923c" stroke="var(--color-surface)" stroke-width="1.5"></path><path d="M110 110 L104.33 20.18 A90 90 0 0 1 110.00 20.00Z" fill="#2dd4bf" stroke="var(--color-surface)" stroke-width="1.5"></path><text x="155.7" y="78.0" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" fill="white" font-family="sans-serif" style="text-shadow:0 1px 2px rgba(0,0,0,.4)">31%</text><text x="109.8" y="165.8" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" fill="white" font-family="sans-serif" style="text-shadow:0 1px 2px rgba(0,0,0,.4)">39%</text><text x="55.2" y="99.5" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" fill="white" font-family="sans-serif" style="text-shadow:0 1px 2px rgba(0,0,0,.4)">17%</text><text x="89.4" y="58.1" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" fill="white" font-family="sans-serif" style="text-shadow:0 1px 2px rgba(0,0,0,.4)">10%</text></svg>
-    <div style="display:flex;flex-wrap:wrap;gap:4px 8px;justify-content:center;max-width:200px"><div style="display:flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
-    <div style="width:10px;height:10px;border-radius:2px;background:#639922;flex-shrink:0"></div>
-    <span style="opacity:.85">Fútbol</span>
-  </div><div style="display:flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
-    <div style="width:10px;height:10px;border-radius:2px;background:#378add;flex-shrink:0"></div>
-    <span style="opacity:.85">Escuelita</span>
-  </div><div style="display:flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
-    <div style="width:10px;height:10px;border-radius:2px;background:#f5a623;flex-shrink:0"></div>
-    <span style="opacity:.85">Paddle</span>
-  </div><div style="display:flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
-    <div style="width:10px;height:10px;border-radius:2px;background:#a78bfa;flex-shrink:0"></div>
-    <span style="opacity:.85">Buffet</span>
-  </div><div style="display:flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
-    <div style="width:10px;height:10px;border-radius:2px;background:#fb923c;flex-shrink:0"></div>
-    <span style="opacity:.85">Eventos</span>
-  </div><div style="display:flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
-    <div style="width:10px;height:10px;border-radius:2px;background:#2dd4bf;flex-shrink:0"></div>
-    <span style="opacity:.85">Torneos</span>
-  </div></div>
+  <div class="rcard">
+    <div class="rcard-h"><div class="rcard-t"><span class="rc-ico">📊</span>Resultado mensual estabilizado</div><span class="rcard-sub" id="rcardMargin"></span></div>
+    <div class="rcard-b" style="padding:0 14px 14px"><div class="rg8" id="rg"></div></div>
   </div>
-  <div style="text-align:center">
-    <svg viewBox="0 0 220 220" width="200" style="display:block;margin:0 auto">
-      <circle cx="110" cy="110" r="90" fill="none" stroke="rgba(128,128,128,.15)" stroke-width="22"></circle>
-<circle cx="110" cy="110" r="90" fill="none" stroke="#4ade80" stroke-width="22" stroke-dasharray="401.5 565.5" stroke-dashoffset="141.4" stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:110px 110px"></circle>
-      <text x="110" y="102" text-anchor="middle" font-size="11" fill="var(--color-text-tertiary)" font-family="sans-serif" letter-spacing="1">VEREDICTO</text>
-      <text x="110" y="128" text-anchor="middle" font-size="26" font-weight="800" fill="#4ade80" font-family="sans-serif">Bueno</text>
-      <text x="110" y="148" text-anchor="middle" font-size="11" fill="var(--color-text-tertiary)" font-family="sans-serif">71 / 100</text>
-    </svg>
-    <div style="display:flex;justify-content:center;gap:16px;font-size:11px;margin-top:2px">
-      <span>ROI <strong style="color:#4ade80">23%</strong></span>
-      <span>BE <strong style="color:#e6933a">mes 27</strong></span>
-      <span>neto <strong style="color:#4ade80">USD 15k/mes</strong></span>
-    </div>
+
+  <div class="rcard">
+    <div class="rcard-h"><div class="rcard-t"><span class="rc-ico">🥧</span>Composición de ingresos</div></div>
+    <div class="rcard-b"><div id="gaugeWrap"></div></div>
   </div>
-</div></div>
+
+  <div class="rcard">
+    <div class="rcard-h"><div class="rcard-t"><span class="rc-ico">📈</span>Ocupación efectiva</div><span class="rcard-sub">arrastrá los puntos ↕</span></div>
+    <div class="rcard-b"><canvas id="occChart" style="width:100%;height:90px;display:block;cursor:ns-resize;border-radius:6px"></canvas></div>
+  </div>
+
+  <div class="rcard">
+    <div class="rcard-h clk" onclick="toggleRcard('rcPnl')"><div class="rcard-t"><span class="rc-ico">🔍</span>Desglose completo (P&amp;L)</div><span class="rcard-chev op" id="chev-rcPnl">▾</span></div>
+    <div class="rcard-b rcard-collapse op" id="rcPnl"><div id="rcContent" style="font-size:11px;line-height:1.6"></div></div>
+  </div>
+
+  <div class="rcard">
+    <div class="rcard-h clk" onclick="toggleRcard('rcRisk')"><div class="rcard-t"><span class="rc-ico">⚠️</span>Riesgos y supuestos</div><span class="rcard-chev op" id="chev-rcRisk">▾</span></div>
+    <div class="rcard-b rcard-collapse op" id="rcRisk"><div id="riskText"></div></div>
+  </div>
 </div>
 </div>
 <button class="chat-fab" onclick="toggleChat()" title="Hablar con Roberto"><span>🧉</span><span class="chat-fab-badge"></span></button>
@@ -849,6 +854,11 @@ function tog(id){
   const b=document.getElementById('abdy-'+id),c=document.getElementById('ach-'+id);
   if(b)b.className='abdy'+(openSecs[id]?' op':'');
   if(c)c.className='ach'+(openSecs[id]?' op':'');
+}
+function toggleRcard(id){
+  const b=document.getElementById(id),c=document.getElementById('chev-'+id);
+  if(b)b.classList.toggle('op');
+  if(c)c.classList.toggle('op',b&&b.classList.contains('op'));
 }
 const getInv=()=>['n-iA','n-iB','n-iC','n-iH',...(P.po?['n-iPdA','n-iPdB']:[])].reduce((s,id)=>s+gR(id),0)+['n-iD','n-iE','n-iF','n-iG'].reduce((s,id)=>s+gR(id),0)/P.fx;
 const getFixArs=()=>['n-gA','n-gB','n-gC','n-gD','n-gABL'].reduce((s,id)=>s+gR(id),0)/P.fx;
@@ -1308,8 +1318,7 @@ function renderOccChart(){
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
   const n=OCC_PTS.length;
-  const padL=chart2&&chart2.chartArea&&chart2.chartArea.left>0?chart2.chartArea.left:45;
-  const padR=chart2&&chart2.chartArea&&chart2.chartArea.left>0?(W-chart2.chartArea.right):12;
+  const padL=42,padR=12;
   const padT=10,padB=14,plotW=W-padL-padR,plotH=H-padT-padB;
   const xOf=i=>padL+(n<=1?plotW/2:(i/(n-1))*plotW);
   const yOf=v=>padT+plotH*(1-Math.max(0,Math.min(100,v))/100); // y-axis: 0-100%
@@ -1371,8 +1380,8 @@ function initOccChartEvents(){
   const getIdx=mx=>{
     initOccPts();
     const n=OCC_PTS.length;
-    const padL=chart2&&chart2.chartArea?chart2.chartArea.left:45;
-    const plotW=canvas.offsetWidth-padL-(chart2&&chart2.chartArea?(canvas.offsetWidth-chart2.chartArea.right):12);
+    const padL=42;
+    const plotW=canvas.offsetWidth-padL-12;
     for(let i=0;i<n;i++){
       const x=padL+(n<=1?plotW/2:(i/(n-1))*plotW);
       if(Math.abs(mx-x)<14)return i;
@@ -1441,12 +1450,21 @@ function togglePartner(n){
 function renderRisk(r){
   const el=document.getElementById('riskText');if(!el)return;
   const oc=P.oc,beM=r.be;
-  let warn='';
-  if(!beM)warn=`Con los parámetros actuales el break-even acumulado no se alcanza en el horizonte — revisá precios u ocupación.`;
-  else if(beM>20)warn=`El break-even a mes ${beM} es tardío y exige reservas operativas durante toda la rampa.`;
-  else if(oc<45)warn=`Con ${oc}% de ocupación el modelo es frágil: una baja estacional del 10–15% puede volverlo negativo.`;
-  else warn=`El modelo es viable en condiciones actuales; la ocupación (${oc}%) y el tipo de cambio son las variables más sensibles.`;
-  el.innerHTML=`<strong>Riesgos no modelados:</strong> Inflación diferencial ARS/USD (costos en pesos subiendo más rápido que los ingresos en dólares), habilitaciones municipales renovables, app de turnos / comisiones de plataforma. ${warn} <strong>Contexto argentino 2025:</strong> los costos en ARS (sueldos, alquiler, servicios) tienden a subir más rápido que la capacidad de ajustar precios en USD; ajustar el slider de obra para ver el impacto real del colchón necesario. <strong>Lo que puede faltar:</strong> contingencias de equipamiento no previstas — la reposición de césped y otros CAPEX puntuales se pueden modelar en la sección Inversión inicial.`;
+  // Headline assessment card — adapts to the model state (flag/good)
+  let head;
+  if(!beM)head={cls:'flag',ico:'🚩',t:'No alcanza break-even',b:`Con los parámetros actuales el break-even acumulado no se alcanza en el horizonte — revisá precios u ocupación.`};
+  else if(beM>20)head={cls:'flag',ico:'🚩',t:`Break-even tardío (mes ${beM})`,b:`Exige reservas operativas durante toda la rampa. Ajustá el slider de obra para ver el colchón de capital necesario.`};
+  else if(oc<45)head={cls:'flag',ico:'🚩',t:`Ocupación frágil (${oc}%)`,b:`Una baja estacional del 10–15% puede volver el modelo negativo. La ocupación es la variable más sensible.`};
+  else head={cls:'good',ico:'✅',t:'Modelo viable',b:`Viable en condiciones actuales. Ocupación (${oc}%) y tipo de cambio son las variables más sensibles.`};
+  const items=[
+    head,
+    {cls:'',ico:'💱',t:'Inflación diferencial ARS/USD',b:'Los costos en pesos (sueldos, alquiler, servicios) tienden a subir más rápido que la capacidad de ajustar precios en USD.'},
+    {cls:'',ico:'🏛️',t:'Regulatorio / plataformas',b:'Habilitaciones municipales renovables y comisiones de apps de turnos no están modeladas.'},
+    {cls:'',ico:'🔧',t:'CAPEX no previsto',b:'Contingencias de equipamiento y reposición de césped: modelables en la sección Inversión / CAPEX.'}
+  ];
+  el.innerHTML='<div class="risk-grid">'+items.map(i=>
+    `<div class="risk-item ${i.cls}"><div class="ri-h">${i.ico} ${i.t}</div><div class="ri-b">${i.b}</div></div>`
+  ).join('')+'</div>';
 }
 function renderFin(){
   const cAmt=gR('n-iA')+gR('n-iB')+gR('n-iC');
@@ -1493,126 +1511,44 @@ function gaugeScore(r){
   return Math.min(100,Math.max(0,Math.round(sc)));
 }
 function renderGauge(r){
-  const el=document.getElementById('gaugeWrap');if(!el)return;
   const sc=gaugeScore(r);
-  const rsp=r.rsp||10;
-  const zoneOf=s=>s<25?{l:'Malo',c:'#e05252',dim:'#7a2020'}:s<50?{l:'Regular',c:'#e6933a',dim:'#7a4a10'}:s<75?{l:'Bueno',c:'#4ade80',dim:'#1a6630'}:{l:'Excelente',c:'#86efac',dim:'#0d4a22'};
+  const zoneOf=s=>s<25?{l:'Malo',c:'#e05252'}:s<50?{l:'Regular',c:'#e6933a'}:s<75?{l:'Bueno',c:'#4ade80'}:{l:'Excelente',c:'#86efac'};
   const zone=zoneOf(sc);
-  const roiC=r.roi>(rsp*1.2)?'#4ade80':r.roi>0?'#e6933a':'#e05252';
-  const beC=typeof r.be==='number'?(r.be<=18?'#4ade80':r.be<=30?'#e6933a':'#e05252'):'#e05252';
-  const gainC=r.gain>0?'#4ade80':'#e05252';
-  const beStr=typeof r.be==='number'?'mes '+r.be:'sin BE';
-
-  // Ring SVG helper: cx cy r strokeWidth pct color bg
+  // Ring helper
   const ring=(cx,cy,radius,sw,pct,color,bg)=>{
-    const circ=2*Math.PI*radius;
-    const dash=pct/100*circ;
-    // Start from top (-90deg = rotate -90)
+    const circ=2*Math.PI*radius,dash=pct/100*circ;
     return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${bg}" stroke-width="${sw}"/>
 <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-dashoffset="${(circ/4).toFixed(1)}" stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:${cx}px ${cy}px"/>`;
   };
-
-  // ── OPCIÓN A: ring gordo, veredicto adentro ──
-  const A=`<div style="text-align:center">
-  <div style="font-size:8px;color:var(--color-text-tertiary);letter-spacing:.05em;margin-bottom:4px">A</div>
-  <svg viewBox="0 0 120 120" width="110" style="display:block;margin:0 auto">
-    ${ring(60,60,46,14,sc,zone.c,'rgba(128,128,128,.15)')}
-    <text x="60" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="${zone.c}" font-family="sans-serif">${zone.l}</text>
-    <text x="60" y="68" text-anchor="middle" font-size="8" fill="var(--color-text-tertiary)" font-family="sans-serif">${sc}/100</text>
-  </svg>
-  <div style="font-size:8px;color:var(--color-text-tertiary)">ROI <span style="color:${roiC}">${r.roi}%</span> · BE <span style="color:${beC}">${beStr}</span></div>
-</div>`;
-
-  // ── OPCIÓN B: ring fino, número grande adentro, label abajo ──
-  const B=`<div style="text-align:center">
-  <div style="font-size:8px;color:var(--color-text-tertiary);letter-spacing:.05em;margin-bottom:4px">B</div>
-  <svg viewBox="0 0 120 120" width="110" style="display:block;margin:0 auto">
-    ${ring(60,60,50,6,sc,zone.c,'rgba(128,128,128,.12)')}
-    <text x="60" y="57" text-anchor="middle" font-size="22" font-weight="800" fill="${zone.c}" font-family="sans-serif">${sc}</text>
-    <text x="60" y="70" text-anchor="middle" font-size="8" fill="var(--color-text-tertiary)" font-family="sans-serif">/ 100</text>
-  </svg>
-  <div style="font-size="12px";font-weight:700;color:${zone.c}">${zone.l}</div>
-  <div style="font-size:8px;color:var(--color-text-tertiary);margin-top:2px">ROI <span style="color:${roiC}">${r.roi}%</span> · BE <span style="color:${beC}">${beStr}</span></div>
-</div>`;
-
-  // ── OPCIÓN C: doble ring (ROI outer, score inner) ──
-  const roiPct=Math.min(100,Math.max(0,r.roi/(rsp*2)*100));
-  const roiRingC=r.roi>(rsp*1.2)?'#4ade80':r.roi>0?'#e6933a':'#e05252';
-  const C=`<div style="text-align:center">
-  <div style="font-size:8px;color:var(--color-text-tertiary);letter-spacing:.05em;margin-bottom:4px">C</div>
-  <svg viewBox="0 0 120 120" width="110" style="display:block;margin:0 auto">
-    ${ring(60,60,52,7,roiPct,roiRingC,'rgba(128,128,128,.1)')}
-    ${ring(60,60,40,9,sc,zone.c,'rgba(128,128,128,.15)')}
-    <text x="60" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="${zone.c}" font-family="sans-serif">${zone.l}</text>
-    <text x="60" y="68" text-anchor="middle" font-size="7.5" fill="var(--color-text-tertiary)" font-family="sans-serif">ROI ${r.roi}%</text>
-  </svg>
-  <div style="font-size:8px;color:var(--color-text-tertiary)">ring exterior = ROI · interior = score</div>
-</div>`;
-
-  // Pie chart — fuentes de ingreso, mismo tamaño que el gauge (220×220)
-  const PIE_COLS=['#639922','#378add','#f5a623','#a78bfa','#fb923c','#2dd4bf'];
-  const pieSlices=[
-    {v:r.scN,l:'Fútbol'},{v:r.stN,l:'Escuelita'},{v:r.pdN,l:'Paddle'},
-    {v:r.bu,l:'Buffet'},{v:r.ev,l:'Eventos'},{v:r.to,l:'Torneos'}
-  ].map((s,i)=>({...s,c:PIE_COLS[i]})).filter(s=>s.v>0);
-  const pieTotal=pieSlices.reduce((s,sl)=>s+sl.v,0);
-  const PCX=110,PCY=110,PR=90;
-  let piePaths='',pieLabels='',pieAngle=-Math.PI/2;
-  if(pieSlices.length===1){
-    piePaths=`<circle cx="${PCX}" cy="${PCY}" r="${PR}" fill="${pieSlices[0].c}"/>`;
-    pieLabels=`<text x="${PCX}" y="${PCY+4}" text-anchor="middle" font-size="13" font-weight="700" fill="white" font-family="sans-serif">100%</text>`;
-  }else{
-    pieSlices.forEach(sl=>{
-      const sw=(sl.v/pieTotal)*2*Math.PI,ea=pieAngle+sw;
-      const midA=pieAngle+sw/2;
-      const x1=PCX+PR*Math.cos(pieAngle),y1=PCY+PR*Math.sin(pieAngle);
-      const x2=PCX+PR*Math.cos(ea),y2=PCY+PR*Math.sin(ea);
-      piePaths+=`<path d="M${PCX} ${PCY} L${x1.toFixed(2)} ${y1.toFixed(2)} A${PR} ${PR} 0 ${sw>Math.PI?1:0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z" fill="${sl.c}" stroke="var(--color-surface)" stroke-width="1.5"/>`;
-      const pct=Math.round(sl.v/pieTotal*100);
-      if(pct>=6){
-        const lx=(PCX+PR*0.62*Math.cos(midA)).toFixed(1),ly=(PCY+PR*0.62*Math.sin(midA)).toFixed(1);
-        pieLabels+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" fill="white" font-family="sans-serif" style="text-shadow:0 1px 2px rgba(0,0,0,.4)">${pct}%</text>`;
-      }
-      pieAngle=ea;
-    });
-  }
-  const pieLegend=pieSlices.map(sl=>`<div style="display:flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
-    <div style="width:10px;height:10px;border-radius:2px;background:${sl.c};flex-shrink:0"></div>
-    <span style="opacity:.85">${sl.l}</span>
-  </div>`).join('');
-  const pieSvg=pieTotal>0
-    ?`<svg viewBox="0 0 220 220" width="200" style="display:block;margin:0 auto">${piePaths}${pieLabels}</svg>`
-    :`<div style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;opacity:.3;font-size:10px">sin datos</div>`;
+  // ── Canonical verdict → top band (verdict-led) ──
   const miniEl=document.getElementById('veredictoKpi');
   if(miniEl){
-    miniEl.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:0 8px;border-left:.5px solid var(--bd-s);border-right:.5px solid var(--bd-s)">
-      <svg viewBox="0 0 70 70" width="58" style="display:block">
-        ${ring(35,35,27,8,sc,zone.c,'rgba(128,128,128,.15)')}
-        <text x="35" y="30" text-anchor="middle" font-size="6.5" fill="var(--tx3)" font-family="sans-serif" letter-spacing=".5">VEREDICTO</text>
-        <text x="35" y="44" text-anchor="middle" font-size="12" font-weight="800" fill="${zone.c}" font-family="sans-serif">${zone.l}</text>
+    miniEl.className='verdict-lead';
+    miniEl.innerHTML=`<svg class="vl-ring" viewBox="0 0 84 84" width="68" height="68">
+        ${ring(42,42,33,7,sc,zone.c,'rgba(128,128,128,.16)')}
+        <text x="42" y="38" text-anchor="middle" font-size="7" fill="var(--tx3)" font-family="sans-serif" letter-spacing=".8">VEREDICTO</text>
+        <text x="42" y="53" text-anchor="middle" font-size="15" font-weight="800" fill="${zone.c}" font-family="sans-serif">${zone.l}</text>
       </svg>
-      <div style="font-size:9px;color:var(--tx3)">${sc}/100</div>
-    </div>`;
+      <div class="vl-score">${sc}/100</div>`;
   }
-  el.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-    ${pieSvg}
-    <div style="display:flex;flex-wrap:wrap;gap:4px 8px;justify-content:center;max-width:200px">${pieLegend}</div>
-  </div>
-  <div style="text-align:center">
-    <svg viewBox="0 0 220 220" width="200" style="display:block;margin:0 auto">
-      ${ring(110,110,90,22,sc,zone.c,'rgba(128,128,128,.15)')}
-      <text x="110" y="102" text-anchor="middle" font-size="11" fill="var(--color-text-tertiary)" font-family="sans-serif" letter-spacing="1">VEREDICTO</text>
-      <text x="110" y="128" text-anchor="middle" font-size="26" font-weight="800" fill="${zone.c}" font-family="sans-serif">${zone.l}</text>
-      <text x="110" y="148" text-anchor="middle" font-size="11" fill="var(--color-text-tertiary)" font-family="sans-serif">${sc} / 100</text>
-    </svg>
-    <div style="display:flex;justify-content:center;gap:16px;font-size:11px;margin-top:2px">
-      <span>ROI <strong style="color:${roiC}">${r.roi}%</strong></span>
-      <span>BE <strong style="color:${beC}">${beStr}</strong></span>
-      <span>neto <strong style="color:${gainC}">${fmtKU(r.gain)}/mes</strong></span>
-    </div>
-  </div>
-</div>`;
+  // ── Revenue mix → horizontal bars (single source of truth, no duplicate donut) ──
+  const el=document.getElementById('gaugeWrap');if(!el)return;
+  const MIX_COLS=['#639922','#378add','#f5a623','#a78bfa','#fb923c','#2dd4bf'];
+  let mix=[{v:r.scN,l:'Fútbol'},{v:r.stN,l:'Escuelita'},{v:r.pdN,l:'Paddle'},
+    {v:r.bu,l:'Buffet'},{v:r.ev,l:'Eventos'},{v:r.to,l:'Torneos'}]
+    .map((s,i)=>({...s,c:MIX_COLS[i]})).filter(s=>s.v>0);
+  const total=mix.reduce((s,m)=>s+m.v,0)||1;
+  const max=Math.max(...mix.map(m=>m.v),1);
+  const bars=mix.map(m=>{
+    const pct=Math.round(m.v/total*100);
+    const w=Math.round(m.v/max*100);
+    return `<div class="mix-item"><span class="mix-lbl">${m.l}</span><div class="mix-track"><div class="mix-fill" style="width:${w}%;background:${m.c}"></div></div><span class="mix-val">${fmtKU(m.v)} · ${pct}%</span></div>`;
+  }).join('');
+  el.innerHTML=`<div class="mix-row">${bars}</div>
+    <div class="mix-foot"><span class="mf-l">Facturación total / mes</span><span class="mf-v">${fmtKU(total)}</span></div>`;
+  // margin sub on the KPI card header
+  const margEl=document.getElementById('rcardMargin');
+  if(margEl){const m=total>1?Math.round(r.gain/total*100):0;margEl.textContent=`margen ${m}% · neto ${fmtKU(r.gain)}/mes`;}
 }
 function renderRealityCheck(r){
   const el=document.getElementById('rcContent');if(!el)return;
