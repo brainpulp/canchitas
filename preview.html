@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('canchitas_theme')||'dark');})();</script>
+<title>Canchitas — Proyección de Factibilidad</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<style>
+:root{
+  /* Light theme */
+  --bg:oklch(97% 0.004 245);
+  --sf:oklch(99.5% 0.003 245);
+  --sf2:oklch(94% 0.006 245);
+  --sf3:oklch(89% 0.009 245);
+  --bd:oklch(76% 0.01 245);
+  --bd-s:oklch(86% 0.007 245);
+  --tx:oklch(16% 0.012 245);
+  --tx2:oklch(38% 0.009 245);
+  --tx3:oklch(56% 0.007 245);
+  --green:oklch(38% 0.2 145);
+  --green-bg:oklch(93% 0.065 145);
+  --red:oklch(46% 0.19 22);
+  --red-bg:oklch(94% 0.055 22);
+  --amber:oklch(50% 0.18 65);
+  --amber-bg:oklch(94% 0.055 65);
+  --blue:oklch(44% 0.16 240);
+  --color-background-primary:var(--sf);
+  --color-background-secondary:var(--sf2);
+  --color-background-tertiary:var(--sf3);
+  --color-background-success:var(--green-bg);
+  --color-background-danger:var(--red-bg);
+  --color-background-warning:var(--amber-bg);
+  --color-text-primary:var(--tx);
+  --color-text-secondary:var(--tx2);
+  --color-text-tertiary:var(--tx3);
+  --color-text-success:var(--green);
+  --color-text-danger:var(--red);
+  --color-text-warning:var(--amber);
+  --color-border-tertiary:var(--bd-s);
+  --color-border-secondary:var(--bd);
+  --color-border-primary:oklch(62% 0.016 245);
+  --color-surface:var(--sf);
+  --color-surface-2:var(--sf2);
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'SF Mono','Fira Code','Roboto Mono',monospace;
+  --border-radius-md:6px;--border-radius-lg:10px;
+  --r:6px;--r-lg:10px;
+}
+[data-theme="dark"]{
+  --bg:oklch(10% 0.008 245);
+  --sf:oklch(14.5% 0.009 245);
+  --sf2:oklch(19% 0.011 245);
+  --sf3:oklch(17% 0.009 245);
+  --bd:oklch(28% 0.014 245);
+  --bd-s:oklch(22% 0.012 245);
+  --tx:oklch(90% 0.005 240);
+  --tx2:oklch(63% 0.008 240);
+  --tx3:oklch(44% 0.007 240);
+  --green:oklch(67% 0.2 145);
+  --green-bg:oklch(17% 0.05 145);
+  --red:oklch(61% 0.19 22);
+  --red-bg:oklch(17% 0.045 22);
+  --amber:oklch(73% 0.18 65);
+  --amber-bg:oklch(17% 0.04 65);
+  --blue:oklch(64% 0.16 240);
+  --color-border-primary:oklch(34% 0.016 245);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--font-sans);padding:0;min-height:100vh}
+h1{font-size:18px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+h1 span{font-size:14px;color:var(--color-text-tertiary);font-weight:400}
+#cw{font-family:var(--font-sans);font-size:14px;max-width:1400px;padding:0 20px 24px}
+#cw input:not([type=range]):not([type=checkbox]),#cw select{
+  font-size:12px !important;font-family:var(--font-mono) !important;
+  color:var(--color-text-primary) !important;background:var(--color-background-primary);
+  border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);
+  padding:2px 7px;height:27px;width:100%;outline:none;-webkit-appearance:none;appearance:none;
+}
+#cw input:not([type=range]):not([type=checkbox]):focus{border-color:var(--color-border-primary)}
+#cw input.dirty{border-color:#378add !important}
+#cw input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;background:var(--color-border-secondary);border-radius:2px;border:none;outline:none;cursor:pointer;padding:0;margin:5px 0}
+#cw input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:#378add;border-radius:50%;margin-top:-5.5px;cursor:pointer}
+#cw input[type=range]::-webkit-slider-runnable-track{height:5px;background:var(--color-border-secondary);border-radius:2px}
+#cw input[type=range]::-moz-range-track{height:5px;background:var(--color-border-secondary);border-radius:2px}
+#cw input[type=range]::-moz-range-thumb{width:16px;height:16px;background:#378add;border-radius:50%;border:none;cursor:pointer}
+#cw input[type=checkbox]{width:14px !important;height:14px !important;accent-color:#378add;cursor:pointer;-webkit-appearance:auto;appearance:auto}
+#cw button{font-size:12px;font-family:var(--font-sans);cursor:pointer}
+.sw{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.sw input[type=checkbox]{display:none}
+.sw-track{width:34px;height:18px;background:var(--color-border-secondary);border-radius:9px;position:relative;transition:background .15s;flex-shrink:0}
+.sw input:checked+.sw-track{background:#378add}
+.sw-thumb{position:absolute;top:3px;left:3px;width:12px;height:12px;background:#fff;border-radius:50%;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw input:checked+.sw-track .sw-thumb{left:19px}
+.sw-label{font-size:12px;color:var(--color-text-secondary)}
+.sec-t{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.sca{display:flex;gap:4px;align-items:stretch;margin-bottom:8px}
+.sc-slot{flex:1;min-width:100px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:4px 8px;cursor:pointer;background:var(--color-background-secondary);min-height:48px;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box}
+.sc-slot:hover{border-color:var(--color-border-secondary);background:var(--color-background-primary)}
+.sc-slot.act{border-color:#378add;background:var(--color-background-primary)}
+.sc-slot.emp{opacity:.35}
+.sc-info{flex:0 0 auto;min-width:56px}
+.scn{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.scm{font-size:10px;color:var(--color-text-tertiary);line-height:1.3}
+.sc-name-inp{flex:1;min-width:0;height:26px;font-size:12px;font-family:var(--font-sans);border:.5px solid var(--color-border-tertiary);border-radius:4px;padding:0 7px;background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.sc-name-inp:focus{border-color:#378add}
+.sc-del{background:transparent;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:18px;line-height:1;padding:0 2px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0}
+.sc-del:hover{color:var(--color-text-danger);background:var(--color-background-danger)}
+.sc-wrap{display:flex;gap:4px;align-items:center;flex-shrink:0}
+.sc-btn{padding:0 10px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);width:auto !important;height:27px}
+.sc-btn:hover{background:var(--color-background-secondary)}
+/* Dashboard panel — typographic hierarchy, no item boxes */
+.dash-panel{flex:1;min-width:0}
+.dp-row1{display:flex;align-items:flex-end;gap:0;flex-wrap:nowrap;overflow:hidden}
+.dp-m{padding:0 22px;position:relative}
+.dp-m:first-child{padding-left:0}
+.dp-m+.dp-m{border-left:.5px solid var(--bd-s)}
+.dp-v{font-size:14px;font-weight:700;font-family:var(--font-mono);line-height:1;color:var(--tx)}
+.dp-v.hero{font-size:30px;letter-spacing:-.01em}
+.dp-v.g{color:var(--green)}.dp-v.r{color:var(--red)}.dp-v.y{color:var(--amber)}
+.dp-l{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3);margin-top:4px}
+.dp-row2{margin-top:8px;font-size:11px;color:var(--tx3);display:flex;gap:0;flex-wrap:nowrap;align-items:center;overflow:hidden;white-space:nowrap}
+.dp-ctx{white-space:nowrap}
+.dp-ctx b{color:var(--tx2);font-weight:600;font-family:var(--font-mono)}
+.dp-dot{padding:0 10px;color:var(--bd)}
+.main{display:grid;grid-template-columns:280px 1fr;gap:12px}
+.lp{padding-right:2px}
+.acc{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:5px;overflow:hidden}
+.ahdr{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;cursor:pointer;background:var(--color-background-secondary);user-select:none;gap:4px}
+.ahdr:hover{background:var(--color-background-primary)}
+.atit{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow:hidden}
+.hvl{font-size:11px;color:var(--color-text-tertiary);font-family:var(--font-mono);white-space:nowrap;background:var(--color-background-tertiary);border-radius:3px;padding:1px 5px;margin-left:2px;flex-shrink:0}
+.hvl.pos{color:var(--color-text-success);background:var(--color-background-success)}
+.hvl.neg{color:var(--color-text-danger);background:var(--color-background-danger)}
+.ach{font-size:12px;color:var(--color-text-tertiary);transition:transform .15s;flex-shrink:0}
+.ach.op{transform:rotate(180deg)}
+.abdy{padding:8px 12px;display:none}.abdy.op{display:block}
+.tsw2{display:flex;align-items:center;gap:3px}
+.tsw2 label{font-size:12px;color:var(--color-text-secondary);cursor:pointer}
+.si{margin-bottom:8px}
+.sih{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.sn{font-size:12px;color:var(--color-text-secondary)}
+.sv{font-size:12px;font-weight:500;font-family:var(--font-mono);color:var(--color-text-primary)}
+.fl{font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px;display:block}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.gt{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.07em;text-transform:uppercase;margin:8px 0 4px}
+.dv{height:.5px;background:var(--color-border-tertiary);margin:8px 0}
+.dis{opacity:.35;pointer-events:none}
+.note{font-size:11px;color:var(--tx2);line-height:1.4;margin:2px 0 6px;padding:5px 9px;background:var(--sf2);border-radius:var(--r)}
+.tot-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:5px}
+.tot-l{font-size:12px;color:var(--color-text-secondary);font-weight:500}
+.tot-v{font-size:12px;font-weight:500;font-family:var(--font-mono);color:var(--color-text-danger)}
+.badge{font-size:10px;padding:1px 5px;border-radius:3px;margin-left:2px}
+.badge.on{background:var(--color-background-success);color:var(--color-text-success)}
+.badge.off{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.sw-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;padding:5px 0;border-bottom:.5px solid var(--color-border-tertiary)}
+.sw-row:last-of-type{border-bottom:none}
+.sw-left{display:flex;align-items:center;gap:6px}
+.sw-val{font-size:12px;font-family:var(--font-mono);color:var(--color-text-secondary)}
+.sw-detail{padding-left:10px;border-left:.5px solid var(--bd-s);margin-bottom:6px}
+.ec{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 9px;margin-bottom:5px}
+.ec-r1{display:grid;grid-template-columns:1fr 24px;gap:4px;align-items:center;margin-bottom:5px}
+.ec-r2{display:grid;grid-template-columns:90px 1fr;gap:6px;align-items:end}
+.ec-field{display:flex;flex-direction:column}
+.ec-field .fl{margin-bottom:2px}
+.rm-btn{background:transparent;border:none !important;color:var(--color-text-tertiary);cursor:pointer;font-size:15px;padding:0;height:27px;width:24px !important;display:flex;align-items:center;justify-content:center}
+.rm-btn:hover{color:var(--color-text-danger)}
+.add-btn{width:100% !important;height:29px;padding:0;border:.5px dashed var(--color-border-secondary) !important;border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-tertiary);margin-top:2px}
+.add-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.rp{display:flex;flex-direction:column;gap:8px}
+.leg{display:flex;gap:8px;flex-wrap:wrap}
+.lgit{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--color-text-secondary)}
+.lgl{width:16px;height:2px;border-radius:1px;flex-shrink:0}
+.rg8{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.occ-strip{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px}
+.rc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:5px 8px}
+.rl{font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px}
+.rv{font-size:16px;font-weight:700;font-family:var(--font-mono);color:var(--color-text-primary)}
+.rv.ng{color:var(--color-text-danger)}
+.prow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--color-border-tertiary)}
+.pcard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;cursor:pointer;border:.5px solid var(--color-border-tertiary)}
+.pcard:hover{border-color:var(--color-border-secondary)}
+.pcard.nd{cursor:default}
+.pl{font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px}
+.pv{font-size:17px;font-weight:700;font-family:var(--font-mono);color:var(--color-text-primary)}
+.p1e{display:flex;gap:5px;align-items:center;margin-top:4px}
+.p1e input{width:60px !important}
+.p-sub{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-top:3px}
+.ms-row{display:flex;gap:5px;flex-wrap:wrap}
+.mstone{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:6px 10px;flex:1;min-width:90px}
+.ms-l{font-size:10px;color:var(--color-text-tertiary);line-height:1.35;margin-bottom:3px}
+.ms-v{font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--color-text-primary)}
+.ms-v.ng{color:var(--color-text-danger)}
+.risk{border-radius:var(--r);padding:11px 14px;font-size:12px;line-height:1.7;background:var(--sf2);color:var(--tx2);border:.5px solid var(--bd-s)}
+.risk strong{color:var(--color-text-primary);font-weight:600}
+.chat-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:#2d5a1b;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:1000;transition:transform .15s,box-shadow .15s}
+.chat-fab:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(0,0,0,.32)}
+.chat-fab-badge{position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:#378add;border:2px solid var(--color-background-tertiary)}
+.chat-panel{position:fixed;bottom:88px;right:24px;width:380px;height:500px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.22);z-index:999;display:none;flex-direction:column;background:var(--color-background-primary)}
+.chat-panel.open{display:flex}
+.chat-hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--color-background-secondary);cursor:default;user-select:none}
+.chat-title{font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;color:var(--color-text-primary)}
+.chat-av{width:28px;height:28px;border-radius:50%;background:#2d5a1b;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.chat-close{background:transparent;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:18px;line-height:1;padding:0 2px;display:flex;align-items:center;justify-content:center;border-radius:4px}
+.chat-close:hover{color:var(--color-text-primary);background:var(--color-background-tertiary)}
+.chat-body{display:flex;flex-direction:column;flex:1;min-height:0}
+.chat-apirow{display:flex;align-items:center;gap:6px;padding:6px 12px;border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-tertiary)}
+.chat-apirow span{font-size:10px;color:var(--color-text-tertiary);white-space:nowrap}
+.chat-apirow input{flex:1;height:24px;font-size:10px;font-family:var(--font-mono);padding:0 7px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.chat-msgs{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin}
+.cmsg{display:flex;gap:8px;align-items:flex-start}
+.cmsg.u{flex-direction:row-reverse}
+.cbub{max-width:82%;padding:8px 11px;border-radius:10px;font-size:14px;line-height:1.6;word-wrap:break-word}
+.cmsg.ai .cbub{background:var(--color-background-secondary);color:var(--color-text-primary);border-radius:3px 10px 10px 10px}
+.cmsg.u .cbub{background:#378add;color:#fff;border-radius:10px 3px 10px 10px}
+.csc-btn{display:inline-flex;align-items:center;gap:5px;margin:3px 2px 1px;padding:4px 11px;background:var(--color-background-success);color:var(--color-text-success);border:.5px solid;border-radius:20px;font-size:11px;cursor:pointer;font-weight:500;vertical-align:middle}
+.csc-btn:hover{opacity:.75}
+.cev-tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:3px;margin:2px;vertical-align:middle}
+.cev-tag.success{background:var(--color-background-success);color:var(--color-text-success)}
+.cev-tag.warning{background:var(--color-background-warning);color:var(--color-text-warning)}
+.cev-tag.danger{background:var(--color-background-danger);color:var(--color-text-danger)}
+.chat-foot{border-top:.5px solid var(--color-border-tertiary);padding:8px 10px;display:flex;gap:6px;align-items:flex-end}
+.chat-inp{flex:1;resize:none;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;font-size:14px;font-family:var(--font-sans);background:var(--color-background-primary);color:var(--color-text-primary);min-height:36px;max-height:120px;outline:none;line-height:1.4}
+.chat-inp:focus{border-color:var(--color-border-primary)}
+.chat-snd{padding:0 14px;height:36px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:14px;cursor:pointer;flex-shrink:0}
+.chat-snd:hover{background:#378add;color:#fff;border-color:#378add}
+.seas12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;margin-bottom:6px}
+.s12m{border-radius:var(--border-radius-md);padding:5px 2px;text-align:center;cursor:default}
+.s12m .s12n{font-size:8px;font-weight:500;margin-bottom:2px}
+.s12m .s12v{font-size:12px;font-weight:700;font-family:var(--font-mono)}
+.s12m.g .s12n,.s12m.g .s12v{color:var(--color-text-success)}.s12m.g{background:var(--color-background-success)}
+.s12m.n .s12n,.s12m.n .s12v{color:var(--color-text-primary)}.s12m.n{background:var(--color-background-secondary)}
+.s12m.y .s12n,.s12m.y .s12v{color:var(--color-text-warning)}.s12m.y{background:var(--color-background-warning)}
+.s12m.r .s12n,.s12m.r .s12v{color:var(--color-text-danger)}.s12m.r{background:var(--color-background-danger)}
+.s12m.open{outline:2px solid #378add;outline-offset:-2px}
+.sbars{margin-top:6px}
+.sbar-row{margin-bottom:6px}
+.sbar-lbl{font-size:9px;font-weight:600;margin-bottom:3px}
+.sbar-cols{display:flex;gap:2px;height:40px;align-items:flex-end}
+.sbar-col{flex:1;min-width:0;border-radius:1px 1px 0 0;transition:height .2s}
+.sbar-names{display:flex;gap:2px;margin-top:2px}
+.sbar-names span{flex:1;font-size:7px;text-align:center;color:var(--color-text-tertiary);min-width:0}
+.ctyping{display:flex;align-items:center;gap:4px;padding:2px 0}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--color-text-tertiary);animation:cdotb .9s infinite}
+.cdot:nth-child(2){animation-delay:.18s}.cdot:nth-child(3){animation-delay:.36s}
+@keyframes cdotb{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+@keyframes numSlotIn{0%{opacity:.4;transform:translateY(4px)}100%{opacity:1;transform:translateY(0)}}
+.kv-anim,.dp-anim{animation:numSlotIn .4s ease-out}
+/* Partner visibility checkboxes */
+.pvis-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.pcb{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:4px 8px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.pcb input[type=checkbox]{cursor:pointer;accent-color:#378add}
+.pcb.off{opacity:.4}
+/* Devaluation presets */
+.dv-preset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.dv-preset{font-size:10px;padding:3px 8px;border-radius:3px;border:.5px solid var(--color-border-secondary);background:var(--color-background-secondary);cursor:pointer;font-weight:500;color:var(--color-text-secondary)}
+.dv-preset:hover{background:var(--color-background-tertiary);color:var(--color-text-primary)}
+.dv-preset.sel{border-color:#378add;background:rgba(55,138,221,.12);color:#378add}
+/* Waterfall trigger */
+.wf-phase{background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 10px;margin-bottom:6px}
+.wf-phase-hdr{font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.wf-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;align-items:end}
+/* Chart visibility toggles */
+.chart-vis-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center}
+.cv-btn{font-size:10px;padding:3px 10px;border-radius:11px;border:1px solid;cursor:pointer;font-weight:600;letter-spacing:.03em;background:transparent;transition:opacity .2s}
+.cv-btn.off{opacity:.22}
+/* dashboard chart header */
+.chart-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.prow{display:flex!important;gap:6px;flex:1;flex-wrap:wrap;align-items:stretch}
+.pcard-new{flex:1;min-width:110px;border-radius:var(--r);padding:10px 14px;cursor:pointer;border:1px solid var(--bd-s);background:var(--sf);transition:opacity .15s,border-color .12s;position:relative}
+.pcard-new:hover{border-color:var(--bd)}
+.pcard-new.off{opacity:.3}
+.pcard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pcard-name{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.pcard-pct{font-size:10px;color:var(--tx3);font-family:var(--font-mono)}
+.pcard-val{font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--tx);line-height:1}
+.pcard-sub{font-size:10px;color:var(--tx3);font-family:var(--font-mono);margin-top:3px}
+.series-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex-shrink:0;align-self:flex-end;padding-bottom:2px}
+/* crisis events */
+.cev-row{display:grid;grid-template-columns:55px 65px 72px 1fr 24px;gap:4px;align-items:end;margin-bottom:5px;padding:6px 8px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary)}
+.sc-brand{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tx);white-space:nowrap;flex-shrink:0}
+.sc-brand span{font-size:10px;font-weight:400;color:var(--tx3);letter-spacing:.02em;text-transform:none;margin-left:8px}
+/* compact scenario bar */
+.sticky-top{position:sticky;top:0;z-index:50;background:var(--bg)}
+.sc-bar{display:flex;align-items:center;gap:8px;padding:8px 20px;background:var(--sf);border-bottom:.5px solid var(--bd-s);flex-wrap:wrap}
+.kpi-strip{display:flex;align-items:center;gap:20px;padding:10px 20px;border-bottom:.5px solid var(--bd-s)}
+.sc-bar-lbl{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+#scRow{display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1}
+.sc-pill{display:inline-flex;align-items:center;height:26px;padding:0 8px 0 10px;border:.5px solid var(--color-border-tertiary);border-radius:13px;background:var(--color-background-secondary);cursor:pointer;font-size:12px;font-weight:500;color:var(--color-text-primary);transition:border-color .12s,background .12s;white-space:nowrap;user-select:none;max-width:160px}
+.sc-pill:hover{border-color:var(--color-border-secondary);background:var(--color-background-primary)}
+.sc-pill.act{border-color:#378add;background:var(--color-background-primary)}
+.sc-pill.emp{opacity:.4}.sc-pill.emp:hover{opacity:.7}
+.sc-pill-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.sc-pill-x{background:transparent;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:13px;line-height:1;padding:0;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-left:3px;flex-shrink:0}
+.sc-pill-x:hover{color:var(--color-text-danger);background:var(--color-background-danger)}
+.sc-pill-inp{border:none;outline:none;background:transparent;font-size:12px;font-weight:500;color:#378add;width:90px;font-family:var(--font-sans)}
+.sc-add-btn{height:26px;padding:0 10px;border:.5px solid var(--color-border-secondary);border-radius:13px;background:transparent;color:var(--color-text-secondary);font-size:12px;cursor:pointer;flex-shrink:0;font-family:var(--font-sans)}
+.sc-add-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.sc-bar-tools{display:flex;gap:4px;align-items:center;margin-left:auto;flex-shrink:0}
+.sc-tool-btn{height:24px;padding:0 8px;border:.5px solid var(--color-border-tertiary);border-radius:4px;background:transparent;color:var(--color-text-tertiary);font-size:11px;cursor:pointer;font-family:var(--font-sans)}
+.sc-tool-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-secondary)}
+#themeToggle{font-size:15px;border-color:var(--bd-s);color:var(--tx2)}
+#themeToggle:hover{color:var(--tx);border-color:var(--bd)}
+/* ───── REDESIGN 2026: clearer information architecture ───── */
+/* Verdict-led top band */
+.verdict-lead{display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 18px 2px 0;border-right:1px solid var(--bd-s);flex-shrink:0}
+.vl-zone{font-size:20px;font-weight:800;line-height:1;letter-spacing:-.01em}
+.vl-score{font-size:10px;color:var(--tx3);font-family:var(--font-mono)}
+.vl-ring{display:block}
+/* Left column — grouped inputs */
+.lp-group{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin:14px 0 6px;padding-bottom:5px;border-bottom:1px solid var(--bd-s);display:flex;align-items:center;gap:6px}
+.lp-group:first-child{margin-top:2px}
+.lp-group .lpg-ico{font-size:13px}
+/* Right column — result cards */
+.rcard{background:var(--sf);border:.5px solid var(--bd-s);border-radius:var(--r-lg);overflow:hidden}
+.rcard-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 14px;cursor:default;user-select:none}
+.rcard-h.clk{cursor:pointer}.rcard-h.clk:hover{background:var(--sf2)}
+.rcard-t{font-size:12px;font-weight:600;color:var(--tx);letter-spacing:.01em;display:flex;align-items:center;gap:7px}
+.rcard-t .rc-ico{font-size:14px}
+.rcard-sub{font-size:11px;color:var(--tx3);font-family:var(--font-mono)}
+.rcard-b{padding:4px 14px 14px}
+.rcard-b.pad0{padding:0}
+.rcard-chev{font-size:11px;color:var(--tx3);transition:transform .15s}
+.rcard-chev.op{transform:rotate(180deg)}
+.rcard-collapse{display:none}.rcard-collapse.op{display:block}
+/* KPI result grid — refined */
+.rg8{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--bd-s);border-radius:var(--r);overflow:hidden}
+.rc{background:var(--sf);border-radius:0;padding:9px 11px}
+.rl{font-size:10px;color:var(--tx3);margin-bottom:3px;letter-spacing:.02em}
+.rv{font-size:16px;font-weight:700;font-family:var(--font-mono);color:var(--tx);line-height:1.1}
+.rv.ng{color:var(--red)}
+/* Revenue mix as horizontal bars (replaces redundant pie option) */
+.mix-row{display:flex;flex-direction:column;gap:7px}
+.mix-item{display:grid;grid-template-columns:66px 1fr 92px;align-items:center;gap:9px}
+.mix-lbl{font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mix-track{height:9px;border-radius:5px;background:var(--sf2);overflow:hidden}
+.mix-fill{height:100%;border-radius:5px;transition:width .4s ease}
+.mix-val{font-size:11px;font-family:var(--font-mono);color:var(--tx2);text-align:right;white-space:nowrap}
+.mix-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:11px;padding-top:9px;border-top:.5px solid var(--bd-s)}
+.mix-foot .mf-l{font-size:11px;color:var(--tx3)}
+.mix-foot .mf-v{font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--green)}
+/* Risk — discrete cards instead of a wall of text */
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.risk-item{background:var(--sf2);border:.5px solid var(--bd-s);border-radius:var(--r);padding:9px 11px}
+.risk-item.flag{border-color:var(--amber);background:var(--amber-bg)}
+.risk-item.good{border-color:var(--green);background:var(--green-bg)}
+.ri-h{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.ri-b{font-size:11px;line-height:1.5;color:var(--tx2)}
+@media(max-width:720px){.risk-grid{grid-template-columns:1fr}.rg8{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div id="cw">
+<div class="sticky-top">
+<div class="sc-bar">
+  <div class="sc-brand">CANCHITAS <span>proyección de factibilidad</span></div>
+  <div class="sc-bar-tools">
+    <button class="sc-tool-btn" id="themeToggle" onclick="toggleTheme()" title="Cambiar tema">☾</button>
+  </div>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importState(this)">
+</div>
+<div class="kpi-strip">
+  <div id="veredictoKpi" style="flex-shrink:0;align-self:center"></div>
+  <div id="dashPanel" class="dash-panel"></div>
+  <div id="scRow" style="flex-shrink:0"></div>
+</div>
+</div>
+<div style="margin-bottom:10px">
+  <div class="chart-top">
+    <div id="prow" class="prow"></div>
+    <div class="series-row">
+      <button class="cv-btn" id="cv-rev" style="border-color:#639922;color:#639922" onclick="chartVis2.rev=!chartVis2.rev;this.classList.toggle('off',!chartVis2.rev);updateChart2(lastR2)">Facturación</button>
+      <button class="cv-btn" id="cv-cost" style="border-color:#a32d2d;color:#a32d2d" onclick="chartVis2.cost=!chartVis2.cost;this.classList.toggle('off',!chartVis2.cost);updateChart2(lastR2)">Gastos</button>
+      <button class="cv-btn" id="cv-net" style="border-color:#378add;color:#378add" onclick="chartVis2.net=!chartVis2.net;this.classList.toggle('off',!chartVis2.net);updateChart2(lastR2)">Ganancia</button>
+      <button class="cv-btn" id="cv-acum" style="border-color:#888780;color:#888780" onclick="chartVis2.acum=!chartVis2.acum;this.classList.toggle('off',!chartVis2.acum);updateChart2(lastR2)">Acumulado</button>
+      <button class="cv-btn" id="cv-sp" style="border-color:#888780;color:#888780;opacity:.35" onclick="chartVis2.sp=!chartVis2.sp;this.classList.toggle('off',!chartVis2.sp);updateChart2(lastR2)">S&amp;P500</button>
+    </div>
+  </div>
+  <div style="position:relative;width:100%;height:340px"><canvas id="ch2"></canvas></div>
+</div>
+<div class="main">
+<div class="lp">
+
+  <div class="lp-group"><span class="lpg-ico">💵</span> Ingresos</div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('ftb')"><span class="atit">⚽ Canchas fútbol<span class="hvl pos" id="hd-ftb"> USD 11k/mes</span></span><span class="ach op" id="ach-ftb">▾</span></div>
+    <div class="abdy op" id="abdy-ftb">
+      <div class="note">Mercado zona norte GBA 2025: ~ARS 65.000/hora pico ≈ USD 48</div>
+      <div class="si"><div class="sih"><span class="sn">Canchas operativas</span><span class="sv" id="v-co">4</span></div><input type="range" id="s-co" min="1" max="8" value="4" oninput="up('co',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Horas disponibles / día</span><span class="sv" id="v-ohd">11 hs</span></div><input type="range" id="s-ohd" min="3" max="16" value="14" oninput="up('ohd',+this.value)"></div>
+      <div class="note">Franja 10–24hs (14hs totales). La ocupación refleja % real de esas horas usadas.</div>
+      <div class="si"><div class="sih"><span class="sn">Ocupación de esas horas</span><span class="sv" id="v-oc">26%</span></div><input type="range" id="s-oc" min="10" max="100" value="30" oninput="up('oc',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Precio / hora (USD)</span><span class="sv" id="v-pr">USD 38</span></div><input type="range" id="s-pr" min="5" max="100" value="48" oninput="up('pr',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Meses hasta estabilidad</span><span class="sv" id="v-rc">10</span></div><input type="range" id="s-rc" min="1" max="24" value="8" oninput="up('rc',+this.value)"></div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('esc')"><span class="atit">🎓 Escuelita<span class="hvl pos" id="hd-esc"> USD 14k/mes</span></span><span class="ach" id="ach-esc">▾</span></div>
+    <div class="abdy" id="abdy-esc">
+      <div class="si"><div class="sih"><span class="sn">Alumnos</span><span class="sv" id="v-st">300</span></div><input type="range" id="s-st" min="0" max="700" step="10" value="450" oninput="up('st',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Cuota</span><span class="sv" id="v-fe">ARS 70.000</span></div><input type="range" id="s-fe" min="20000" max="200000" step="5000" value="60000" oninput="up('fe',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Meses hasta estabilidad</span><span class="sv" id="v-rs">12</span></div><input type="range" id="s-rs" min="1" max="24" value="12" oninput="up('rs',+this.value)"></div>
+      <div class="dv"></div>
+      <div class="gt">Profesores (monotributistas)</div>
+      <div class="si"><div class="sih"><span class="sn">Alumnos por profe (jornada completa)</span><span class="sv" id="v-stRatio">75</span></div><input type="range" id="s-stRatio" min="20" max="200" step="5" value="75" oninput="up('stRatio',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Honorario por profe (ARS/mes)</span><span class="sv" id="v-stSalArs">ARS 700.000</span></div><input type="range" id="s-stSalArs" min="100000" max="2000000" step="50000" value="700000" oninput="up('stSalArs',+this.value)"></div>
+      <div class="note" id="note-profes">4 profes (300 ÷ 75) → USD 2.074/mes</div>
+      <div class="dv"></div>
+      <div class="gt">Inscripción anual por alumno</div>
+      <span class="fl">Se cobra en el mes de inicio del ciclo lectivo</span><input data-fmt="ars" id="n-stInsc" value="ARS 150.000" data-raw="150000">
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('pdl')">
+      <span class="atit">🏓 Paddle<span class="badge on" id="pdlbadge"> ON</span><span class="hvl pos" id="hd-pdl"> USD 6k/mes</span></span>
+      <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
+        <div class="tsw2" onclick="event.stopPropagation()"><input type="checkbox" id="pdOn" checked="" onchange="up('po',this.checked)"><label for="pdOn">activo</label></div>
+        <span class="ach" id="ach-pdl">▾</span>
+      </div>
+    </div>
+    <div class="abdy" id="abdy-pdl">
+      <div id="pdSliders" class="">
+        <div class="note">Mercado zona norte GBA 2025: ~ARS 45.000/hora ≈ USD 30</div>
+        <div class="si"><div class="sih"><span class="sn">Canchas</span><span class="sv" id="v-pn">2</span></div><input type="range" id="s-pn" min="1" max="6" value="2" oninput="up('pn',+this.value)"></div>
+        <div class="si"><div class="sih"><span class="sn">Horas disponibles / día</span><span class="sv" id="v-pod">8 hs</span></div><input type="range" id="s-pod" min="3" max="16" value="8" oninput="up('pod',+this.value)"></div>
+        <div class="si"><div class="sih"><span class="sn">Ocupación</span><span class="sv" id="v-pa">50%</span></div><input type="range" id="s-pa" min="10" max="100" value="50" oninput="up('pa',+this.value)"></div>
+        <div class="si"><div class="sih"><span class="sn">Precio / hora (USD)</span><span class="sv" id="v-pp">USD 30</span></div><input type="range" id="s-pp" min="5" max="80" value="30" oninput="up('pp',+this.value)"></div>
+        <div class="si"><div class="sih"><span class="sn">Meses hasta estabilidad</span><span class="sv" id="v-rp">7</span></div><input type="range" id="s-rp" min="1" max="24" value="6" oninput="up('rp',+this.value)"></div>
+        <div class="si"><div class="sih"><span class="sn">Mes de inversión paddle (diferida)</span><span class="sv" id="v-pInvM">mes 4</span></div><input type="range" id="s-pInvM" min="0" max="24" step="1" value="0" oninput="up('pInvM',+this.value)"></div>
+        <div class="note">Si diferida, la inversión en canchas se descuenta del flujo en ese mes y la rampa comienza 1 mes después.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('add')"><span class="atit">🍔 Otros ingresos<span class="hvl pos" id="hd-add"> USD 5k/mes</span></span><span class="ach" id="ach-add">▾</span></div>
+    <div class="abdy" id="abdy-add">
+      <div class="sw-row">
+        <div class="sw-left"><label class="sw"><input type="checkbox" id="sw-bu" checked="" onchange="up('buOn',this.checked)"><span class="sw-track"><span class="sw-thumb"></span></span></label><span class="sw-label">Buffet</span></div>
+        <span class="sw-val" id="sv-bu">USD 895/mes</span>
+      </div>
+      <div id="det-bu" class="sw-detail">
+        <div class="r2" style="margin-bottom:4px">
+          <div><span class="fl">Facturación bruta (USD)</span><input data-fmt="usd" id="n-bu" value="USD 5.000" data-raw="5000"></div>
+          <div><span class="fl">Margen neto %</span><input type="number" data-ni="true" id="n-bm" value="20" min="0" max="100"></div>
+        </div>
+      </div>
+      <div class="sw-row">
+        <div class="sw-left"><label class="sw"><input type="checkbox" id="sw-ev" checked="" onchange="up('evOn',this.checked)"><span class="sw-track"><span class="sw-thumb"></span></span></label><span class="sw-label">Eventos</span></div>
+        <span class="sw-val" id="sv-ev">USD 4k/mes</span>
+      </div>
+      <div id="det-ev" class="sw-detail">
+        <div class="r2" style="margin-bottom:4px">
+          <div><span class="fl">Cantidad / mes</span><input type="number" data-ni="true" id="n-ev" value="10" min="0"></div>
+          <div><span class="fl">Precio / evento (USD)</span><input data-fmt="usd" id="n-ep" value="USD 400" data-raw="400"></div>
+        </div>
+      </div>
+      <div class="sw-row">
+        <div class="sw-left"><label class="sw"><input type="checkbox" id="sw-to" checked="" onchange="up('toOn',this.checked)"><span class="sw-track"><span class="sw-thumb"></span></span></label><span class="sw-label">Torneos</span></div>
+        <span class="sw-val" id="sv-to">USD 358/mes</span>
+      </div>
+      <div id="det-to" class="sw-detail">
+        <span class="fl">Ingreso mensual (USD)</span><input data-fmt="usd" id="n-to" value="USD 800" data-raw="800">
+      </div>
+      <div class="gt">Ingresos personalizados (AI o manual)</div>
+      <div id="customIngRows"><div class="note" style="margin:0">Roberto puede agregar ingresos vía chat con {{INGRESO|nombre|usd_mes}}</div></div>
+      <button class="add-btn" onclick="CUSTOM_INGRESOS.push({n:'Ingreso extra',usd:500});renderCustomIngresos();render()">+ agregar ingreso</button>
+    </div>
+  </div>
+
+  <div class="lp-group"><span class="lpg-ico">🏗️</span> Inversión y financiamiento</div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('inv')"><span class="atit">💰 Inversión inicial<span class="hvl neg" id="hd-inv"> USD 219k</span></span><span class="ach" id="ach-inv">▾</span></div>
+    <div class="abdy" id="abdy-inv">
+      <div class="gt">En USD</div>
+      <div style="margin-bottom:4px"><span class="fl">Césped sintético</span><input data-fmt="usd" id="n-iA" value="USD 90.000" data-raw="90000"></div>
+      <div style="margin-bottom:4px"><span class="fl">Mov. suelo + colocación</span><input data-fmt="usd" id="n-iB" value="USD 30.000" data-raw="30000"></div>
+      <div style="margin-bottom:4px"><span class="fl">Luces + Red + Arena</span><input data-fmt="usd" id="n-iC" value="USD 13.000" data-raw="13000"></div>
+      <div class="gt">En ARS (→ TC activo)</div>
+      <div style="margin-bottom:4px"><span class="fl">Vestuarios, estac., oficinas</span><input data-fmt="ars" id="n-iD" value="ARS 21.000.000" data-raw="21000000"></div>
+      <div style="margin-bottom:4px"><span class="fl">Buffet (obra + equipamiento)</span><input data-fmt="ars" id="n-iE" value="ARS 17.000.000" data-raw="17000000"></div>
+      <div style="margin-bottom:4px"><span class="fl">Cartelería + herramientas</span><input data-fmt="ars" id="n-iF" value="ARS 10.000.000" data-raw="10000000"></div>
+      <div style="margin-bottom:4px"><span class="fl">Permisos + Escribanía + Otros</span><input data-fmt="ars" id="n-iG" value="ARS 14.550.000" data-raw="14550000"></div>
+      <div class="gt">Canchas paddle (USD)</div>
+      <div id="inv-pd-wrap">
+      <div class="note">Estimado GBA 2025: piso sintético + malla metálica + vidrio templado + iluminación LED. Cubierta incluye estructura tipo carpa industrial con lona tensada (aprox. 15×10m).</div>
+      <div style="margin-bottom:4px"><span class="fl">Cancha descubierta (piso + cerco + luces)</span><input data-fmt="usd" id="n-iPdA" value="USD 12.000" data-raw="12000"></div>
+      <div style="margin-bottom:4px"><span class="fl">Cancha cubierta (ídem + estructura/lona)</span><input data-fmt="usd" id="n-iPdB" value="USD 28.000" data-raw="28000"></div>
+      </div>
+      <div class="gt">One-offs lanzamiento (USD)</div>
+      <div><span class="fl">Campaña inicial</span><input data-fmt="usd" id="n-iH" value="USD 0" data-raw="0"></div>
+      <div class="dv"></div>
+      <div class="tot-row"><span class="tot-l">Total inversión</span><span class="tot-v" id="v-ivt">-USD 219.333</span></div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('fin')"><span class="atit">💳 Financiamiento<span class="hvl " id="hd-fin"></span></span><span class="ach" id="ach-fin">▾</span></div>
+    <div class="abdy" id="abdy-fin">
+      <div class="note">Cuota fija (sistema francés). Si el capital lo tenés disponible, financiar conviene solo si la tasa del proveedor es menor al rendimiento esperado de ese capital (S&amp;P ~10% anual). Financiar reduce el rojo inicial pero suma costo mensual.</div>
+      <div class="gt">Césped + Mov. suelo + Luces (ítems USD de inversión)</div>
+      <div class="sw-row" style="margin-bottom:0">
+        <div class="sw-left">
+          <label class="sw"><input type="checkbox" id="fin-cOn" onchange="P.finCOn=this.checked;renderFin();render()"><span class="sw-track"><span class="sw-thumb"></span></span></label>
+          <span class="sw-label">Pagar en cuotas</span>
+        </div>
+        <span class="sw-val" id="fin-cPill">—</span>
+      </div>
+      <div id="fin-cDet" class="sw-detail dis">
+        <div class="r2" style="margin-top:6px">
+          <div>
+            <div class="si"><div class="sih"><span class="sn">Cuotas</span><span class="sv" id="v-finCCuotas">24</span></div><input type="range" id="s-finCCuotas" min="6" max="48" step="6" value="24" oninput="P.finCCuotas=+this.value;document.getElementById('v-finCCuotas').textContent=this.value;renderFin();render()"></div>
+          </div>
+          <div>
+            <span class="fl">Tasa anual USD (%)</span>
+            <input type="number" id="n-finCTasa" value="8" min="0" max="30" step="0.5" style="width:70px;text-align:right" onblur="P.finCTasa=+this.value;renderFin();render()">
+          </div>
+        </div>
+        <div id="fin-cInfo" class="note" style="margin-top:4px"></div>
+      </div>
+      <div class="gt">Canchas paddle</div>
+      <div id="fin-pdRow" class="sw-row" style="margin-bottom: 0px; opacity: 1;">
+        <div class="sw-left">
+          <label class="sw"><input type="checkbox" id="fin-pdOn" onchange="P.finPdOn=this.checked;renderFin();render()"><span class="sw-track"><span class="sw-thumb"></span></span></label>
+          <span class="sw-label">Pagar en cuotas</span>
+        </div>
+        <span class="sw-val" id="fin-pdPill">—</span>
+      </div>
+      <div id="fin-pdNote" class="note" style="display: none;">Activá paddle diferido (sección Paddle → "Mes de inversión paddle") para habilitar esta opción.</div>
+      <div id="fin-pdDet" class="sw-detail dis">
+        <div class="r2" style="margin-top:6px">
+          <div>
+            <div class="si"><div class="sih"><span class="sn">Cuotas</span><span class="sv" id="v-finPdCuotas">18</span></div><input type="range" id="s-finPdCuotas" min="6" max="36" step="6" value="18" oninput="P.finPdCuotas=+this.value;document.getElementById('v-finPdCuotas').textContent=this.value;renderFin();render()"></div>
+          </div>
+          <div>
+            <span class="fl">Tasa anual USD (%)</span>
+            <input type="number" id="n-finPdTasa" value="8" min="0" max="30" step="0.5" style="width:70px;text-align:right" onblur="P.finPdTasa=+this.value;renderFin();render()">
+          </div>
+        </div>
+        <div id="fin-pdInfo" class="note" style="margin-top:4px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('cpx')"><span class="atit">🔧 CAPEX adicional<span class="hvl neg" id="hd-cpx"> 2 ítems</span></span><span class="ach" id="ach-cpx">▾</span></div>
+    <div class="abdy" id="abdy-cpx">
+      <div class="note">Gastos de capital puntuales en el tiempo: reposición de césped, refacciones, equipamiento nuevo, etc. Indicá en qué mes ocurren y si son únicos o se repiten cada N meses. Mes mayor al horizonte → sin impacto en el flujo actual.</div>
+      <div id="customCapexRows"><div class="ec" style="padding:5px 9px;margin-bottom:4px">
+      <div class="ec-r1" style="margin-bottom:4px"><input type="text" value="Reposición césped sintético" placeholder="Descripción" onblur="CUSTOM_CAPEX[0].n=this.value;" style="font-size:11px"><button class="rm-btn" onclick="CUSTOM_CAPEX.splice(0,1);renderCustomCapex();render()">×</button></div>
+      <div style="display:grid;grid-template-columns:1fr 60px 90px;gap:5px;align-items:end">
+        <div><span class="fl">USD</span><input type="number" value="90000" min="0" style="font-size:11px" onblur="CUSTOM_CAPEX[0].usd=+this.value||0;renderCustomCapex();render();"></div>
+        <div><span class="fl">Mes inicio</span><input type="number" value="61" min="1" style="font-size:11px;text-align:center" onblur="CUSTOM_CAPEX[0].month=Math.max(1,+this.value||1);renderCustomCapex();render();"></div>
+        <div><span class="fl">Frec. (0=único)</span><input type="number" value="0" min="0" style="font-size:11px;text-align:center" placeholder="0" onblur="CUSTOM_CAPEX[0].freq=Math.max(0,+this.value||0);renderCustomCapex();render();"></div>
+      </div>
+      <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:3px">Mes 61 está fuera del horizonte (60m) — sin impacto actual</div>
+    </div><div class="ec" style="padding:5px 9px;margin-bottom:4px">
+      <div class="ec-r1" style="margin-bottom:4px"><input type="text" value="Cancha extra de paddle" placeholder="Descripción" onblur="CUSTOM_CAPEX[1].n=this.value;" style="font-size:11px"><button class="rm-btn" onclick="CUSTOM_CAPEX.splice(1,1);renderCustomCapex();render()">×</button></div>
+      <div style="display:grid;grid-template-columns:1fr 60px 90px;gap:5px;align-items:end">
+        <div><span class="fl">USD</span><input type="number" value="20000" min="0" style="font-size:11px" onblur="CUSTOM_CAPEX[1].usd=+this.value||0;renderCustomCapex();render();"></div>
+        <div><span class="fl">Mes inicio</span><input type="number" value="30" min="1" style="font-size:11px;text-align:center" onblur="CUSTOM_CAPEX[1].month=Math.max(1,+this.value||1);renderCustomCapex();render();"></div>
+        <div><span class="fl">Frec. (0=único)</span><input type="number" value="0" min="0" style="font-size:11px;text-align:center" placeholder="0" onblur="CUSTOM_CAPEX[1].freq=Math.max(0,+this.value||0);renderCustomCapex();render();"></div>
+      </div>
+      <div style="font-size:10px;color:var(--color-text-warning);margin-top:3px">Impacta mes 30</div>
+    </div></div>
+      <button class="add-btn" onclick="CUSTOM_CAPEX.push({n:'Reposición césped sintético',usd:90000,month:P.meses+1,freq:0});renderCustomCapex();render()">+ agregar CAPEX</button>
+    </div>
+  </div>
+
+  <div class="lp-group"><span class="lpg-ico">💸</span> Costos operativos</div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('emp')"><span class="atit">👥 Empleados<span class="hvl neg" id="hd-emp"> (5) USD 6k/mes</span></span><span class="ach" id="ach-emp">▾</span></div>
+    <div class="abdy" id="abdy-emp">
+      <div id="empRows"><div class="ec"><div class="ec-r1"><input type="text" placeholder="Rol / nombre" value="Encargado" onkeydown="if(event.key==='Enter'){EMP[0].n=this.value;render();this.blur();}" onblur="EMP[0].n=this.value;"><button class="rm-btn" onclick="removeEmp(0)">×</button></div><div class="ec-r2" style="grid-template-columns:70px 1fr 70px"><div class="ec-field"><span class="fl">Cantidad</span><input type="number" min="0" max="20" value="1" style="text-align:center" onkeydown="if(event.key==='Enter'){EMP[0].q=+this.value;render();this.blur();}" onblur="EMP[0].q=+this.value;render();"></div><div class="ec-field"><span class="fl">Sueldo ARS / persona</span><input type="text" value="ARS 2.500.000" data-raw="2500000" onfocus="this.value=this.getAttribute('data-raw');this.classList.add('dirty')" oninput="this.classList.add('dirty')" onkeydown="if(event.key==='Enter'){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[0].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();this.blur();}" onblur="if(this.classList.contains('dirty')){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[0].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();}else{this.value=fmtA(2500000);}"></div><div class="ec-field"><span class="fl">Mes ingreso</span><input type="number" min="1" value="1" style="text-align:center" title="Mes en que este empleado se incorpora (1 = desde el inicio)" onkeydown="if(event.key==='Enter'){EMP[0].m=Math.max(1,+this.value||1);render();this.blur();}" onblur="EMP[0].m=Math.max(1,+this.value||1);render();"></div></div></div><div class="ec"><div class="ec-r1"><input type="text" placeholder="Rol / nombre" value="Administrativo" onkeydown="if(event.key==='Enter'){EMP[1].n=this.value;render();this.blur();}" onblur="EMP[1].n=this.value;"><button class="rm-btn" onclick="removeEmp(1)">×</button></div><div class="ec-r2" style="grid-template-columns:70px 1fr 70px"><div class="ec-field"><span class="fl">Cantidad</span><input type="number" min="0" max="20" value="1" style="text-align:center" onkeydown="if(event.key==='Enter'){EMP[1].q=+this.value;render();this.blur();}" onblur="EMP[1].q=+this.value;render();"></div><div class="ec-field"><span class="fl">Sueldo ARS / persona</span><input type="text" value="ARS 800.000" data-raw="800000" onfocus="this.value=this.getAttribute('data-raw');this.classList.add('dirty')" oninput="this.classList.add('dirty')" onkeydown="if(event.key==='Enter'){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[1].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();this.blur();}" onblur="if(this.classList.contains('dirty')){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[1].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();}else{this.value=fmtA(800000);}"></div><div class="ec-field"><span class="fl">Mes ingreso</span><input type="number" min="1" value="1" style="text-align:center" title="Mes en que este empleado se incorpora (1 = desde el inicio)" onkeydown="if(event.key==='Enter'){EMP[1].m=Math.max(1,+this.value||1);render();this.blur();}" onblur="EMP[1].m=Math.max(1,+this.value||1);render();"></div></div></div><div class="ec"><div class="ec-r1"><input type="text" placeholder="Rol / nombre" value="Sereno/casero" onkeydown="if(event.key==='Enter'){EMP[2].n=this.value;render();this.blur();}" onblur="EMP[2].n=this.value;"><button class="rm-btn" onclick="removeEmp(2)">×</button></div><div class="ec-r2" style="grid-template-columns:70px 1fr 70px"><div class="ec-field"><span class="fl">Cantidad</span><input type="number" min="0" max="20" value="1" style="text-align:center" onkeydown="if(event.key==='Enter'){EMP[2].q=+this.value;render();this.blur();}" onblur="EMP[2].q=+this.value;render();"></div><div class="ec-field"><span class="fl">Sueldo ARS / persona</span><input type="text" value="ARS 700.000" data-raw="700000" onfocus="this.value=this.getAttribute('data-raw');this.classList.add('dirty')" oninput="this.classList.add('dirty')" onkeydown="if(event.key==='Enter'){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[2].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();this.blur();}" onblur="if(this.classList.contains('dirty')){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[2].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();}else{this.value=fmtA(700000);}"></div><div class="ec-field"><span class="fl">Mes ingreso</span><input type="number" min="1" value="1" style="text-align:center" title="Mes en que este empleado se incorpora (1 = desde el inicio)" onkeydown="if(event.key==='Enter'){EMP[2].m=Math.max(1,+this.value||1);render();this.blur();}" onblur="EMP[2].m=Math.max(1,+this.value||1);render();"></div></div></div><div class="ec"><div class="ec-r1"><input type="text" placeholder="Rol / nombre" value="Julio" onkeydown="if(event.key==='Enter'){EMP[3].n=this.value;render();this.blur();}" onblur="EMP[3].n=this.value;"><button class="rm-btn" onclick="removeEmp(3)">×</button></div><div class="ec-r2" style="grid-template-columns:70px 1fr 70px"><div class="ec-field"><span class="fl">Cantidad</span><input type="number" min="0" max="20" value="1" style="text-align:center" onkeydown="if(event.key==='Enter'){EMP[3].q=+this.value;render();this.blur();}" onblur="EMP[3].q=+this.value;render();"></div><div class="ec-field"><span class="fl">Sueldo ARS / persona</span><input type="text" value="ARS 1.000.000" data-raw="1000000" onfocus="this.value=this.getAttribute('data-raw');this.classList.add('dirty')" oninput="this.classList.add('dirty')" onkeydown="if(event.key==='Enter'){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[3].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();this.blur();}" onblur="if(this.classList.contains('dirty')){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[3].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();}else{this.value=fmtA(1000000);}"></div><div class="ec-field"><span class="fl">Mes ingreso</span><input type="number" min="1" value="3" style="text-align:center" title="Mes en que este empleado se incorpora (1 = desde el inicio)" onkeydown="if(event.key==='Enter'){EMP[3].m=Math.max(1,+this.value||1);render();this.blur();}" onblur="EMP[3].m=Math.max(1,+this.value||1);render();"></div></div></div><div class="ec"><div class="ec-r1"><input type="text" placeholder="Rol / nombre" value="Pato" onkeydown="if(event.key==='Enter'){EMP[4].n=this.value;render();this.blur();}" onblur="EMP[4].n=this.value;"><button class="rm-btn" onclick="removeEmp(4)">×</button></div><div class="ec-r2" style="grid-template-columns:70px 1fr 70px"><div class="ec-field"><span class="fl">Cantidad</span><input type="number" min="0" max="20" value="1" style="text-align:center" onkeydown="if(event.key==='Enter'){EMP[4].q=+this.value;render();this.blur();}" onblur="EMP[4].q=+this.value;render();"></div><div class="ec-field"><span class="fl">Sueldo ARS / persona</span><input type="text" value="ARS 1.000.000" data-raw="1000000" onfocus="this.value=this.getAttribute('data-raw');this.classList.add('dirty')" oninput="this.classList.add('dirty')" onkeydown="if(event.key==='Enter'){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[4].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();this.blur();}" onblur="if(this.classList.contains('dirty')){var v=parseFloat(this.value.replace(/[^\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[4].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();}else{this.value=fmtA(1000000);}"></div><div class="ec-field"><span class="fl">Mes ingreso</span><input type="number" min="1" value="4" style="text-align:center" title="Mes en que este empleado se incorpora (1 = desde el inicio)" onkeydown="if(event.key==='Enter'){EMP[4].m=Math.max(1,+this.value||1);render();this.blur();}" onblur="EMP[4].m=Math.max(1,+this.value||1);render();"></div></div></div></div>
+      <button class="add-btn" onclick="addEmp()">+ agregar empleado</button>
+      <div class="dv"></div>
+      <div class="r2">
+        <div><span class="fl">% sueldos en blanco</span><input type="number" data-ni="true" id="n-ebl" value="40" min="0" max="100"></div>
+        <div><span class="fl">Cargas patronales %</span><input type="number" data-ni="true" id="n-ecg" value="60" min="0" max="100"></div>
+      </div>
+      <div class="gt">Provisión indemnizaciones</div>
+      <div class="si"><div class="sih"><span class="sn">% empleados familia/amigos (menos riesgo legal)</span><span class="sv" id="v-indemFam">45%</span></div><input type="range" id="s-indemFam" min="0" max="100" step="5" value="70" oninput="up('indemFam',+this.value)"></div>
+      <div class="note">Provisión mensual = sueldos × fracción no-familia × 8.3% (≈ 1 mes por año, antigüedad media 3 años). Con 70% familia: ~2.5% del total de sueldos.</div>
+      <div class="dv"></div>
+      <div class="tot-row"><span class="tot-l">Total sueldos (USD/mes)</span><span class="tot-v" id="v-suel">-USD 5.511</span></div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('gfx')"><span class="atit">📊 Gastos fijos<span class="hvl neg" id="hd-gfx"> USD 12k/mes</span></span><span class="ach" id="ach-gfx">▾</span></div>
+    <div class="abdy" id="abdy-gfx">
+      <div class="gt">En ARS</div>
+      <div class="r2">
+        <div><span class="fl">Alquiler</span><input data-fmt="ars" id="n-gA" value="ARS 4.600.000" data-raw="4600000"></div>
+        <div><span class="fl">Servicios</span><input data-fmt="ars" id="n-gB" value="ARS 1.500.000" data-raw="1500000"></div>
+        <div><span class="fl">Marketing</span><input data-fmt="ars" id="n-gC" value="ARS 1.800.000" data-raw="1800000"></div>
+        <div><span class="fl">Mantenimiento + otros</span><input data-fmt="ars" id="n-gD" value="ARS 1.750.000" data-raw="1750000"></div>
+        <div><span class="fl">ABL mensual (averiguar municipio — 1 ha)</span><input data-fmt="ars" id="n-gABL" value="ARS 0" data-raw="0"></div>
+      </div>
+      <div class="gt">Gastos extra (USD)</div>
+      <span class="fl">One-offs / promo</span><input data-fmt="usd" id="n-gE" value="USD 0" data-raw="0">
+      <div class="gt">Profesionales / legales / seguros (USD/mes)</div>
+      <div class="r2">
+        <div><span class="fl">Honorarios contables e impositivos</span><input data-fmt="usd" id="n-gHono" value="USD 400" data-raw="400"></div>
+        <div><span class="fl">Fondo imprevistos legales</span><input data-fmt="usd" id="n-gLeg" value="USD 200" data-raw="200"></div>
+        <div><span class="fl">Seguro mensual (predio + RC)</span><input data-fmt="usd" id="n-gSeg" value="USD 300" data-raw="300"></div>
+      </div>
+      <div class="gt">Inversión recurrente (USD)</div>
+      <span class="fl">Obra y mantenimiento semestral (se amortiza ÷6 por mes)</span><input data-fmt="usd" id="n-mant6" value="USD 20.000" data-raw="20000">
+      <div class="gt">Ingresos Brutos sobre facturación</div>
+      <div class="si"><div class="sih"><span class="sn">Tasa IB (GBA 2025: 3–5%)</span><span class="sv" id="v-ibRate">3.5%</span></div><input type="range" id="s-ibRate" min="0" max="7" step="0.5" value="3.5" oninput="up('ibRate',+this.value)"></div>
+      <div class="note">IIBB sobre ingresos brutos totales (netos de cash). Se calcula sobre la parte declarada.</div>
+      <div class="gt">Impuesto al cheque (déb. y créd. bancarios)</div>
+      <div class="si"><div class="sih"><span class="sn">Tasa sobre facturación declarada</span><span class="sv" id="v-chequeRate">0.6%</span></div><input type="range" id="s-chequeRate" min="0" max="1.5" step="0.1" value="0.6" oninput="up('chequeRate',+this.value)"></div>
+      <div class="note">0.6% sobre depósitos bancarios (parte declarada). No aplica sobre cash.</div>
+      <div class="gt">Impuesto a las Ganancias (SRL)</div>
+      <div class="si"><div class="sih"><span class="sn">Tasa sobre utilidad neta declarada</span><span class="sv" id="v-ganRate">35%</span></div><input type="range" id="s-ganRate" min="0" max="50" step="5" value="35" oninput="up('ganRate',+this.value)"></div>
+      <div class="note">Provisión mensual sobre ganancia positiva declarada. Solo aplica en meses rentables.</div>
+      <div class="dv"></div>
+      <div class="tot-row"><span class="tot-l">Total gastos fijos (USD/mes)</span><span class="tot-v" id="v-gft">-USD 12.049</span></div>
+    </div>
+  </div>
+
+  <div class="lp-group"><span class="lpg-ico">🌎</span> Contexto macro</div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('par')"><span class="atit">⚙️ Parámetros</span><span class="ach" id="ach-par">▾</span></div>
+    <div class="abdy" id="abdy-par">
+      <div class="si"><div class="sih"><span class="sn">Tipo de cambio ARS/USD</span><span class="sv" id="v-fx">1.350</span></div><input type="range" id="s-fx" min="600" max="6000" step="50" value="1350" oninput="up('fx',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Horizonte (meses)</span><span class="sv" id="v-meses">60</span></div><input type="range" id="s-meses" min="12" max="84" step="6" value="60" oninput="up('meses',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Meses de obra (sin ingresos)</span><span class="sv" id="v-obra">sin obra</span></div><input type="range" id="s-obra" min="0" max="12" step="1" value="0" oninput="up('obra',+this.value)"></div>
+      <div class="note">Durante estos meses se acumulan costos fijos sin ningún ingreso. Impacta el colchón de capital necesario.</div>
+      <div class="dv"></div>
+      <div class="si">
+        <div class="sih"><span class="sn">% vendido en cash (sin declarar)</span><span class="sv" id="v-negro">50%</span></div>
+        <input type="range" id="s-negro" min="0" max="100" step="5" value="50" oninput="up('negro',+this.value)">
+        <div class="note" id="note-negro">50% en cash → IVA efectivo 10.5% sobre el total</div>
+      </div>
+      <div class="dv"></div>
+      <div class="gt">🌡️ Estacionalidad</div>
+      <div class="si"><div class="sih"><span class="sn">Intensidad (0 = plano · 100 = real)</span><span class="sv" id="v-seas">80%</span></div><input type="range" id="s-seas" min="0" max="100" step="10" value="80" oninput="up('seas',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Mes de apertura</span><span class="sv" id="v-startMonth">Mar</span></div><input type="range" id="s-startMonth" min="1" max="12" step="1" value="3" oninput="up('startMonth',+this.value)"></div>
+      <div class="si"><div class="sih"><span class="sn">Año de apertura</span><span class="sv" id="v-startYear">2026</span></div><input type="range" id="s-startYear" min="2024" max="2035" step="1" value="2025" oninput="up('startYear',+this.value)"></div>
+      <div id="seasBars"><div class="sbars"><div class="sbar-row"><div class="sbar-lbl" style="color:#639922">⚽ Fútbol + extras (canchas + buffet/eventos siguen este patrón)</div><div class="sbar-cols"><div class="sbar-col" title="Mar: 104%" style="height:29px;background:#639922"></div><div class="sbar-col" title="Abr: 110%" style="height:31px;background:#639922"></div><div class="sbar-col" title="May: 106%" style="height:30px;background:#639922"></div><div class="sbar-col" title="Jun: 90%" style="height:25px;background:#854f0b"></div><div class="sbar-col" title="Jul: 86%" style="height:24px;background:#854f0b"></div><div class="sbar-col" title="Ago: 92%" style="height:26px;background:#888780"></div><div class="sbar-col" title="Sep: 110%" style="height:31px;background:#639922"></div><div class="sbar-col" title="Oct: 110%" style="height:31px;background:#639922"></div><div class="sbar-col" title="Nov: 104%" style="height:29px;background:#639922"></div><div class="sbar-col" title="Dic: 82%" style="height:23px;background:#854f0b"></div><div class="sbar-col" title="Ene: 76%" style="height:21px;background:#a32d2d"></div><div class="sbar-col" title="Feb: 84%" style="height:24px;background:#854f0b"></div></div><div class="sbar-names"><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span></div></div><div class="sbar-row"><div class="sbar-lbl" style="color:#378add">🎓 Escuelita (calendario escolar, independiente)</div><div class="sbar-cols"><div class="sbar-col" title="Mar: 112%" style="height:31px;background:#378add"></div><div class="sbar-col" title="Abr: 112%" style="height:31px;background:#378add"></div><div class="sbar-col" title="May: 108%" style="height:30px;background:#378add"></div><div class="sbar-col" title="Jun: 96%" style="height:27px;background:#888780"></div><div class="sbar-col" title="Jul: 64%" style="height:18px;background:#a32d2d"></div><div class="sbar-col" title="Ago: 104%" style="height:29px;background:#378add"></div><div class="sbar-col" title="Sep: 106%" style="height:30px;background:#378add"></div><div class="sbar-col" title="Oct: 106%" style="height:30px;background:#378add"></div><div class="sbar-col" title="Nov: 100%" style="height:28px;background:#888780"></div><div class="sbar-col" title="Dic: 56%" style="height:16px;background:#a32d2d"></div><div class="sbar-col" title="Ene: 42%" style="height:12px;background:#a32d2d"></div><div class="sbar-col" title="Feb: 64%" style="height:18px;background:#a32d2d"></div></div><div class="sbar-names"><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span></div></div><div class="sbar-row"><div class="sbar-lbl" style="color:#f5a623">🏓 Paddle (canchas — también afecta extras)</div><div class="sbar-cols"><div class="sbar-col" title="Mar: 102%" style="height:28px;background:#888780"></div><div class="sbar-col" title="Abr: 106%" style="height:30px;background:#f5a623"></div><div class="sbar-col" title="May: 102%" style="height:28px;background:#888780"></div><div class="sbar-col" title="Jun: 94%" style="height:26px;background:#888780"></div><div class="sbar-col" title="Jul: 90%" style="height:25px;background:#854f0b"></div><div class="sbar-col" title="Ago: 96%" style="height:27px;background:#888780"></div><div class="sbar-col" title="Sep: 110%" style="height:31px;background:#f5a623"></div><div class="sbar-col" title="Oct: 110%" style="height:31px;background:#f5a623"></div><div class="sbar-col" title="Nov: 104%" style="height:29px;background:#f5a623"></div><div class="sbar-col" title="Dic: 82%" style="height:23px;background:#854f0b"></div><div class="sbar-col" title="Ene: 78%" style="height:22px;background:#a32d2d"></div><div class="sbar-col" title="Feb: 86%" style="height:24px;background:#854f0b"></div></div><div class="sbar-names"><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span></div></div><div class="note" style="margin-top:6px">Modelo: estacionalidad modifica la ocupación de canchas. Fútbol y paddle tienen su propio patrón estacional; buffet, eventos y torneos siguen el tráfico de canchas (no tienen factor independiente). Escuelita sigue el calendario escolar GCBA. Fuentes: ADEF zona norte GBA, variación de demanda paddle Arg. 2022-2024.</div></div></div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('dev')"><span class="atit">📉 Devaluación / Crisis cambiaria<span class="hvl" id="hd-dev"></span></span><span class="ach" id="ach-dev">▾</span></div>
+    <div class="abdy" id="abdy-dev">
+      <div class="note">Modelá la devaluación del peso: el tipo de cambio crece cada mes, haciendo los costos en ARS más baratos en USD. Los ingresos en USD no se afectan.</div>
+      <div class="sw-row">
+        <div class="sw-left"><label class="sw"><input type="checkbox" id="sw-deval" onchange="P.devalOn=this.checked;renderDevalHdr();render()"><span class="sw-track"><span class="sw-thumb"></span></span></label><span class="sw-label">Activar devaluación progresiva</span></div>
+        <span class="sw-val" id="sv-deval">—</span>
+      </div>
+      <div id="det-deval" class="sw-detail dis">
+        <div class="si"><div class="sih"><span class="sn">Tasa mensual de devaluación (%)</span><span class="sv" id="v-devalMonthly">3%</span></div><input type="range" id="s-devalMonthly" min="0" max="20" step="0.5" value="3" oninput="P.devalMonthly=+this.value;document.getElementById('v-devalMonthly').textContent=this.value+'%';renderDevalHdr();render()"></div>
+        <div class="dv-preset-row" id="devalPresets">
+          <button class="dv-preset" onclick="applyDevalPreset(0,'Estable')">Estable (0%)</button>
+          <button class="dv-preset" onclick="applyDevalPreset(3,'Normal AR')">Normal AR (3%/m)</button>
+          <button class="dv-preset" onclick="applyDevalPreset(7,'Crisis')">Crisis (7%/m)</button>
+          <button class="dv-preset" onclick="applyDevalPreset(15,'Colapso')">Colapso (15%/m)</button>
+        </div>
+        <div class="note" id="note-deval">Modelo: todos los precios y costos en ARS se indexan a la inflación → valor en USD estable. La devaluación suave es neutral; <strong>las crisis puntuales impactan vía shock de demanda</strong> (clientes con menos poder adquisitivo → caída temporal de ocupación).</div>
+        <div style="margin-top:8px">
+          <div style="font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">Crisis puntuales</div>
+          <div class="note" style="margin:0 0 5px">Cada crisis aplica un shock de demanda: caída de ocupación proporcional al salto cambiario (ej. +50% FX → −17% ocupación por 6 meses). La escuelita también pierde valor en USD al devaluar la cuota ARS.</div>
+          <div id="deval-events"></div>
+          <button class="add-btn" onclick="DEVAL_EVENTS.push({month:12,jump:40,postRate:P.devalMonthly||3});renderDevalEvents();render()">+ agregar crisis puntual</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-group"><span class="lpg-ico">🤝</span> Sociedad</div>
+
+  <div class="acc">
+    <div class="ahdr" onclick="tog('wf')"><span class="atit">🏦 Distribución de ganancias — waterfall<span class="hvl" id="hd-wf"></span></span><span class="ach" id="ach-wf">▾</span></div>
+    <div class="abdy" id="abdy-wf">
+      <div class="note">Socios: <strong id="wf-pn1">Maxi</strong> (inversor principal, recupera inversión primero), <strong id="wf-pn2">Pato</strong> y <strong id="wf-pn3">Julio</strong> (no reciben dividendos hasta que Maxi recupere el capital).</div>
+      <div class="wf-phase"><div class="wf-phase-hdr">Fase 0 → Trigger 1 — Maxi recupera capital</div>
+        <div class="wf-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+          <div><span class="fl">% inversión Maxi (T1)</span><input type="number" id="n-trig1Pct" value="100" min="1" max="500" style="text-align:center" onblur="P.trig1Pct=+this.value||100;renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#f59e0b">% Maxi en T1</span><input type="number" id="n-trig1Sp1" value="55" min="1" max="98" style="text-align:center;color:#f59e0b" onblur="P.trig1Sp1=Math.min(98,Math.max(1,+this.value||55));renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#38bdf8">% Pato en T1</span><input type="number" id="n-trig1Sp2" value="22.5" min="0" max="97" step="0.5" style="text-align:center;color:#38bdf8" onblur="P.trig1Sp2=Math.max(0,+this.value||0);renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#fb7185">% Julio en T1</span><input type="number" id="n-trig1Sp3" value="22.5" style="text-align:center;color:#fb7185" disabled readonly></div>
+        </div>
+      </div>
+      <div class="wf-phase"><div class="wf-phase-hdr">Fase 1 → Trigger 2 — split permanente</div>
+        <div class="wf-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+          <div><span class="fl">% inversión Maxi (T2)</span><input type="number" id="n-trig2Pct" value="200" min="1" max="1000" style="text-align:center" onblur="P.trig2Pct=+this.value||200;renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#f59e0b">% Maxi en T2</span><input type="number" id="n-trig2Sp1" value="35" min="1" max="98" style="text-align:center;color:#f59e0b" onblur="P.trig2Sp1=Math.min(98,Math.max(1,+this.value||35));renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#38bdf8">% Pato en T2</span><input type="number" id="n-trig2Sp2" value="32.5" min="0" max="97" step="0.5" style="text-align:center;color:#38bdf8" onblur="P.trig2Sp2=Math.max(0,+this.value||0);renderWfHdr();render()"></div>
+          <div><span class="fl" style="color:#fb7185">% Julio en T2</span><input type="number" id="n-trig2Sp3" value="32.5" style="text-align:center;color:#fb7185" disabled readonly></div>
+        </div>
+      </div>
+      <div class="note">Fase 2 (después del trigger 2): split del T2 se mantiene indefinidamente. Julio = 100 − Maxi − Pato.</div>
+      <div id="wf-status" class="note" style="margin-top:4px"></div>
+    </div>
+  </div>
+
+
+</div>
+<div class="rp">
+  <div class="rcard">
+    <div class="rcard-h"><div class="rcard-t"><span class="rc-ico">📊</span>Resultado mensual estabilizado</div><span class="rcard-sub" id="rcardMargin"></span></div>
+    <div class="rcard-b" style="padding:0 14px 14px"><div class="rg8" id="rg"></div></div>
+  </div>
+
+  <div class="rcard">
+    <div class="rcard-h"><div class="rcard-t"><span class="rc-ico">🥧</span>Composición de ingresos</div></div>
+    <div class="rcard-b"><div id="gaugeWrap"></div></div>
+  </div>
+
+  <div class="rcard">
+    <div class="rcard-h"><div class="rcard-t"><span class="rc-ico">📈</span>Ocupación efectiva</div><span class="rcard-sub">arrastrá los puntos ↕</span></div>
+    <div class="rcard-b"><canvas id="occChart" style="width:100%;height:90px;display:block;cursor:ns-resize;border-radius:6px"></canvas></div>
+  </div>
+
+  <div class="rcard">
+    <div class="rcard-h clk" onclick="toggleRcard('rcPnl')"><div class="rcard-t"><span class="rc-ico">🔍</span>Desglose completo (P&amp;L)</div><span class="rcard-chev op" id="chev-rcPnl">▾</span></div>
+    <div class="rcard-b rcard-collapse op" id="rcPnl"><div id="rcContent" style="font-size:11px;line-height:1.6"></div></div>
+  </div>
+
+  <div class="rcard">
+    <div class="rcard-h clk" onclick="toggleRcard('rcRisk')"><div class="rcard-t"><span class="rc-ico">⚠️</span>Riesgos y supuestos</div><span class="rcard-chev op" id="chev-rcRisk">▾</span></div>
+    <div class="rcard-b rcard-collapse op" id="rcRisk"><div id="riskText"></div></div>
+  </div>
+</div>
+</div>
+<button class="chat-fab" onclick="toggleChat()" title="Hablar con Roberto"><span>🧉</span><span class="chat-fab-badge"></span></button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-hdr">
+    <div class="chat-title"><div class="chat-av">🧉</div>Roberto Etcheverría — asesor de negocios<span class="badge on" style="margin-left:4px">AI</span></div>
+    <button class="chat-close" onclick="toggleChat()" title="Cerrar">✕</button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-apirow">
+      <span>API key Anthropic:</span>
+      <input type="password" id="chatApiKey" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')saveApiKey()">
+      <button class="sc-btn" onclick="saveApiKey()">Guardar</button>
+      <span id="chatApiSt" style="font-size:10px;color:var(--color-text-tertiary);margin-left:4px"></span>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"><div class="cmsg ai"><div class="chat-av" style="font-size:13px">🧉</div><div class="cbub">¡Buenas! Estuve mirando los números. Bastante ambicioso el proyecto, pero no imposible — en zona norte GBA hay mercado para esto. Cuando quieras arrancamos: preguntame sobre cualquier variable, pedime un escenario pesimista o decime qué parte del modelo te genera más dudas.</div></div></div>
+    <div class="chat-foot">
+      <textarea class="chat-inp" id="chatInput" placeholder="Preguntale algo a Roberto…" rows="1" onkeydown="if(event.key==='Enter'&amp;&amp;!event.shiftKey){event.preventDefault();sendChat();}" oninput="this.style.height='36px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+      <button class="chat-snd" onclick="sendChat()">Enviar →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let P={"co":4,"ohd":11,"oc":26,"pr":38,"rc":10,"st":300,"fe":70000,"rs":12,"po":true,"pn":2,"pod":8,"pa":50,"pp":30,"rp":7,"buOn":true,"evOn":true,"toOn":true,"eBlanco":40,"eCarg":60,"fx":1350,"meses":60,"negro":50,"sp1":10,"obra":0,"pInvM":4,"startMonth":3,"seas":80,"startYear":2026,"ibRate":3.5,"indemFam":45,"stRatio":75,"stSalArs":700000,"chequeRate":0.6,"ganRate":35,"finCOn":false,"finCCuotas":24,"finCTasa":8,"finPdOn":false,"finPdCuotas":18,"finPdTasa":8,
+  "pn1":"Maxi","pn2":"Pato","pn3":"Julio",
+  "trig1Pct":100,"trig1Sp1":55,"trig2Pct":200,"trig2Sp1":35,
+  "devalOn":false,"devalMonthly":3};
+let EMP=[{"n":"Encargado","q":1,"s":2500000,"m":1},{"n":"Administrativo","q":1,"s":800000,"m":1},{"n":"Sereno/casero","q":1,"s":700000,"m":1},{"n":"Julio","q":1,"s":1000000,"m":3},{"n":"Pato","q":1,"s":1000000,"m":4}];
+let CUSTOM_GASTOS=[];
+let CUSTOM_INGRESOS=[];
+let DEVAL_EVENTS=[];
+let CUSTOM_CAPEX=[{"n":"Reposición césped sintético","usd":90000,"month":61,"freq":0},{"n":"Cancha extra de paddle","usd":20000,"month":30,"freq":0}];
+let OCC_PTS=[104,90,110,82,104,90,110,82,104,90,110,82,104,90,110,82,104,90,110,82,104];
+// OCC_PTS stores PURE SEASONAL MULTIPLIERS (100 = average month, ~70-115 range).
+// Display occupancy % = P.oc × OCC_PTS[i] / 100. Never shown above 100%.
+// Moving the P.oc slider scales the entire visible curve proportionally.
+function defaultOccForQuarter(i){
+  const calIdx=((P.startMonth-1)+i*3)%12;
+  const seas=P.seas!=null?P.seas:80;
+  const sf=1+(SEAS_F.futbol[calIdx]-1)*(seas/100);
+  return Math.round(sf*100); // pure seasonal multiplier, 100 = average month
+}
+function initOccPts(){
+  const n=Math.ceil(P.meses/3)+1;
+  while(OCC_PTS.length<n)OCC_PTS.push(defaultOccForQuarter(OCC_PTS.length));
+  if(OCC_PTS.length>n)OCC_PTS=OCC_PTS.slice(0,n);
+}
+function resetOccPts(){OCC_PTS=[];initOccPts();}
+// Returns seasonal multiplier (1.0 = average/base month = P.oc occupancy).
+// scN already encodes P.oc/100, so mCourt = scN * cf * getOccFactor(m).
+function getOccFactor(m){
+  initOccPts();
+  const fi=(m-1)/3,lo=Math.floor(fi),hi=Math.min(lo+1,OCC_PTS.length-1);
+  const mult=(OCC_PTS[lo]||100)*(1-(fi-lo))+(OCC_PTS[hi]||100)*(fi-lo);
+  return mult/100; // 1.0 = average month; 0.7 = low season; 1.15 = peak
+}
+let slots=[{"name":"basico","P":{"co":4,"ohd":11,"oc":26,"pr":38,"rc":10,"st":300,"fe":70000,"rs":12,"po":true,"pn":2,"pod":8,"pa":50,"pp":30,"rp":7,"buOn":true,"evOn":true,"toOn":true,"eBlanco":40,"eCarg":60,"fx":1350,"meses":60,"negro":50,"sp1":10,"obra":0,"pInvM":4,"startMonth":3,"seas":80,"startYear":2026,"ibRate":3.5,"indemFam":45,"stRatio":75,"stSalArs":700000,"chequeRate":0.6,"ganRate":35,"finCOn":false,"finCCuotas":24,"finCTasa":8,"finPdOn":false,"finPdCuotas":18,"finPdTasa":8,"pn1":"Maxi","pn2":"Pato","pn3":"Julio","trig1Pct":100,"trig1Sp1":55,"trig2Pct":200,"trig2Sp1":35,"devalOn":false,"devalMonthly":3},"EMP":[{"n":"Encargado","q":1,"s":2500000,"m":1},{"n":"Administrativo","q":1,"s":800000,"m":1},{"n":"Sereno/casero","q":1,"s":700000,"m":1},{"n":"Julio","q":1,"s":1000000,"m":3},{"n":"Pato","q":1,"s":1000000,"m":4}],"roi":23,"be":27,"cum":403289},null,null,null],aSlot=0,openSecs={ftb:true};
+let partVis={p1:true,p2:true,p3:true};
+let chartVis2={rev:true,cost:true,p1:true,p2:true,p3:true,acum:true,net:true,sp:false};
+let chart2=null,lastR2=null;
+const sep=n=>Math.round(n).toLocaleString('es-AR').replace(/,/g,'.');
+const fmtU=v=>(v<0?'-':'')+'USD '+sep(Math.abs(Math.round(v)));
+const fmtA=v=>(v<0?'-':'')+'ARS '+sep(Math.abs(Math.round(v)));
+const fmtByType=(v,type)=>type==='ars'?fmtA(v):fmtU(v);
+const fmtKU=v=>{const s=v<0?'-':'',a=Math.abs(Math.round(v));if(a>=1e6)return s+'USD '+(a/1e6).toFixed(1).replace('.',',')+' M';if(a>=1000)return s+'USD '+(a/1000).toFixed(0)+'k';return s+'USD '+a;};
+const taxFactor=()=>1-(1-P.negro/100)*0.21;
+function bindInputs(){
+  document.querySelectorAll('#cw [data-fmt]').forEach(el=>{
+    const type=el.getAttribute('data-fmt');
+    el.addEventListener('focus',()=>{el.value=el.getAttribute('data-raw')||'';});
+    el.addEventListener('input',()=>el.classList.add('dirty'));
+    const commit=()=>{const v=parseFloat(el.value.replace(/[^\d.]/g,''))||0;el.setAttribute('data-raw',v);el.value=fmtByType(v,type);el.classList.remove('dirty');render();};
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();commit();el.blur();}});
+    el.addEventListener('blur',()=>{if(el.classList.contains('dirty'))commit();else{const v=parseFloat(el.getAttribute('data-raw'))||0;el.value=fmtByType(v,type);}});
+  });
+  document.querySelectorAll('#cw [data-ni]').forEach(el=>{
+    el.addEventListener('input',()=>el.classList.add('dirty'));
+    const commit=()=>{el.classList.remove('dirty');render();};
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();commit();el.blur();}});
+    el.addEventListener('blur',()=>{if(el.classList.contains('dirty'))commit();});
+  });
+}
+const gR=id=>{const e=document.getElementById(id);return e?parseFloat(e.getAttribute('data-raw'))||0:0;};
+const gN=id=>parseFloat(document.getElementById(id)?.value)||0;
+function up(k,v){P[k]=v;if(k==='oc'||k==='seas'||k==='startMonth')resetOccPts();rfr();render();}
+function rfr(){
+  const S=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  S('v-co',P.co);S('v-ohd',P.ohd+' hs');S('v-oc',P.oc+'%');S('v-pr','USD '+P.pr);S('v-rc',P.rc);
+  S('v-st',P.st);S('v-fe','ARS '+sep(P.fe));S('v-rs',P.rs);
+  S('v-pn',P.pn);S('v-pod',P.pod+' hs');S('v-pa',P.pa+'%');S('v-pp','USD '+P.pp);S('v-rp',P.rp);
+  S('v-fx',sep(P.fx));S('v-meses',P.meses);S('v-negro',P.negro+'%');
+  S('v-obra',P.obra===0?'sin obra':P.obra+(P.obra===1?' mes':' meses'));
+  S('v-pInvM',P.pInvM===0?'al inicio':'mes '+P.pInvM);
+  S('v-seas',P.seas+'%');
+  S('v-startMonth',MES_NOM[(P.startMonth-1)%12]);
+  S('v-startYear',P.startYear);
+  S('v-ibRate',P.ibRate+'%');
+  S('v-indemFam',P.indemFam+'%');
+  S('v-stRatio',P.stRatio||75);
+  S('v-stSalArs','ARS '+sep(P.stSalArs||700000));
+  S('v-chequeRate',(P.chequeRate!=null?P.chequeRate:0.6)+'%');
+  S('v-ganRate',(P.ganRate!=null?P.ganRate:35)+'%');
+  const profCount=Math.ceil((P.st||0)/Math.max(1,P.stRatio||75));
+  const profCostUsd=Math.round(profCount*(P.stSalArs||700000)/P.fx);
+  const noteP=document.getElementById('note-profes');
+  if(noteP)noteP.textContent=`${profCount} profe${profCount!==1?'s':''} (${P.st||0} ÷ ${P.stRatio||75}) → USD ${sep(profCostUsd)}/mes`;
+  const ivaEf=((1-P.negro/100)*21).toFixed(1);
+  const note=document.getElementById('note-negro');
+  if(note)note.textContent=P.negro===100?'Todo en cash — IVA efectivo: 0%':P.negro===0?'Todo declarado — IVA efectivo: 21%':`${P.negro}% en cash → IVA efectivo ${ivaEf}% sobre el total`;
+  const pd=document.getElementById('pdSliders');if(pd)pd.className=P.po?'':'dis';
+  const b=document.getElementById('pdlbadge');if(b){b.textContent=P.po?' ON':' OFF';b.className='badge '+(P.po?'on':'off');}
+  const pdInv=document.getElementById('inv-pd-wrap');if(pdInv)pdInv.className=P.po?'':'dis';
+  const tog2=(sw,det,on)=>{const s=document.getElementById(sw);if(s)s.checked=on;const d=document.getElementById(det);if(d)d.className='sw-detail'+(on?'':' dis');};
+  tog2('sw-bu','det-bu',P.buOn);tog2('sw-ev','det-ev',P.evOn);tog2('sw-to','det-to',P.toOn);
+}
+function tog(id){
+  openSecs[id]=!openSecs[id];
+  const b=document.getElementById('abdy-'+id),c=document.getElementById('ach-'+id);
+  if(b)b.className='abdy'+(openSecs[id]?' op':'');
+  if(c)c.className='ach'+(openSecs[id]?' op':'');
+}
+function toggleRcard(id){
+  const b=document.getElementById(id),c=document.getElementById('chev-'+id);
+  if(b)b.classList.toggle('op');
+  if(c)c.classList.toggle('op',b&&b.classList.contains('op'));
+}
+const getInv=()=>['n-iA','n-iB','n-iC','n-iH',...(P.po?['n-iPdA','n-iPdB']:[])].reduce((s,id)=>s+gR(id),0)+['n-iD','n-iE','n-iF','n-iG'].reduce((s,id)=>s+gR(id),0)/P.fx;
+const getFixArs=()=>['n-gA','n-gB','n-gC','n-gD','n-gABL'].reduce((s,id)=>s+gR(id),0)/P.fx;
+const getFixUsd=()=>gR('n-gE')+gR('n-gHono')+gR('n-gLeg')+gR('n-gSeg')+gR('n-mant6')/6+CUSTOM_GASTOS.reduce((s,g)=>s+g.usd,0);
+const getFix=()=>getFixArs()+getFixUsd();
+const getSal=()=>{const r=EMP.reduce((s,e)=>s+e.q*e.s,0);return(r+r*(P.eBlanco/100)*(P.eCarg/100))/P.fx;};
+const getSalAt=m=>{const r=EMP.reduce((s,e)=>s+((!e.m||e.m<=m)?e.q*e.s:0),0);return(r+r*(P.eBlanco/100)*(P.eCarg/100))/P.fx;};
+const getAdd=()=>({bu:P.buOn?gR('n-bu')*(gN('n-bm')||20)/100:0,ev:P.evOn?gN('n-ev')*(gR('n-ep')||400):0,to:P.toOn?gR('n-to')*0.5:0});
+function cuotaFija(principal,cuotas,tasaAnual){const r=tasaAnual/100/12;if(r<0.00001||cuotas<=0)return principal/Math.max(1,cuotas);return principal*r/(1-Math.pow(1+r,-cuotas));}
+const SEAS_F={
+  futbol:[0.70,0.80,1.05,1.12,1.08,0.88,0.82,0.90,1.12,1.12,1.05,0.78],
+  escuela:[0.28,0.55,1.15,1.15,1.10,0.95,0.55,1.05,1.08,1.08,1.00,0.45],
+  paddle:[0.72,0.82,1.02,1.08,1.02,0.92,0.88,0.95,1.12,1.12,1.05,0.78],
+  add:[0.65,0.78,1.05,1.10,1.05,0.90,0.82,0.92,1.08,1.08,1.05,0.72]
+};
+const MES_NOM=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function seasF(type,loopM){
+  if(!P.seas)return 1;
+  const idx=((P.startMonth-1)+(loopM-1))%12;
+  return 1+(SEAS_F[type][idx]-1)*(P.seas/100);
+}
+function renderSeasStrip(){
+  const el=document.getElementById('seasStrip');if(!el)return;
+  el.innerHTML=Array.from({length:12},(_,i)=>{
+    const calIdx=((P.startMonth-1)+i)%12;
+    const sf=t=>1+(SEAS_F[t][calIdx]-1)*(P.seas/100);
+    const avg=(sf('futbol')+sf('escuela')+sf('paddle'))/3;
+    const pct=Math.round(avg*100);
+    const cls=avg>=1.04?'g':avg>=0.92?'n':avg>=0.78?'y':'r';
+    return`<div class="s12m ${cls}${i===0?' open':''}" title="${MES_NOM[calIdx]}: Fútbol ${Math.round(sf('futbol')*100)}% · Escuelita ${Math.round(sf('escuela')*100)}% · Paddle ${Math.round(sf('paddle')*100)}%"><div class="s12n">${MES_NOM[calIdx]}</div><div class="s12v">${pct}%</div></div>`;
+  }).join('');
+}
+function renderSeasBars(){
+  const el=document.getElementById('seasBars');if(!el)return;
+  const rows=[{k:'futbol',lbl:'⚽ Fútbol + extras (canchas + buffet/eventos siguen este patrón)',col:'#639922',neg:'#a32d2d'},{k:'escuela',lbl:'🎓 Escuelita (calendario escolar, independiente)',col:'#378add',neg:'#a32d2d'},{k:'paddle',lbl:'🏓 Paddle (canchas — también afecta extras)',col:'#f5a623',neg:'#a32d2d'}];
+  el.innerHTML='<div class="sbars">'+rows.map(r=>{
+    const bars=Array.from({length:12},(_,i)=>{
+      const calIdx=((P.startMonth-1)+i)%12;
+      const f=1+(SEAS_F[r.k][calIdx]-1)*(P.seas/100);
+      const h=Math.max(3,Math.round(Math.min(40,f*28)));
+      const col=f>=1.04?r.col:f>=0.92?'#888780':f>=0.78?'#854f0b':r.neg;
+      return`<div class="sbar-col" title="${MES_NOM[calIdx]}: ${Math.round(f*100)}%" style="height:${h}px;background:${col}"></div>`;
+    }).join('');
+    const lbls=Array.from({length:12},(_,i)=>`<span>${MES_NOM[((P.startMonth-1)+i)%12]}</span>`).join('');
+    return`<div class="sbar-row"><div class="sbar-lbl" style="color:${r.col}">${r.lbl}</div><div class="sbar-cols">${bars}</div><div class="sbar-names">${lbls}</div></div>`;
+  }).join('')+'<div class="note" style="margin-top:6px">Modelo: estacionalidad modifica la ocupación de canchas. Fútbol y paddle tienen su propio patrón estacional; buffet, eventos y torneos siguen el tráfico de canchas (no tienen factor independiente). Escuelita sigue el calendario escolar GCBA. Fuentes: ADEF zona norte GBA, variación de demanda paddle Arg. 2022-2024.</div></div>';
+}
+function calcFxAt(m){
+  if(!P.devalOn)return P.fx;
+  const evs=(DEVAL_EVENTS||[]).slice().sort((a,b)=>a.month-b.month);
+  let rate=(P.devalMonthly||0)/100,fx=P.fx,prev=0;
+  for(const ev of evs){
+    if(ev.month>m)break;
+    fx*=Math.pow(1+rate,ev.month-prev);
+    fx*=1+(ev.jump||0)/100;
+    rate=((ev.postRate!=null?ev.postRate:P.devalMonthly)||0)/100;
+    prev=ev.month;
+  }
+  fx*=Math.pow(1+rate,m-prev);
+  return fx;
+}
+function calc(){
+  const tf=taxFactor();
+  // Base revenues at full capacity (for display / steady-state estimates)
+  const scN=P.co*P.ohd*7*4*(P.oc/100)*P.pr*tf;
+  const stN=P.st*(P.fe/P.fx); // escuelita: IVA-exempt, no tf deduction
+  const pdN=P.po?P.pn*P.pod*7*4*(P.pa/100)*P.pp*tf:0;
+  const{bu,ev,to}=getAdd();
+  const buT=bu*tf,evT=ev*tf,toT=to*tf;
+  const fc=getFix(),fc_ars=getFixArs(),fc_usd=getFixUsd(),sal=getSal();
+  const ibRate=(P.ibRate!=null?P.ibRate:3.5)/100;
+  const chequeRate=(P.chequeRate!=null?P.chequeRate:0.6)/100;
+  const ganRate=(P.ganRate!=null?P.ganRate:35)/100;
+  const indemProv=sal*(1-(P.indemFam!=null?P.indemFam:70)/100)*0.083;
+  // Teacher cost: ceil(students / stRatio) professors × salary each (monotributistas)
+  const profN=Math.ceil((P.st||0)/Math.max(1,P.stRatio||75));
+  const teacherSalFull=profN*(P.stSalArs||700000)/P.fx;
+  // Enrollment fee: charged once per year in the school start month
+  const stInscArs=gR('n-stInsc');
+  const custRev=CUSTOM_INGRESOS.reduce((s,g)=>s+g.usd,0);
+  // Enrollment revenue amortized (for steady-state display only)
+  const stInscMonthly=(P.st||0)*stInscArs/12/P.fx; // IVA-exempt
+  const startYear=P.startYear||2025;
+  // Steady-state display values (used for headers, not for simulation loop)
+  const revSteady=scN+stN+stInscMonthly+pdN+buT+evT+toT;
+  const ibAmtSteady=revSteady*(1-P.negro/100)*ibRate;
+  const chequeSteady=revSteady*(1-P.negro/100)*chequeRate;
+  const costsPreGan=fc+sal+teacherSalFull+ibAmtSteady+indemProv+chequeSteady;
+  const preGanNet=(revSteady+custRev)-costsPreGan;
+  const ganSteady=Math.max(0,preGanNet)*(1-P.negro/100)*ganRate;
+  const costs=costsPreGan+ganSteady,gain=preGanNet-ganSteady;
+  const pInvM=P.pInvM||0;
+  const obraM=P.obra||0;
+  // Turf financing (iA+iB+iC paid in installments instead of upfront)
+  const finCOn=!!P.finCOn;
+  const finCAmt=finCOn?(gR('n-iA')+gR('n-iB')+gR('n-iC')):0;
+  const finCCuotas=Math.max(1,P.finCCuotas||24);
+  const finCTasa=P.finCTasa!=null?P.finCTasa:8;
+  const finCMonthly=finCOn?cuotaFija(finCAmt,finCCuotas,finCTasa):0;
+  const finCStartM=obraM+1;
+  // Paddle financing (only when paddle is deferred)
+  const finPdRaw=P.po?(gR('n-iPdA')+gR('n-iPdB')):0;
+  const finPdActive=!!P.finPdOn&&P.po&&pInvM>0;
+  const finPdCuotas=Math.max(1,P.finPdCuotas||18);
+  const finPdTasa=P.finPdTasa!=null?P.finPdTasa:8;
+  const finPdMonthly=finPdActive?cuotaFija(finPdRaw,finPdCuotas,finPdTasa):0;
+  // Lump-sum paddle at pInvM (0 if financed)
+  const pdInvAmt=pInvM>0&&P.po&&!finPdActive?finPdRaw:0;
+  // Upfront: total minus deferred paddle (financed or not) minus financed turf
+  const invBase=getInv()-(pInvM>0&&P.po?finPdRaw:0)-finCAmt;
+  const totalInv=getInv();
+  const rE=Math.max(obraM+P.rc,obraM+P.rs,P.po?pInvM+P.rp:0,3);
+  const anyFin=finCOn||finPdActive;
+  const invBaseNF=invBase+finCAmt; // upfront if turf paid lump-sum
+  const labels=[],cumD=[],netD=[],spD=[],facD=[];
+  const pn1D=[],pn2D=[],pn3D=[],costsD=[],grossD=[];
+  const pn1CumD=[],pn2CumD=[],pn3CumD=[];
+  let cum=-invBase,be=null,fp=null,minCum=-invBase;
+  let cumNF=-invBaseNF,minCumNF=-invBaseNF;
+  let maxiCumDiv=0,pn1Cum=0,pn2Cum=0,pn3Cum=0,pn1Post=0,pn2Post=0,pn3Post=0;
+  const trig1Pct=(P.trig1Pct||100)/100,trig2Pct=(P.trig2Pct||200)/100;
+  const trig1Sp1=(P.trig1Sp1||55)/100,trig2Sp1=(P.trig2Sp1||35)/100;
+  const t1Rem=1-trig1Sp1,t2Rem=1-trig2Sp1;
+  const trig1Sp2=P.trig1Sp2!=null?P.trig1Sp2/100:t1Rem/2;
+  const trig2Sp2=P.trig2Sp2!=null?P.trig2Sp2/100:t2Rem/2;
+  for(let m=1;m<=P.meses;m++){
+    if(pInvM>0&&m===pInvM&&P.po){cum-=pdInvAmt;if(cum<minCum)minCum=cum;cumNF-=finPdRaw;if(cumNF<minCumNF)minCumNF=cumNF;}
+    const fxM=calcFxAt(m);
+    const fxRatio=P.fx/Math.max(1,fxM); // ARS costs get cheaper in USD as peso weakens
+    const mOp=Math.max(0,m-obraM);
+    const cf=Math.min(1,mOp/Math.max(1,P.rc));
+    const sf=Math.min(1,mOp/Math.max(1,P.rs));
+    const pf=P.po&&m>pInvM?Math.min(1,Math.max(0,m-pInvM)/Math.max(1,P.rp)):0;
+    const of=Math.min(1,mOp/3);
+    // Occupancy curve (OCC_PTS) encodes the FULL occupancy story for courts:
+    //   it's initialized from seasonal data × P.oc, so courts need NO extra seasF.
+    // Escuelita: own school-calendar pattern, independent of court traffic.
+    // Paddle: own mild seasonal (courts differ from futbol scheduling).
+    // Extras (buffet, events, torneos): follow court traffic.
+    const occF=getOccFactor(m);       // seasonal multiplier: 1.0=base(P.oc), 0.7=low, 1.15=peak
+    const sesc_=seasF('escuela',m);
+    const spdl_=seasF('paddle',m);
+    // Crisis demand shock: sudden devaluations reduce client purchasing power → lower occupancy
+    let shockMult=1;
+    if(P.devalOn){
+      for(const ev of (DEVAL_EVENTS||[])){
+        const dur=6,elapsed=m-ev.month;
+        if(elapsed>=0&&elapsed<dur){
+          const peak=Math.min(0.30,(ev.jump||0)/100*0.35); // 100% jump→30% drop, 50%→17.5%
+          shockMult*=(1-peak*(1-elapsed/dur)); // linear recovery over 6 months
+        }
+      }
+    }
+    const mCourt=scN*cf*occF*shockMult;
+    const mPdl=pdN*pf*spdl_*occF*shockMult;
+    const mEsc=stN*sf*sesc_; // escuelita: IVA-exempt, fee indexed to inflation → stable in USD
+    const mInsc=(P.st||0)*stInscArs/12/P.fx*sf; // inscripción: indexed
+    const mExtra=(buT+evT+toT)*of*occF*shockMult; // extras follow court traffic + crisis shock
+    const mGross=mCourt+mPdl+mEsc+mInsc+mExtra+custRev;
+    const mIb=mGross*(1-P.negro/100)*ibRate; // IB on actual monthly revenue
+    const mCheque=mGross*(1-P.negro/100)*chequeRate;
+    const salM=getSalAt(m); // ARS wages renegotiated to track inflation → stable in USD
+    const mTeacher=teacherSalFull*sf; // idem
+    const indemProvM=salM*(1-(P.indemFam!=null?P.indemFam:70)/100)*0.083;
+    const mCapex=CUSTOM_CAPEX.reduce((s,c)=>{if(!c.month||c.month<1)return s;if(c.freq>0){if(m>=c.month&&(m-c.month)%c.freq===0)return s+(c.usd||0);}else{if(m===c.month)return s+(c.usd||0);}return s;},0);
+    const mFin=(finCOn&&m>=finCStartM&&m<finCStartM+finCCuotas?finCMonthly:0)+(finPdActive&&m>=pInvM&&m<pInvM+finPdCuotas?finPdMonthly:0);
+    const fcM=fc_ars+fc_usd; // ARS fixed costs also indexed → stable in USD
+    const mNetPreGan=mGross-(fcM+salM+mTeacher+indemProvM+mIb+mCheque)-mCapex-mFin;
+    const mGan=Math.max(0,mNetPreGan)*(1-P.negro/100)*ganRate;
+    const mN=mNetPreGan-mGan;
+    cum+=mN;if(cum<minCum)minCum=cum;
+    cumNF+=mN+mFin;if(cumNF<minCumNF)minCumNF=cumNF;
+    if(!fp&&mN>0)fp=m;if(!be&&cum>=0)be=m;
+    // Waterfall dividend logic
+    let mP1=0,mP2=0,mP3=0;
+    if(mN>0){
+      const inPhase0=maxiCumDiv<trig1Pct*totalInv;
+      if(inPhase0){mP1=mN;mP2=0;mP3=0;}
+      else if(maxiCumDiv<trig2Pct*totalInv){mP1=mN*trig1Sp1;mP2=mN*trig1Sp2;mP3=mN*Math.max(0,1-trig1Sp1-trig1Sp2);}
+      else{mP1=mN*trig2Sp1;mP2=mN*trig2Sp2;mP3=mN*Math.max(0,1-trig2Sp1-trig2Sp2);}
+      maxiCumDiv+=mP1;
+      if(!inPhase0){pn1Post+=mP1;pn2Post+=mP2;pn3Post+=mP3;}
+    }
+    pn1CumD.push(Math.round(pn1Cum+=mP1));
+    pn2CumD.push(Math.round(pn2Cum+=mP2));
+    pn3CumD.push(Math.round(pn3Cum+=mP3));
+    pn1D.push(Math.round(mP1));pn2D.push(Math.round(mP2));pn3D.push(Math.round(mP3));
+    grossD.push(Math.round(mGross));costsD.push(Math.round(-(fcM+salM+mTeacher+indemProvM+mIb+mCheque+mCapex+mFin+mGan)));
+    const d=new Date(startYear,P.startMonth-1+m-1);
+    labels.push(MES_NOM[d.getMonth()]+" '"+(d.getFullYear()%100).toString().padStart(2,'0'));
+    cumD.push(Math.round(cum));netD.push(Math.round(mN));facD.push(Math.round(mGross));
+    spD.push(Math.round(totalInv*(Math.pow(1+0.10/12,m)-1)));
+  }
+  const colchon=Math.max(0,-minCum-invBase);
+  const capitalTotal=totalInv+colchon;
+  const colchonNF=Math.max(0,-minCumNF-invBaseNF);
+  const capitalNoFin=totalInv+colchonNF;
+  const c2=Math.round(cum),sp=Math.round(totalInv*(Math.pow(1+0.10,P.meses/12)-1));
+  const years=P.meses/12;
+  const roi=totalInv>0&&1+c2/totalInv>0?Math.round((Math.pow(1+c2/totalInv,1/years)-1)*100):-100;
+  const rsp=totalInv>0?Math.round((Math.pow(1+sp/totalInv,1/years)-1)*100):0;
+  return{scN:Math.round(scN),stN:Math.round(stN),pdN:Math.round(pdN),bu:Math.round(buT),ev:Math.round(evT),to:Math.round(toT),fc:Math.round(fc),sal:Math.round(sal),teacher:Math.round(teacherSalFull),ib:Math.round(ibAmtSteady),cheque:Math.round(chequeSteady),indem:Math.round(indemProv),gan:Math.round(ganSteady),gain:Math.round(gain),inv:Math.round(totalInv),colchon:Math.round(colchon),capitalTotal:Math.round(capitalTotal),minCum:Math.round(minCum),anyFin,capitalNoFin:Math.round(capitalNoFin),minCumNF:Math.round(minCumNF),be,fp,cum:c2,roi,rsp,spMult:rsp>0?(roi/rsp).toFixed(1)+'×':'>>',labels,cumD,netD,facD,spD,rE,
+    pn1D,pn2D,pn3D,pn1CumD,pn2CumD,pn3CumD,grossD,costsD,
+    pn1Cum:Math.round(pn1Cum),pn2Cum:Math.round(pn2Cum),pn3Cum:Math.round(pn3Cum),
+    pn1Post:Math.round(pn1Post),pn2Post:Math.round(pn2Post),pn3Post:Math.round(pn3Post)};
+}
+let gRE=8,gBE=null;
+let prevCalcResult=null,isSlotSwitch=false,numAnimId=null;
+function renderDashPanel(r){
+  const el=document.getElementById('dashPanel');if(!el)return;
+  const totalGfx=r.fc+r.sal+(r.teacher||0)+(r.ib||0)+(r.cheque||0)+(r.indem||0)+(r.gan||0);
+  const totalRev=r.scN+r.stN+r.pdN+r.bu+r.ev+r.to;
+  const bec=typeof r.be==='number'?(r.be<=24?'g':r.be<=36?'y':'r'):'r';
+  const roiC=r.roi>r.rsp?'g':r.roi>0?'y':'r';
+  const spF=parseFloat(r.spMult),spC=spF>=2?'g':spF>=1?'y':'r';
+  const gainC=r.gain>0?'g':'r';
+  el.innerHTML=`
+    <div class="dp-row1">
+      <div class="dp-m"><div class="dp-v hero ${gainC}">${fmtKU(r.gain)}<span style="font-size:16px;font-weight:400;opacity:.55">/mes</span></div><div class="dp-l">Ganancia mensual</div></div>
+      <div class="dp-m"><div class="dp-v ${bec}">${bef(r.be)}</div><div class="dp-l">Break-even acum.</div></div>
+      <div class="dp-m"><div class="dp-v">${fmtKU(r.capitalTotal)}</div><div class="dp-l">Capital necesario</div></div>
+      <div class="dp-m"><div class="dp-v ${roiC}">${r.roi}%</div><div class="dp-l">ROI anualizado</div></div>
+      <div class="dp-m"><div class="dp-v ${spC}">${r.spMult}</div><div class="dp-l">vs S&amp;P 500</div></div>
+    </div>
+    <div class="dp-row2">
+      <span class="dp-ctx"><b>${fmtKU(totalRev)}/mes</b> facturación</span>
+      <span class="dp-dot">·</span>
+      <span class="dp-ctx"><b>${fmtKU(totalGfx)}/mes</b> gastos</span>
+      <span class="dp-dot">·</span>
+      <span class="dp-ctx"><b>${fmtKU(Math.abs(r.minCum))}</b> exposición máx.</span>
+      <span class="dp-dot">·</span>
+      <span class="dp-ctx"><b>${fmtKU(r.cum)}</b> acumulado mes ${P.meses||60}</span>
+    </div>`;
+}
+function animateSlotNumbers(from,to){
+  if(numAnimId){cancelAnimationFrame(numAnimId);numAnimId=null;}
+  document.querySelectorAll('#dashPanel .dp-v,#rg .rv').forEach(el=>{
+    el.classList.remove('dp-anim');void el.offsetWidth;el.classList.add('dp-anim');
+  });
+  const dur=1000,start=performance.now();
+  const fromGfx=from.fc+from.sal+(from.teacher||0)+(from.ib||0)+(from.cheque||0)+(from.indem||0)+(from.gan||0);
+  const toGfx=to.fc+to.sal+(to.teacher||0)+(to.ib||0)+(to.cheque||0)+(to.indem||0)+(to.gan||0);
+  const fromBe=typeof from.be==='number'?from.be:P.meses+1;
+  const toBe=typeof to.be==='number'?to.be:null;
+  const fromSp=parseFloat(from.spMult)||0,toSp=parseFloat(to.spMult)||0;
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  function step(now){
+    const raw=Math.min(1,(now-start)/dur);
+    const t=1-Math.pow(1-raw,3); // ease-out cubic
+    const dp=document.getElementById('dashPanel');
+    if(dp){
+      const kvs=dp.querySelectorAll('.dp-v');
+      // [0]=gain hero, [1]=be, [2]=capitalTotal, [3]=roi, [4]=spMult
+      if(kvs[0]){const v=fmtKU(lerp(from.gain,to.gain,t));kvs[0].innerHTML=`${v}<span style="font-size:16px;font-weight:400;opacity:.55">/mes</span>`;}
+      if(kvs[1])kvs[1].textContent=toBe!==null?'mes '+Math.round(lerp(fromBe,toBe,t)):bef(to.be);
+      if(kvs[2])kvs[2].textContent=fmtKU(lerp(from.capitalTotal,to.capitalTotal,t));
+      if(kvs[3])kvs[3].textContent=Math.round(lerp(from.roi,to.roi,t))+'%';
+      if(kvs[4])kvs[4].textContent=toSp>0?lerp(fromSp,toSp,t).toFixed(1)+'×':to.spMult;
+    }
+    const rg=document.getElementById('rg');
+    if(rg){
+      const rvs=rg.querySelectorAll('.rv');
+      const pairs=[[from.scN,to.scN],[from.stN,to.stN],[from.pdN,to.pdN],[from.bu,to.bu],[from.ev,to.ev],[from.to,to.to],[-fromGfx,-toGfx],[from.gain,to.gain]];
+      rvs.forEach((el,i)=>{if(pairs[i])el.textContent=fmtKU(lerp(pairs[i][0],pairs[i][1],t));});
+    }
+    if(raw<1)numAnimId=requestAnimationFrame(step);else numAnimId=null;
+  }
+  numAnimId=requestAnimationFrame(step);
+}
+Chart.register({id:'rp',beforeDraw(c){const{ctx,chartArea:ca,scales}=c;if(!ca)return;ctx.save();ctx.fillStyle='rgba(136,135,128,.09)';const x0=scales.x.getPixelForValue(0),x1=scales.x.getPixelForValue(gRE);ctx.fillRect(x0,ca.top,Math.max(0,x1-x0),ca.bottom-ca.top);ctx.restore();}});
+function drawStar(ctx,cx,cy,spikes,outerR,innerR){let rot=(Math.PI/2)*3;const step=Math.PI/spikes;ctx.beginPath();ctx.moveTo(cx,cy-outerR);for(let i=0;i<spikes;i++){ctx.lineTo(cx+Math.cos(rot)*outerR,cy+Math.sin(rot)*outerR);rot+=step;ctx.lineTo(cx+Math.cos(rot)*innerR,cy+Math.sin(rot)*innerR);rot+=step;}ctx.lineTo(cx,cy-outerR);ctx.closePath();}
+let chartHover=null; // {type:'be'|'fp'|'event', idx?:number}
+function drawHoverLabel(ctx,x,y,text,textCol,bg,borderCol){
+  ctx.save();ctx.font='bold 9px sans-serif';
+  const words=text.split(' '),mid=Math.ceil(words.length/2);
+  const l1=words.slice(0,mid).join(' '),l2=words.slice(mid).join(' ');
+  const bw=Math.max(ctx.measureText(l1).width,l2?ctx.measureText(l2).width:0)+12;
+  const bh=l2?28:16,bx=x-bw/2;
+  ctx.fillStyle=bg;ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(bx,y,bw,bh,3);else ctx.rect(bx,y,bw,bh);
+  ctx.fill();ctx.strokeStyle=borderCol;ctx.lineWidth=0.7;ctx.stroke();
+  ctx.fillStyle=textCol;ctx.textAlign='left';
+  ctx.fillText(l1,bx+6,y+11);if(l2)ctx.fillText(l2,bx+6,y+22);
+  ctx.restore();
+}
+Chart.register({id:'bestar',afterDraw(c){
+  if(!gBE||gBE>P.meses)return;
+  const{ctx,scales,chartArea:ca}=c;if(!ca)return;
+  const x=scales.x.getPixelForValue(gBE-1),y=scales.y.getPixelForValue(0);
+  if(x<ca.left||x>ca.right)return;
+  ctx.save();drawStar(ctx,x,y,5,9,4);ctx.fillStyle='#f5c542';ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=0.5;ctx.fill();ctx.stroke();ctx.restore();
+  if(chartHover?.type==='be')drawHoverLabel(ctx,x,y+14,'Break-even acumulado','#b8921a','rgba(255,245,200,.95)','#b8921a');
+}});
+Chart.register({id:'fpmark',afterDraw(c){
+  if(!gRE||typeof gRE!=='number')return;
+  const dsIdx=c.data?.datasets?.findIndex(d=>d.label==='Ganancia mensual');
+  if(dsIdx==null||dsIdx<0)return;
+  const fp=c.data.datasets[dsIdx].data?.findIndex(v=>v>0);
+  if(fp==null||fp<0||fp>=P.meses)return;
+  const{ctx,scales,chartArea:ca}=c;if(!ca||!scales.y)return;
+  const x=scales.x.getPixelForValue(fp),y=scales.y.getPixelForValue(0);
+  if(x<ca.left||x>ca.right)return;
+  ctx.save();ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='#378add';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();ctx.restore();
+  if(chartHover?.type==='fp')drawHoverLabel(ctx,x,y+8,'1er mes con ganancia','#1a5a99','rgba(220,235,255,.95)','#378add');
+}});
+let chartEvents=[];
+Chart.register({id:'cevents',afterDraw(c){
+  if(!chartEvents.length)return;
+  const{ctx,scales,chartArea:ca}=c;if(!ca)return;
+  const cols={success:'#3b6d11',warning:'#854f0b',danger:'#a32d2d'};
+  const bgs={success:'rgba(234,243,222,.95)',warning:'rgba(250,238,218,.95)',danger:'rgba(252,235,235,.95)'};
+  const dotR=4;
+  chartEvents.forEach((ev,i)=>{
+    if(ev.m<1||ev.m>P.meses)return;
+    const x=scales.x.getPixelForValue(ev.m-1);
+    if(x<ca.left||x>ca.right)return;
+    const col=cols[ev.color]||cols.warning;
+    const bg=bgs[ev.color]||bgs.warning;
+    ctx.save();
+    // always: dashed line + dot at top
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.globalAlpha=0.4;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(x,ca.top+dotR*2+2);ctx.lineTo(x,ca.bottom);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.beginPath();ctx.arc(x,ca.top+dotR+2,dotR,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.fill();
+    ctx.restore();
+    // label only on hover
+    if(chartHover?.type==='event'&&chartHover.idx===i){
+      const lbl=ev.label.length>32?ev.label.substr(0,30)+'…':ev.label;
+      drawHoverLabel(ctx,x,ca.top+dotR*2+8,lbl,col,bg,col);
+    }
+  });
+}});
+Chart.register({id:'ymiles',afterDraw(c){
+  const{ctx,scales,chartArea:ca}=c;if(!ca)return;
+  [12,24,36].filter(m=>m<=P.meses).forEach(m=>{
+    const x=scales.x.getPixelForValue(m-1);
+    if(x<ca.left||x>ca.right)return;
+    ctx.save();
+    ctx.strokeStyle='rgba(99,153,34,0.25)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(x,ca.top);ctx.lineTo(x,ca.bottom);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(99,153,34,0.7)';ctx.font='bold 8px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Año '+(m/12),x,ca.top+10);
+    ctx.restore();
+  });
+}});
+Chart.register({id:'seasbg',beforeDraw(c){
+  const{ctx,scales,chartArea:ca}=c;if(!ca||!scales.x)return;
+  // Summer(Dec/Jan/Feb)=warm yellow, Winter(Jun/Jul/Aug)=cool blue; based on Buenos Aires calendar
+  const tickW=Math.max(1,(ca.right-ca.left)/(P.meses||1));
+  ctx.save();
+  for(let m=1;m<=P.meses;m++){
+    const calM=((P.startMonth-1)+(m-1))%12;
+    let col=null;
+    if(calM===11||calM===0||calM===1)col='rgba(252,211,77,.09)'; // summer: Dec/Jan/Feb
+    else if(calM===5||calM===6||calM===7)col='rgba(96,165,250,.09)'; // winter: Jun/Jul/Aug
+    if(!col)continue;
+    const x0=scales.x.getPixelForValue(m-1)-tickW/2;
+    ctx.fillStyle=col;
+    ctx.fillRect(Math.max(x0,ca.left),ca.top,Math.min(x0+tickW,ca.right)-Math.max(x0,ca.left),ca.bottom-ca.top);
+  }
+  ctx.restore();
+}});
+const bef=v=>typeof v==='number'?'mes '+v:'>'+P.meses+'m';
+function updateHeaders(r){
+  const hv=(id,v,cls)=>{const e=document.getElementById('hd-'+id);if(e){e.textContent=' '+v;e.className='hvl '+cls;}};
+  hv('ftb',fmtKU(r.scN)+'/mes','pos');hv('esc',fmtKU(r.stN)+'/mes','pos');
+  hv('pdl',P.po?fmtKU(r.pdN)+'/mes':'OFF','pos');hv('add',fmtKU(r.bu+r.ev+r.to)+'/mes','pos');
+  hv('inv',fmtKU(r.inv),'neg');
+  const cnt=EMP.reduce((s,e)=>s+e.q,0);hv('emp','('+cnt+') '+fmtKU(r.sal)+'/mes','neg');hv('gfx',fmtKU(r.fc+(r.ib||0))+'/mes','neg');
+  const sv=(id,v)=>{const e=document.getElementById('sv-'+id);if(e)e.textContent=v;};
+  sv('bu',P.buOn?fmtKU(r.bu)+'/mes':'—');sv('ev',P.evOn?fmtKU(r.ev)+'/mes':'—');sv('to',P.toOn?fmtKU(r.to)+'/mes':'—');
+}
+function render(){
+  rfr();
+  initOccPts();
+  const r=calc();gRE=r.rE;gBE=r.be;
+  const e=id=>document.getElementById(id);
+  if(e('v-ivt'))e('v-ivt').textContent=fmtU(-r.inv);
+  if(e('v-gft'))e('v-gft').textContent=fmtU(-(r.fc+(r.ib||0)));
+  if(e('v-suel'))e('v-suel').textContent=fmtU(-r.sal);
+  updateHeaders(r);renderEmp();
+  if(aSlot>=0)slots[aSlot]={name:slots[aSlot]?.name||('Esc. '+(aSlot+1)),P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),roi:r.roi,be:r.be,cum:r.cum};
+  renderDashPanel(r);
+  e('rg').innerHTML=[{l:'Fútbol',v:r.scN},{l:'Escuelita',v:r.stN},{l:'Paddle',v:r.pdN},{l:'Buffet',v:r.bu},{l:'Eventos',v:r.ev},{l:'Torneos',v:r.to},{l:'Gastos',v:-(r.fc+r.sal+(r.teacher||0)+(r.ib||0)+(r.cheque||0)+(r.indem||0)+(r.gan||0))},{l:'Neto mensual',v:r.gain}]
+    .map(c=>`<div class="rc"><div class="rl">${c.l}</div><div class="rv${c.v<0?' ng':''}">${fmtKU(c.v)}</div></div>`).join('');
+  if(prevCalcResult)animateSlotNumbers(prevCalcResult,r);
+  prevCalcResult=r;
+  renderPartners(r);
+  renderRisk(r);
+  renderGauge(r);
+  renderSeasStrip();
+  renderSeasBars();
+  renderCustomIngresos();
+  renderCustomCapex();
+  if(chart2&&chart2.chartArea&&chart2.chartArea.left>0){renderOccChart();initOccChartEvents();}else{requestAnimationFrame(()=>{renderOccChart();initOccChartEvents();});}
+  renderFin();
+  renderSlots();
+  renderRealityCheck(r);
+  renderDevalHdr();
+  renderDevalEvents();
+  renderWfHdr();
+  renderPartnerNames();
+  updateChart2(r);
+  saveLS();
+}
+function renderEmp(){
+  const div=document.getElementById('empRows');if(!div)return;
+  div.innerHTML=EMP.map((e,i)=>`<div class="ec"><div class="ec-r1"><input type="text" placeholder="Rol / nombre" value="${e.n}" onkeydown="if(event.key==='Enter'){EMP[${i}].n=this.value;render();this.blur();}" onblur="EMP[${i}].n=this.value;"><button class="rm-btn" onclick="removeEmp(${i})">×</button></div><div class="ec-r2" style="grid-template-columns:70px 1fr 70px"><div class="ec-field"><span class="fl">Cantidad</span><input type="number" min="0" max="20" value="${e.q}" style="text-align:center" onkeydown="if(event.key==='Enter'){EMP[${i}].q=+this.value;render();this.blur();}" onblur="EMP[${i}].q=+this.value;render();"></div><div class="ec-field"><span class="fl">Sueldo ARS / persona</span><input type="text" value="${fmtA(e.s)}" data-raw="${e.s}" onfocus="this.value=this.getAttribute('data-raw');this.classList.add('dirty')" oninput="this.classList.add('dirty')" onkeydown="if(event.key==='Enter'){var v=parseFloat(this.value.replace(/[^\\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[${i}].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();this.blur();}" onblur="if(this.classList.contains('dirty')){var v=parseFloat(this.value.replace(/[^\\d.]/g,''))||0;this.setAttribute('data-raw',v);EMP[${i}].s=v;this.value=fmtA(v);this.classList.remove('dirty');render();}else{this.value=fmtA(${e.s});}"></div><div class="ec-field"><span class="fl">Mes ingreso</span><input type="number" min="1" value="${e.m||1}" style="text-align:center" title="Mes en que este empleado se incorpora (1 = desde el inicio)" onkeydown="if(event.key==='Enter'){EMP[${i}].m=Math.max(1,+this.value||1);render();this.blur();}" onblur="EMP[${i}].m=Math.max(1,+this.value||1);render();"></div></div></div>`).join('');
+}
+function addEmp(){EMP.push({n:'Empleado',q:1,s:600000,m:1});renderEmp();render();}
+function removeEmp(i){EMP.splice(i,1);renderEmp();render();}
+let pendingDelete=-1;
+function askDeleteSlot(i){pendingDelete=i;renderSlots();}
+function cancelDelete(){pendingDelete=-1;renderSlots();}
+function deleteSlot(i){slots[i]=null;if(aSlot===i)aSlot=-1;pendingDelete=-1;saveLS();render();}
+function renderCustomIngresos(){
+  const el=document.getElementById('customIngRows');if(!el)return;
+  if(!CUSTOM_INGRESOS.length){el.innerHTML='<div class="note" style="margin:0">Roberto puede agregar ingresos vía chat con {{INGRESO|nombre|usd_mes}}</div>';return;}
+  el.innerHTML=CUSTOM_INGRESOS.map((g,i)=>`<div class="ec" style="padding:4px 9px;margin-bottom:3px"><div class="ec-r1"><input type="text" value="${g.n}" onblur="CUSTOM_INGRESOS[${i}].n=this.value;render();" style="font-size:11px"><button class="rm-btn" onclick="CUSTOM_INGRESOS.splice(${i},1);renderCustomIngresos();render()">×</button></div><div style="display:flex;align-items:center;gap:4px;margin-top:2px"><span class="fl" style="white-space:nowrap">USD/mes</span><input type="number" value="${g.usd}" style="width:80px;font-size:11px" onblur="CUSTOM_INGRESOS[${i}].usd=+this.value||0;render();"></div></div>`).join('');
+}
+function renderCustomCapex(){
+  const el=document.getElementById('customCapexRows');if(!el)return;
+  // Update header badge
+  const hd=document.getElementById('hd-cpx');
+  if(hd){
+    const inRange=CUSTOM_CAPEX.filter(c=>c.freq>0?c.month<=P.meses:c.month<=P.meses);
+    if(!CUSTOM_CAPEX.length){hd.textContent='';hd.className='hvl';}
+    else if(inRange.length){hd.textContent=' '+CUSTOM_CAPEX.length+(CUSTOM_CAPEX.length===1?' ítem':' ítems');hd.className='hvl neg';}
+    else{hd.textContent=' '+CUSTOM_CAPEX.length+(CUSTOM_CAPEX.length===1?' ítem':' ítems')+' (fuera horizonte)';hd.className='hvl';}
+  }
+  if(!CUSTOM_CAPEX.length){el.innerHTML='<div class="note" style="margin:0 0 4px">Sin CAPEX adicional. Ejemplo: reposición de césped sintético (~USD 90k) en mes 97 (fuera del horizonte de 60m → no impacta el flujo).</div>';return;}
+  el.innerHTML=CUSTOM_CAPEX.map((c,i)=>{
+    const outOfRange=c.freq===0&&c.month>P.meses;
+    const hits=[];if(c.freq>0){for(let m=c.month;m<=P.meses;m+=c.freq)hits.push(m);}
+    const sub=c.freq>0?(hits.length?`Impacta mes${hits.length>1?'es':''}: ${hits.slice(0,4).join(', ')}${hits.length>4?'…':''}`:'Sin impacto en el horizonte actual'):
+      (outOfRange?`Mes ${c.month} está fuera del horizonte (${P.meses}m) — sin impacto actual`:`Impacta mes ${c.month}`);
+    return`<div class="ec" style="padding:5px 9px;margin-bottom:4px">
+      <div class="ec-r1" style="margin-bottom:4px"><input type="text" value="${c.n}" placeholder="Descripción" onblur="CUSTOM_CAPEX[${i}].n=this.value;" style="font-size:11px"><button class="rm-btn" onclick="CUSTOM_CAPEX.splice(${i},1);renderCustomCapex();render()">×</button></div>
+      <div style="display:grid;grid-template-columns:1fr 60px 90px;gap:5px;align-items:end">
+        <div><span class="fl">USD</span><input type="number" value="${c.usd}" min="0" style="font-size:11px" onblur="CUSTOM_CAPEX[${i}].usd=+this.value||0;renderCustomCapex();render();"></div>
+        <div><span class="fl">Mes inicio</span><input type="number" value="${c.month}" min="1" style="font-size:11px;text-align:center" onblur="CUSTOM_CAPEX[${i}].month=Math.max(1,+this.value||1);renderCustomCapex();render();"></div>
+        <div><span class="fl">Frec. (0=único)</span><input type="number" value="${c.freq}" min="0" style="font-size:11px;text-align:center" placeholder="0" onblur="CUSTOM_CAPEX[${i}].freq=Math.max(0,+this.value||0);renderCustomCapex();render();"></div>
+      </div>
+      <div style="font-size:10px;color:${outOfRange&&c.freq===0?'var(--color-text-tertiary)':'var(--color-text-warning)'};margin-top:3px">${sub}</div>
+    </div>`;
+  }).join('');
+}
+let occDrag={active:false,idx:-1,startY:0,startDisp:0};
+function renderOccChart(){
+  initOccPts();
+  const canvas=document.getElementById('occChart');if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.parentElement.offsetWidth||600,H=90;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  const n=OCC_PTS.length;
+  const padL=42,padR=12;
+  const padT=10,padB=14,plotW=W-padL-padR,plotH=H-padT-padB;
+  const xOf=i=>padL+(n<=1?plotW/2:(i/(n-1))*plotW);
+  const yOf=v=>padT+plotH*(1-Math.max(0,Math.min(100,v))/100); // y-axis: 0-100%
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=isDark?'rgba(30,30,28,.85)':'rgba(243,242,238,.85)';
+  ctx.fillRect(0,0,W,H);
+  // seasonal tint bands
+  for(let m=1;m<=P.meses;m++){
+    const calM=((P.startMonth-1)+(m-1))%12;
+    let col=calM===11||calM===0||calM===1?'rgba(252,211,77,.09)':calM===5||calM===6||calM===7?'rgba(96,165,250,.09)':null;
+    if(!col)continue;
+    const tW=plotW/(P.meses-1||1),ptX=padL+(m-1)/(P.meses-1||1)*plotW;
+    ctx.fillStyle=col;ctx.fillRect(Math.max(ptX-tW/2,padL),padT,Math.min(tW,plotW),plotH);
+  }
+  // grid lines: 100% max, P.oc base, 50%
+  [[100,'rgba(160,160,140,.6)',0.6,'100% (máx)'],[P.oc,'#f5a623',0.5,P.oc+'% base'],[50,'#888780',0.25,'50%']].forEach(([v,col,a,lbl])=>{
+    if(v<=0)return;
+    const y=yOf(v);
+    ctx.save();ctx.strokeStyle=col;ctx.globalAlpha=a;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+    ctx.setLineDash([]);ctx.restore();
+    ctx.fillStyle=col;ctx.font='7px sans-serif';ctx.textAlign='right';ctx.globalAlpha=0.8;
+    ctx.fillText(lbl,padL-2,y+2.5);ctx.globalAlpha=1;
+  });
+  // Convert OCC_PTS multipliers → display % (P.oc × mult / 100, capped at 100)
+  const dispPts=OCC_PTS.map(v=>Math.min(100,Math.max(0,P.oc*v/100)));
+  // area fill + curve
+  ctx.beginPath();ctx.moveTo(xOf(0),padT+plotH);
+  dispPts.forEach((v,i)=>ctx.lineTo(xOf(i),yOf(v)));
+  ctx.lineTo(xOf(n-1),padT+plotH);ctx.closePath();
+  ctx.fillStyle='rgba(245,166,35,.13)';ctx.fill();
+  ctx.strokeStyle='#f5a623';ctx.lineWidth=2;
+  ctx.beginPath();dispPts.forEach((v,i)=>{i===0?ctx.moveTo(xOf(i),yOf(v)):ctx.lineTo(xOf(i),yOf(v));});
+  ctx.stroke();
+  // draggable dots
+  dispPts.forEach((v,i)=>{
+    const x=xOf(i),y=yOf(v);
+    ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fillStyle=v>=P.oc*0.9?'#f5a623':v>=P.oc*0.65?'#f5c542':'#a32d2d';
+    ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    const effLabelY=Math.max(padT+16,y-7);
+    ctx.fillStyle=v>=P.oc*0.9?'#888780':v>=P.oc*0.65?'#854f0b':'#a32d2d';
+    ctx.font='bold 8px sans-serif';ctx.textAlign='center';
+    ctx.fillText(Math.round(v)+'%',x,effLabelY);
+    ctx.fillStyle='rgba(136,135,128,.65)';ctx.font='6.5px sans-serif';
+    ctx.fillText(OCC_PTS[i]+'%',x,Math.max(padT+7,effLabelY-8));
+    if(i%2===0){
+      ctx.fillStyle='#888780';ctx.font='7px sans-serif';
+      ctx.fillText(MES_NOM[((P.startMonth-1)+i*3)%12],x,H-2);
+    }
+  });
+}
+let occChartInited=false;
+function initOccChartEvents(){
+  if(occChartInited)return;
+  occChartInited=true;
+  const canvas=document.getElementById('occChart');if(!canvas)return;
+  const getIdx=mx=>{
+    initOccPts();
+    const n=OCC_PTS.length;
+    const padL=42;
+    const plotW=canvas.offsetWidth-padL-12;
+    for(let i=0;i<n;i++){
+      const x=padL+(n<=1?plotW/2:(i/(n-1))*plotW);
+      if(Math.abs(mx-x)<14)return i;
+    }return -1;
+  };
+  // Tooltip div that replaces the cursor during drag
+  let tip=document.getElementById('occTip');
+  if(!tip){tip=document.createElement('div');tip.id='occTip';
+    Object.assign(tip.style,{position:'fixed',display:'none',pointerEvents:'none',
+      background:'rgba(20,20,18,.82)',color:'#fff',padding:'3px 9px',borderRadius:'6px',
+      fontSize:'14px',fontWeight:'700',zIndex:'9999',transform:'translate(14px,-50%)',
+      letterSpacing:'.02em',fontFamily:'var(--font-mono)'});
+    document.body.appendChild(tip);}
+  const showTip=(cx,cy,val)=>{tip.textContent=Math.round(val)+'%';tip.style.left=cx+'px';tip.style.top=cy+'px';tip.style.display='block';};
+  const hideTip=()=>{tip.style.display='none';};
+  const plotH=()=>canvas.offsetHeight-10-14;
+  const onDown=(mx,my,cx,cy)=>{
+    const idx=getIdx(mx);
+    if(idx>=0){
+      const startDisp=Math.min(100,Math.max(0,P.oc*OCC_PTS[idx]/100));
+      occDrag={active:true,idx,startY:my,startDisp};
+      canvas.style.cursor='none';showTip(cx,cy,startDisp);
+      return true;
+    }return false;
+  };
+  const onMove=(mx,my,cx,cy)=>{
+    if(!occDrag.active)return;
+    // Half-speed: 100px mouse movement = 50px dot movement
+    const deltaDisp=(occDrag.startY-my)/plotH()*100*0.5;
+    const dispPct=Math.max(0,Math.min(100,occDrag.startDisp+deltaDisp));
+    OCC_PTS[occDrag.idx]=Math.max(0,Math.round(dispPct/Math.max(1,P.oc)*100));
+    showTip(cx,cy,dispPct);
+    renderOccChart();
+    if(chart2){updateChart2(calc());}
+  };
+  const onUp=()=>{if(occDrag.active){occDrag={active:false,idx:-1,startY:0,startDisp:0};canvas.style.cursor='';hideTip();render();}};
+  canvas.addEventListener('mousedown',e=>{const r=canvas.getBoundingClientRect();if(onDown(e.clientX-r.left,e.clientY-r.top,e.clientX,e.clientY))e.preventDefault();});
+  canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();onMove(e.clientX-r.left,e.clientY-r.top,e.clientX,e.clientY);});
+  canvas.addEventListener('mouseup',onUp);canvas.addEventListener('mouseleave',onUp);
+  canvas.addEventListener('touchstart',e=>{const r=canvas.getBoundingClientRect();const t=e.touches[0];if(onDown(t.clientX-r.left,t.clientY-r.top,t.clientX,t.clientY))e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();const t=e.touches[0];onMove(t.clientX-r.left,t.clientY-r.top,t.clientX,t.clientY);},{passive:false});
+  canvas.addEventListener('touchend',onUp);
+}
+function renderPartners(r){
+  const pr=document.getElementById('prow');if(!pr)return;
+  const PCOLS=['#f59e0b','#38bdf8','#fb7185'];
+  const names=[P.pn1||'Maxi',P.pn2||'Pato',P.pn3||'Julio'];
+  const cums=[r.pn1Cum,r.pn2Cum,r.pn3Cum];
+  const monthly=[r.pn1D?r.pn1D[r.pn1D.length-1]||0:0,r.pn2D?r.pn2D[r.pn2D.length-1]||0:0,r.pn3D?r.pn3D[r.pn3D.length-1]||0:0];
+  const posts=[r.pn1Post||0,r.pn2Post||0,r.pn3Post||0];
+  const postTotal=posts[0]+posts[1]+posts[2];
+  const vis=[partVis.p1,partVis.p2,partVis.p3];
+  pr.innerHTML=names.map((name,i)=>{
+    const col=PCOLS[i],off=!vis[i];
+    const pct=postTotal>0?((posts[i]/postTotal)*100).toFixed(0):'—';
+    return`<div class="pcard-new${off?' off':''}" style="border-color:${col}${off?'28':'40'}" onclick="togglePartner(${i+1})"><div class="pcard-top"><span class="pcard-name" style="color:${col}">${name}</span><span class="pcard-pct">${pct}% real</span></div><div class="pcard-val">${fmtKU(cums[i])}</div><div class="pcard-sub">${fmtKU(monthly[i])}/mes est.</div></div>`;
+  }).join('');
+}
+function togglePartner(n){
+  const k='p'+n;
+  partVis[k]=!partVis[k];
+  chartVis2[k]=partVis[k];
+  if(lastR2)renderPartners(lastR2);
+  updateChart2(lastR2);
+}
+function renderRisk(r){
+  const el=document.getElementById('riskText');if(!el)return;
+  const oc=P.oc,beM=r.be;
+  // Headline assessment card — adapts to the model state (flag/good)
+  let head;
+  if(!beM)head={cls:'flag',ico:'🚩',t:'No alcanza break-even',b:`Con los parámetros actuales el break-even acumulado no se alcanza en el horizonte — revisá precios u ocupación.`};
+  else if(beM>20)head={cls:'flag',ico:'🚩',t:`Break-even tardío (mes ${beM})`,b:`Exige reservas operativas durante toda la rampa. Ajustá el slider de obra para ver el colchón de capital necesario.`};
+  else if(oc<45)head={cls:'flag',ico:'🚩',t:`Ocupación frágil (${oc}%)`,b:`Una baja estacional del 10–15% puede volver el modelo negativo. La ocupación es la variable más sensible.`};
+  else head={cls:'good',ico:'✅',t:'Modelo viable',b:`Viable en condiciones actuales. Ocupación (${oc}%) y tipo de cambio son las variables más sensibles.`};
+  const items=[
+    head,
+    {cls:'',ico:'💱',t:'Inflación diferencial ARS/USD',b:'Los costos en pesos (sueldos, alquiler, servicios) tienden a subir más rápido que la capacidad de ajustar precios en USD.'},
+    {cls:'',ico:'🏛️',t:'Regulatorio / plataformas',b:'Habilitaciones municipales renovables y comisiones de apps de turnos no están modeladas.'},
+    {cls:'',ico:'🔧',t:'CAPEX no previsto',b:'Contingencias de equipamiento y reposición de césped: modelables en la sección Inversión / CAPEX.'}
+  ];
+  el.innerHTML='<div class="risk-grid">'+items.map(i=>
+    `<div class="risk-item ${i.cls}"><div class="ri-h">${i.ico} ${i.t}</div><div class="ri-b">${i.b}</div></div>`
+  ).join('')+'</div>';
+}
+function renderFin(){
+  const cAmt=gR('n-iA')+gR('n-iB')+gR('n-iC');
+  const pdAmt=P.po?(gR('n-iPdA')+gR('n-iPdB')):0;
+  const pdDeferred=P.po&&(P.pInvM||0)>0;
+  // Turf section
+  const cDet=document.getElementById('fin-cDet');
+  const cPill=document.getElementById('fin-cPill');
+  const cInfo=document.getElementById('fin-cInfo');
+  if(cDet)cDet.className='sw-detail'+(P.finCOn?'':' dis');
+  if(P.finCOn&&cAmt>0){
+    const monthly=cuotaFija(cAmt,P.finCCuotas||24,P.finCTasa||8);
+    const total=monthly*(P.finCCuotas||24);
+    const interest=total-cAmt;
+    if(cPill)cPill.textContent=fmtKU(monthly)+'/mes';
+    if(cInfo)cInfo.innerHTML=`Cuota: <strong>${fmtU(monthly)}</strong> × ${P.finCCuotas||24} meses · Total pagado: <strong>${fmtU(total)}</strong> · Costo financiero: <strong>${fmtU(interest)}</strong> (${((interest/cAmt)*100).toFixed(1)}% del capital)`;
+  } else {if(cPill)cPill.textContent='—';if(cInfo)cInfo.textContent='';}
+  // Paddle section
+  const pdRow=document.getElementById('fin-pdRow');
+  const pdDet=document.getElementById('fin-pdDet');
+  const pdPill=document.getElementById('fin-pdPill');
+  const pdInfo=document.getElementById('fin-pdInfo');
+  const pdNote=document.getElementById('fin-pdNote');
+  if(pdNote)pdNote.style.display=pdDeferred?'none':'';
+  if(pdRow)pdRow.style.opacity=pdDeferred?'1':'0.4';
+  if(pdDet)pdDet.className='sw-detail'+(P.finPdOn&&pdDeferred?'':' dis');
+  if(P.finPdOn&&pdDeferred&&pdAmt>0){
+    const monthly=cuotaFija(pdAmt,P.finPdCuotas||18,P.finPdTasa||8);
+    const total=monthly*(P.finPdCuotas||18);
+    const interest=total-pdAmt;
+    if(pdPill)pdPill.textContent=fmtKU(monthly)+'/mes';
+    if(pdInfo)pdInfo.innerHTML=`Cuota: <strong>${fmtU(monthly)}</strong> × ${P.finPdCuotas||18} meses desde mes ${P.pInvM} · Total pagado: <strong>${fmtU(total)}</strong> · Costo financiero: <strong>${fmtU(interest)}</strong> (${((interest/pdAmt)*100).toFixed(1)}%)`;
+  } else {if(pdPill)pdPill.textContent='—';if(pdInfo)pdInfo.textContent='';}
+  // Header badge
+  const hd=document.getElementById('hd-fin');
+  if(hd){const parts=[];if(P.finCOn)parts.push('turf');if(P.finPdOn&&pdDeferred)parts.push('paddle');hd.textContent=parts.length?' '+parts.join(' + ')+' financiado':'';hd.className='hvl '+(parts.length?'neg':'');}
+}
+function gaugeScore(r){
+  let sc=0;
+  if(r.gain>0)sc+=Math.min(40,20+r.roi/2);else if(r.gain>-300)sc+=8;
+  if(typeof r.be==='number')sc+=Math.max(0,30-Math.max(0,r.be-6));
+  const rsp=r.rsp||10;
+  if(r.roi>0)sc+=Math.min(30,(r.roi/(rsp*2))*30);
+  return Math.min(100,Math.max(0,Math.round(sc)));
+}
+function renderGauge(r){
+  const sc=gaugeScore(r);
+  const zoneOf=s=>s<25?{l:'Malo',c:'#e05252'}:s<50?{l:'Regular',c:'#e6933a'}:s<75?{l:'Bueno',c:'#4ade80'}:{l:'Excelente',c:'#86efac'};
+  const zone=zoneOf(sc);
+  // Ring helper
+  const ring=(cx,cy,radius,sw,pct,color,bg)=>{
+    const circ=2*Math.PI*radius,dash=pct/100*circ;
+    return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${bg}" stroke-width="${sw}"/>
+<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-dashoffset="${(circ/4).toFixed(1)}" stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:${cx}px ${cy}px"/>`;
+  };
+  // ── Canonical verdict → top band (verdict-led) ──
+  const miniEl=document.getElementById('veredictoKpi');
+  if(miniEl){
+    miniEl.className='verdict-lead';
+    miniEl.innerHTML=`<svg class="vl-ring" viewBox="0 0 84 84" width="68" height="68">
+        ${ring(42,42,33,7,sc,zone.c,'rgba(128,128,128,.16)')}
+        <text x="42" y="38" text-anchor="middle" font-size="7" fill="var(--tx3)" font-family="sans-serif" letter-spacing=".8">VEREDICTO</text>
+        <text x="42" y="53" text-anchor="middle" font-size="15" font-weight="800" fill="${zone.c}" font-family="sans-serif">${zone.l}</text>
+      </svg>
+      <div class="vl-score">${sc}/100</div>`;
+  }
+  // ── Revenue mix → horizontal bars (single source of truth, no duplicate donut) ──
+  const el=document.getElementById('gaugeWrap');if(!el)return;
+  const MIX_COLS=['#639922','#378add','#f5a623','#a78bfa','#fb923c','#2dd4bf'];
+  let mix=[{v:r.scN,l:'Fútbol'},{v:r.stN,l:'Escuelita'},{v:r.pdN,l:'Paddle'},
+    {v:r.bu,l:'Buffet'},{v:r.ev,l:'Eventos'},{v:r.to,l:'Torneos'}]
+    .map((s,i)=>({...s,c:MIX_COLS[i]})).filter(s=>s.v>0);
+  const total=mix.reduce((s,m)=>s+m.v,0)||1;
+  const max=Math.max(...mix.map(m=>m.v),1);
+  const bars=mix.map(m=>{
+    const pct=Math.round(m.v/total*100);
+    const w=Math.round(m.v/max*100);
+    return `<div class="mix-item"><span class="mix-lbl">${m.l}</span><div class="mix-track"><div class="mix-fill" style="width:${w}%;background:${m.c}"></div></div><span class="mix-val">${fmtKU(m.v)} · ${pct}%</span></div>`;
+  }).join('');
+  el.innerHTML=`<div class="mix-row">${bars}</div>
+    <div class="mix-foot"><span class="mf-l">Facturación total / mes</span><span class="mf-v">${fmtKU(total)}</span></div>`;
+  // margin sub on the KPI card header
+  const margEl=document.getElementById('rcardMargin');
+  if(margEl){const m=total>1?Math.round(r.gain/total*100):0;margEl.textContent=`margen ${m}% · neto ${fmtKU(r.gain)}/mes`;}
+}
+function renderRealityCheck(r){
+  const el=document.getElementById('rcContent');if(!el)return;
+  const fx=P.fx||1350;const tf=taxFactor();
+  const custRev=CUSTOM_INGRESOS.reduce((s,g)=>s+g.usd,0);
+  const totalRev=r.scN+r.stN+r.pdN+r.bu+r.ev+r.to+custRev;
+  const empBruto=EMP.reduce((s,e)=>s+e.q*e.s,0)/fx;
+  const empCargas=empBruto*(P.eBlanco/100)*(P.eCarg/100);
+  const rcProfN=Math.ceil((P.st||0)/Math.max(1,P.stRatio||75));
+  const teachBruto=rcProfN*(P.stSalArs||700000)/fx;
+  const stInscArsRC=gR('n-stInsc');
+  const ivaEf=((1-P.negro/100)*21).toFixed(1);
+  const ivaAmt=Math.round((totalRev/tf)*(1-P.negro/100)*0.21);
+  const totalGastos=r.fc+r.sal+(r.teacher||0)+r.indem+(r.ib||0)+(r.cheque||0)+(r.gan||0);
+  const margen=totalRev>0?Math.round(r.gain/totalRev*100):0;
+  const S=(v,neg,bold,indent)=>{
+    const c=neg?'color:var(--color-text-danger)':v>0?'color:#639922':'color:var(--color-text-tertiary)';
+    return`font-family:var(--font-mono);font-size:10.5px;${c}${bold?';font-weight:700':''}`;
+  };
+  const row=(lbl,v,neg,bold,indent)=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:1.5px 0${indent?';padding-left:10px':''}${bold?';font-weight:600':''}">
+    <span style="opacity:.75;font-size:10.5px">${lbl}</span><span style="${S(v,neg,bold,indent)}">${neg?'-':''}${fmtKU(Math.abs(Math.round(v)))}</span></div>`;
+  const sec=(t)=>`<div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin:9px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--color-border-secondary)">${t}</div>`;
+  const hr=()=>`<div style="border-top:1px dashed var(--color-border-secondary);margin:3px 0"></div>`;
+  const sub=(lbl,v,neg)=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;font-weight:700;font-size:11px">
+    <span>${lbl}</span><span style="${S(v,neg,true,false)}">${neg?'-':''}${fmtKU(Math.abs(Math.round(v)))}</span></div>`;
+  let h='';
+  h+=sec('Ingresos — estabilizados, netos de IVA');
+  h+=row('⚽ Fútbol',r.scN,false,false,true);
+  h+=row('🎓 Escuelita',r.stN,false,false,true);
+  if(P.po)h+=row('🏓 Paddle',r.pdN,false,false,true);
+  if(P.buOn)h+=row('🍺 Buffet',r.bu,false,false,true);
+  if(P.evOn)h+=row('🎉 Eventos',r.ev,false,false,true);
+  if(P.toOn)h+=row('🏆 Torneos',r.to,false,false,true);
+  if(custRev>0)h+=row('Custom ingresos',custRev,false,false,true);
+  h+=hr();h+=sub('Total facturación',totalRev,false);
+  h+=row(`IVA no recibido (${ivaEf}% ef. sobre declarado — informativo)`,ivaAmt,true,false,true);
+  h+=sec('Gastos fijos');
+  const fixRows=[['Alquiler',gR('n-gA')/fx],['Servicios',gR('n-gB')/fx],['Marketing',gR('n-gC')/fx],
+    ['Mant. + otros',gR('n-gD')/fx],['ABL',gR('n-gABL')/fx],['One-offs',gR('n-gE')],
+    ['Honorarios contables',gR('n-gHono')],['Fondo legal',gR('n-gLeg')],['Seguros',gR('n-gSeg')],
+    ['Mant. semestral ÷6',gR('n-mant6')/6],...CUSTOM_GASTOS.map(g=>[g.n,g.usd])].filter(([,v])=>v>0);
+  fixRows.forEach(([l,v])=>h+=row(l,v,true,false,true));
+  h+=hr();h+=sub('Subtotal fijos',r.fc,true);
+  h+=sec('Personal');
+  const nEmp=EMP.reduce((s,e)=>s+e.q,0);
+  const ecEf=(P.eBlanco/100*P.eCarg).toFixed(0);
+  h+=row(`Empleados (${nEmp} pers.) — bruto`,empBruto,true,false,true);
+  h+=row(`Cargas patronales empleados (${ecEf}% ef.)`,empCargas,true,false,true);
+  h+=row(`Profes (${rcProfN} × ARS ${sep(P.stSalArs||700000)}/mes, monotributistas)`,teachBruto,true,false,true);
+  if(stInscArsRC>0)h+=row(`Inscripción anual (÷12 amort.) ARS ${sep(stInscArsRC)}/alumno`,Math.round((P.st||0)*stInscArsRC/12/fx),false,false,true);
+  h+=row('Provisión indemnizaciones',r.indem,true,false,true);
+  h+=hr();h+=sub('Subtotal personal',r.sal+(r.teacher||0)+r.indem,true);
+  h+=sec('Impuestos y cargas fiscales');
+  h+=row(`IIBB ${P.ibRate}% sobre declarado`,r.ib,true,false,true);
+  h+=row(`Imp. al cheque ${(P.chequeRate!=null?P.chequeRate:0.6)}% sobre declarado`,(r.cheque||0),true,false,true);
+  h+=row(`Ganancias SRL ${(P.ganRate!=null?P.ganRate:35)}% sobre utilidad declarada`,(r.gan||0),true,false,true);
+  h+=hr();h+=sub('Subtotal impuestos',(r.ib||0)+(r.cheque||0)+(r.gan||0),true);
+  h+=sec('Resultado mensual estabilizado');
+  h+=sub('Total gastos',totalGastos,true);
+  const gc=r.gain>=0?'#639922':'var(--color-text-danger)';
+  h+=`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-weight:700;font-size:13px;border-top:2px solid var(--color-border-secondary);margin-top:4px">
+    <span>Ganancia neta mensual</span><span style="font-family:var(--font-mono);color:${gc}">${fmtKU(r.gain)}/mes</span></div>`;
+  h+=`<div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-top:1px"><span>Margen sobre facturación</span><span>${margen}%</span></div>`;
+  el.innerHTML=h;
+}
+function renderSlots(){
+  const row=document.getElementById('scRow');
+  row.innerHTML='';
+  for(let i=0;i<4;i++){
+    const s=slots[i],el=document.createElement('div');
+    el.className='sc-pill'+(s?'':' emp')+(i===aSlot?' act':'');
+    if(s){
+      el.title=`ROI ${s.roi}% · BE ${bef(s.be)} · ${fmtKU(s.cum)} al vencimiento`;
+      if(pendingDelete===i){
+        el.innerHTML=`<span class="sc-pill-n" style="color:var(--color-text-danger)">¿Borrar?</span><button class="sc-pill-x" style="color:var(--color-text-danger);border-color:var(--color-text-danger)" title="Confirmar borrado" onclick="event.stopPropagation();deleteSlot(${i})">✓</button><button class="sc-pill-x" title="Cancelar" onclick="event.stopPropagation();cancelDelete()">✗</button>`;
+        el.style.borderColor='var(--color-text-danger)';
+        el.style.background='var(--color-background-danger)';
+      } else {
+        el.innerHTML=`<span class="sc-pill-n">${s.name.replace(/</g,'&lt;')}</span><button class="sc-pill-x" title="Borrar escenario" onclick="event.stopPropagation();askDeleteSlot(${i})">×</button>`;
+      }
+      el.addEventListener('click',()=>{if(i===aSlot)aSlot=-1;else loadSlot(i);});
+      el.querySelector('.sc-pill-n').addEventListener('dblclick',e=>{e.stopPropagation();startRenameSlot(i,el);});
+    } else {
+      el.innerHTML=`<span class="sc-pill-n" style="opacity:.5">${i===aSlot?'grabando…':'Slot '+(i+1)}</span>`;
+      el.addEventListener('click',()=>{aSlot=i;render();});
+      el.title='Grabar en este slot';
+    }
+    row.appendChild(el);
+  }
+  const ab=document.createElement('button');
+  ab.className='sc-add-btn';
+  ab.textContent='+ nuevo';
+  ab.title='Guardar escenario actual con nuevo nombre';
+  ab.addEventListener('click',()=>{
+    const cnt=slots.filter(Boolean).length;
+    newSlot('Escenario '+(cnt+1));
+    const newEl=document.getElementById('scRow').children[aSlot];
+    if(newEl) startRenameSlot(aSlot,newEl);
+  });
+  row.appendChild(ab);
+}
+function startRenameSlot(i,el){
+  const nameEl=el.querySelector('.sc-pill-n');
+  if(!nameEl) return;
+  const inp=document.createElement('input');
+  inp.className='sc-pill-inp';
+  inp.value=slots[i]?slots[i].name:'';
+  const done=(save)=>{
+    if(save&&slots[i]) slots[i].name=inp.value.trim()||slots[i].name;
+    renderSlots();saveLS();
+  };
+  inp.onkeydown=e=>{if(e.key==='Enter')done(true);else if(e.key==='Escape')done(false);};
+  inp.onblur=()=>done(true);
+  nameEl.replaceWith(inp);
+  inp.focus();inp.select();
+}
+function newSlot(name){let idx=slots.findIndex(s=>!s);if(idx<0)idx=0;slots[idx]={name,P:{...P},EMP:JSON.parse(JSON.stringify(EMP)),roi:0,be:null,cum:0};aSlot=idx;render();}
+function loadSlot(i){
+  P={...slots[i].P};EMP=JSON.parse(JSON.stringify(slots[i].EMP));
+  Object.entries({co:'s-co',ohd:'s-ohd',oc:'s-oc',pr:'s-pr',rc:'s-rc',st:'s-st',fe:'s-fe',rs:'s-rs',pn:'s-pn',pod:'s-pod',pa:'s-pa',pp:'s-pp',rp:'s-rp',fx:'s-fx',meses:'s-meses',negro:'s-negro',obra:'s-obra',pInvM:'s-pInvM',seas:'s-seas',startMonth:'s-startMonth',startYear:'s-startYear',ibRate:'s-ibRate',indemFam:'s-indemFam',stRatio:'s-stRatio',stSalArs:'s-stSalArs',chequeRate:'s-chequeRate',ganRate:'s-ganRate'})
+    .forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.value=P[k];});
+  document.getElementById('pdOn').checked=P.po;
+  document.getElementById('sw-bu').checked=P.buOn;document.getElementById('sw-ev').checked=P.evOn;document.getElementById('sw-to').checked=P.toOn;
+  const fcOn=document.getElementById('fin-cOn');if(fcOn)fcOn.checked=!!P.finCOn;
+  const sCFC=document.getElementById('s-finCCuotas');if(sCFC){sCFC.value=P.finCCuotas||24;document.getElementById('v-finCCuotas').textContent=P.finCCuotas||24;}
+  const nCT=document.getElementById('n-finCTasa');if(nCT)nCT.value=P.finCTasa!=null?P.finCTasa:8;
+  const fpOn=document.getElementById('fin-pdOn');if(fpOn)fpOn.checked=!!P.finPdOn;
+  const sFPC=document.getElementById('s-finPdCuotas');if(sFPC){sFPC.value=P.finPdCuotas||18;document.getElementById('v-finPdCuotas').textContent=P.finPdCuotas||18;}
+  const nPT=document.getElementById('n-finPdTasa');if(nPT)nPT.value=P.finPdTasa!=null?P.finPdTasa:8;
+  document.getElementById('n-ebl').value=P.eBlanco;document.getElementById('n-ecg').value=P.eCarg;
+  document.querySelectorAll('#cw [data-fmt]').forEach(el=>{const v=parseFloat(el.getAttribute('data-raw'))||0;el.value=fmtByType(v,el.getAttribute('data-fmt'));});
+  aSlot=i;rfr();isSlotSwitch=true;render();isSlotSwitch=false;
+}
+// ─── CHAT ────────────────────────────────────────────────────────────
+const ROBERTO_PROMPT=`Sos Roberto Etcheverría, 58 años, contador público y empresario con 30 años en negocios gastronómicos y deportivos en zona norte del Gran Buenos Aires.
+Tu historia: en 1995 abriste un buffet en Pilar; sobreviviste el corralito del 2001 con cheques rebotados y sin crédito; en 2003 compraste tu primer complejo de fútbol en San Isidro (4 canchas + salón); en 2009 entraste al paddle en Tigre cuando era novedad y en 2011 ya era la mitad de tu facturación; hoy tenés participación en 4 complejos, ~14 canchas en total, y de vez en cuando asesorás proyectos que te parecen interesantes.
+Hablás directo, con humor porteño, sin vueltas. Cuando algo no cierra, lo decís. Cuando está bien armado, también lo reconocés. Tirás anécdotas concretas de negocios que conociste (nombres ficticios, situaciones reales del mercado GBA). Cuando cites una anécdota, explicá brevemente su naturaleza y de dónde viene la referencia.
+PODÉS PROPONER ESCENARIOS con este formato exacto en una sola línea:
+{{ESCENARIO|nombre corto|{"param":valor}}}
+Los valores deben ser SIEMPRE números puros (sin unidades, sin texto, sin comillas). Solo cambiá los parámetros relevantes. Parámetros: co (canchas fútbol 1-8), ohd (horas/día 3-16), oc (ocupación % fútbol 10-100), pr (precio USD/hora fútbol 5-100), rc (meses ramp fútbol 1-24), st (alumnos escuelita 0-700), fe (cuota ARS 20000-200000), rs (meses ramp escuelita 1-24), pn (canchas paddle 1-6), pa (ocupación % paddle 10-100), pp (precio USD/hora paddle 5-80), rp (meses ramp paddle 1-24), fx (TC ARS/USD 600-6000), meses (horizonte 12-84), negro (% cash 0-100), obra (meses sin ingresos 0-12), pInvM (mes inversión paddle 0-24).
+PODÉS MARCAR EVENTOS EN EL GRÁFICO con este formato exacto:
+{{EVENTO|mes|descripción máx 25 chars|color}}
+Colores: success (positivo), warning (neutro/riesgo), danger (negativo).
+PODÉS AGREGAR GASTOS FIJOS MENSUALES (en USD) al modelo con este formato:
+{{GASTO|nombre del gasto|monto_usd_mensual}}
+PODÉS AGREGAR EMPLEADOS al modelo con este formato:
+{{EMP_ADD|rol o nombre|cantidad|sueldo_ars_por_persona}}
+PODÉS AGREGAR INGRESOS MENSUALES (en USD) al modelo con este formato:
+{{INGRESO|nombre del ingreso|monto_usd_mensual}}
+PODÉS EDITAR LA CURVA DE OCUPACIÓN GLOBAL (afectar demanda de todos los ingresos) con este formato:
+{{OCC|mes|porcentaje}}
+Porcentaje: 100=normal, 70=crisis, 120=boom. Podés enviar múltiples en un mensaje.
+Respondé siempre en español rioplatense. Máximo 4-5 párrafos. No des teoría, dá perspectiva práctica con números reales cuando puedas.`;
+
+let chatHistory=[],chatOpen=false,chatTypingEl=null;
+
+function getStateCtx(){
+  const r=calc();
+  return `[Estado actual del simulador]
+- Fútbol: ${P.co} canchas · ${P.ohd}hs/día · ${P.oc}% ocup. · USD ${P.pr}/h → USD ${Math.round(r.scN/1000)}k/mes
+- Escuelita: ${P.st} alumnos · ARS ${sep(P.fe)}/cuota → USD ${Math.round(r.stN/1000)}k/mes
+- Paddle: ${P.po?`${P.pn} canchas · ${P.pa}% ocup. · USD ${P.pp}/h → USD ${Math.round(r.pdN/1000)}k/mes`:'inactivo'}
+- Gastos fijos (incl. sueldos): USD ${Math.round((r.fc+r.sal)/1000)}k/mes
+- Inversión total: USD ${Math.round(r.inv/1000)}k · Colchón: USD ${Math.round(r.colchon/1000)}k · Capital total: USD ${Math.round(r.capitalTotal/1000)}k
+- Break-even acumulado: ${r.be?'mes '+r.be:'no alcanzado en el horizonte'}
+- Ganancia mensual estabilizada: USD ${Math.round(r.gain/1000)}k · ROI anualizado: ${r.roi}%
+- TC: ARS ${sep(P.fx)}/USD · Horizonte: ${P.meses} meses · Obra: ${P.obra} meses · Paddle diferido: mes ${P.pInvM}`;
+}
+
+function parseAIMsg(raw,replay=false){
+  let html=raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  // Events
+  html=html.replace(/\{\{EVENTO\|(\d+)\|([^|]+)\|(\w+)\}\}/g,(m,mo,desc,col)=>{
+    if(!replay){const ev={m:parseInt(mo),label:desc.trim(),color:col.trim()};chartEvents.push(ev);if(chart)chart.update('none');}
+    return `<span class="cev-tag ${col.trim()}">📍 mes ${mo}: ${desc.trim()}</span>`;
+  });
+  // Custom gastos
+  html=html.replace(/\{\{GASTO\|([^|]+)\|([\d.]+)\}\}/g,(m,name,usdStr)=>{
+    const usd=parseFloat(usdStr)||0;
+    if(!replay&&usd>0&&name.trim()){
+      const existing=CUSTOM_GASTOS.findIndex(g=>g.n===name.trim());
+      if(existing>=0)CUSTOM_GASTOS[existing].usd=usd;else CUSTOM_GASTOS.push({n:name.trim(),usd});
+      render();
+    }
+    return `<span class="cev-tag warning">💸 Gasto agregado: ${name.trim()} USD ${usd}/mes</span>`;
+  });
+  // Custom ingresos
+  html=html.replace(/\{\{INGRESO\|([^|]+)\|([\d.]+)\}\}/g,(m,name,usdStr)=>{
+    const usd=parseFloat(usdStr)||0;
+    if(!replay&&usd>0&&name.trim()){
+      const existing=CUSTOM_INGRESOS.findIndex(g=>g.n===name.trim());
+      if(existing>=0)CUSTOM_INGRESOS[existing].usd=usd;else CUSTOM_INGRESOS.push({n:name.trim(),usd});
+      render();
+    }
+    return `<span class="cev-tag success">💰 Ingreso agregado: ${name.trim()} USD ${usd}/mes</span>`;
+  });
+  // OCC curve — AI sends display % (0-100), stored as pure multiplier
+  html=html.replace(/\{\{OCC\|(\d+)\|(\d+)\}\}/g,(m,mStr,pctStr)=>{
+    const mi=Math.floor(parseInt(mStr)/3);
+    const dispPct=Math.max(0,Math.min(100,parseInt(pctStr)||P.oc));
+    const mult=Math.max(0,Math.round(dispPct/Math.max(1,P.oc)*100));
+    if(!replay){
+      initOccPts();
+      if(mi<OCC_PTS.length)OCC_PTS[mi]=mult;
+      render();
+    }
+    return `<span class="cev-tag warning">📊 Ocupación mes ${mStr}: ${dispPct}%</span>`;
+  });
+  // Custom employees
+  html=html.replace(/\{\{EMP_ADD\|([^|]+)\|(\d+)\|([\d.]+)\}\}/g,(m,role,qtyStr,salStr)=>{
+    const qty=parseInt(qtyStr)||1,sal=parseFloat(salStr)||0;
+    if(!replay&&sal>0&&role.trim()){
+      const existing=EMP.findIndex(e=>e.n===role.trim());
+      if(existing>=0){EMP[existing].q=qty;EMP[existing].s=sal;}else EMP.push({n:role.trim(),q:qty,s:sal});
+      renderEmp();render();
+    }
+    return `<span class="cev-tag success">👤 Empleado: ${role.trim()} ×${qty} — ARS ${sep(sal)}/mes</span>`;
+  });
+  // Scenarios
+  html=html.replace(/\{\{ESCENARIO\|([^|]+)\|(\{[^}]+\})\}\}/g,(m,name,paramsRaw)=>{
+    try{
+      const params=JSON.parse(paramsRaw);
+      const uid='csc_'+Math.random().toString(36).substr(2,8);
+      setTimeout(()=>{const b=document.getElementById(uid);if(b)b.onclick=()=>applyChatScenario(name.trim(),params);},50);
+      return `<button id="${uid}" class="csc-btn">📊 Aplicar: ${name.trim()}</button>`;
+    }catch(e){return m;}
+  });
+  return html;
+}
+
+function applyChatScenario(name,params){
+  // Only allow known numeric P keys; coerce all values to numbers to prevent NaN from string params
+  const knownNum=['co','ohd','oc','pr','rc','st','fe','rs','pn','pod','pa','pp','rp','fx','meses','negro','obra','pInvM','sp1','seas','startMonth','startYear','ibRate','indemFam','stRatio','stSalArs','chequeRate','ganRate','finCCuotas','finCTasa','finPdCuotas','finPdTasa','eBlanco','eCarg'];
+  const safe={};
+  knownNum.forEach(k=>{if(params[k]!==undefined){const v=parseFloat(params[k]);if(!isNaN(v))safe[k]=v;}});
+  if(Object.keys(safe).length===0){addCMsg('ai','⚠️ El escenario no tenía parámetros válidos para aplicar.');return;}
+  Object.assign(P,safe);
+  const sm={co:'s-co',ohd:'s-ohd',oc:'s-oc',pr:'s-pr',rc:'s-rc',st:'s-st',fe:'s-fe',rs:'s-rs',pn:'s-pn',pod:'s-pod',pa:'s-pa',pp:'s-pp',rp:'s-rp',fx:'s-fx',meses:'s-meses',negro:'s-negro',obra:'s-obra',pInvM:'s-pInvM'};
+  Object.entries(sm).forEach(([k,id])=>{if(safe[k]!==undefined){const el=document.getElementById(id);if(el)el.value=P[k];}});
+  newSlot(name);rfr();render();
+  addCMsg('ai',`✅ Apliqué <strong>${name}</strong> y lo guardé en un slot. Podés compararlo con otros escenarios arriba.`);
+}
+
+function addCMsg(role,html){
+  const msgs=document.getElementById('chatMsgs');if(!msgs)return;
+  const d=document.createElement('div');d.className='cmsg '+role;
+  d.innerHTML=role==='ai'
+    ?`<div class="chat-av" style="font-size:13px">🧉</div><div class="cbub">${html}</div>`
+    :`<div class="cbub">${html}</div>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+
+function showTypingC(){
+  const msgs=document.getElementById('chatMsgs');if(!msgs)return;
+  chatTypingEl=document.createElement('div');chatTypingEl.className='cmsg ai';
+  chatTypingEl.innerHTML='<div class="chat-av" style="font-size:13px">🧉</div><div class="cbub"><div class="ctyping"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div></div>';
+  msgs.appendChild(chatTypingEl);msgs.scrollTop=msgs.scrollHeight;
+}
+function hideTypingC(){if(chatTypingEl){chatTypingEl.remove();chatTypingEl=null;}}
+
+async function sendChat(){
+  const inp=document.getElementById('chatInput');
+  const key=localStorage.getItem('claudeApiKey')||'';
+  if(!key){addCMsg('ai','⚠️ Primero ingresá tu API key de Anthropic arriba.');return;}
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.style.height='36px';
+  addCMsg('u',txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+  showTypingC();
+  const stateCtx=getStateCtx();
+  const msgs=[...chatHistory,{role:'user',content:`${stateCtx}\n\n[Mensaje]\n${txt}`}];
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1200,system:ROBERTO_PROMPT,messages:msgs})
+    });
+    hideTypingC();
+    if(!res.ok){const e=await res.json();addCMsg('ai',`⚠️ Error API: ${e.error?.message||res.status}`);return;}
+    const data=await res.json();
+    const reply=data.content[0].text;
+    chatHistory.push({role:'user',content:`${stateCtx}\n\n[Mensaje]\n${txt}`});
+    chatHistory.push({role:'assistant',content:reply});
+    if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
+    addCMsg('ai',parseAIMsg(reply));
+  }catch(e){hideTypingC();addCMsg('ai',`⚠️ Error de conexión: ${e.message}`);}
+}
+
+function saveApiKey(){
+  const el=document.getElementById('chatApiKey');
+  if(el&&el.value.trim()&&!el.value.startsWith('●')){
+    localStorage.setItem('claudeApiKey',el.value.trim());
+    el.value='●●●●●●●●●●●●●●●●●●●●';
+    const st=document.getElementById('chatApiSt');if(st)st.textContent='guardada ✓';
+  }
+}
+function toggleChat(){
+  chatOpen=!chatOpen;
+  const p=document.getElementById('chatPanel');if(p)p.classList.toggle('open',chatOpen);
+}
+// Init chat
+(function initChat(){
+  const key=localStorage.getItem('claudeApiKey');
+  const st=document.getElementById('chatApiSt');
+  if(key){const el=document.getElementById('chatApiKey');if(el)el.value='●●●●●●●●●●●●●●●●●●●●';if(st)st.textContent='guardada ✓';}
+  // Restore chat history
+  try{
+    const cd=JSON.parse(localStorage.getItem('canchitas_chat')||'{}');
+    if(cd.chatHistory&&cd.chatHistory.length){
+      chatHistory=cd.chatHistory;
+      // Replay visible messages from history (skip state-context user messages, show only user text and AI replies)
+      chatHistory.forEach((msg,i)=>{
+        if(msg.role==='user'){
+          const txt=(msg.content.includes('[Mensaje]\n')?msg.content.split('[Mensaje]\n')[1]:msg.content).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          addCMsg('u',txt);
+        } else {
+          addCMsg('ai',parseAIMsg(msg.content,true));
+        }
+      });
+      // Restore chart events
+      if(cd.chartEvents){chartEvents=cd.chartEvents;if(chart)chart.update('none');}
+      return;
+    }
+  }catch(e){}
+  setTimeout(()=>addCMsg('ai',`¡Buenas! Estuve mirando los números. Bastante ambicioso el proyecto, pero no imposible — en zona norte GBA hay mercado para esto. Cuando quieras arrancamos: preguntame sobre cualquier variable, pedime un escenario pesimista o decime qué parte del modelo te genera más dudas.`),400);
+})();
+// ─────────────────────────────────────────────────────────────────────
+function shareHTML(){
+  let html=document.documentElement.outerHTML;
+  const s=v=>JSON.stringify(v);
+  html=html.replace(/let P=\{[^}]*\};/,()=>'let P='+s(P)+';');
+  html=html.replace(/let EMP=\[.*?\];/,()=>'let EMP='+s(EMP)+';');
+  html=html.replace(/let CUSTOM_GASTOS=\[.*?\];/,()=>'let CUSTOM_GASTOS='+s(CUSTOM_GASTOS)+';');
+  html=html.replace(/let CUSTOM_INGRESOS=\[.*?\];/,()=>'let CUSTOM_INGRESOS='+s(CUSTOM_INGRESOS)+';');
+  html=html.replace(/let CUSTOM_CAPEX=\[.*?\];/,()=>'let CUSTOM_CAPEX='+s(CUSTOM_CAPEX)+';');
+  html=html.replace(/let OCC_PTS=\[.*?\];/,()=>'let OCC_PTS='+s(OCC_PTS)+';');
+  html=html.replace(/let DEVAL_EVENTS=\[.*?\];/,()=>'let DEVAL_EVENTS='+s(DEVAL_EVENTS)+';');
+  html=html.replace(/let slots=.+,aSlot=-?\d+,openSecs=\{ftb:true\}/,()=>'let slots='+s(slots)+',aSlot='+aSlot+',openSecs={ftb:true}');
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='canchitas-'+new Date().toISOString().slice(0,10)+'.html';
+  a.click();URL.revokeObjectURL(a.href);
+}
+function exportJSON(){
+  const data={P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,OCC_PTS,DEVAL_EVENTS,slots,aSlot};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='canchitas-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();URL.revokeObjectURL(a.href);
+}
+function importState(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.P)P={...P,...d.P};
+      if(d.EMP)EMP=d.EMP;
+      if(d.CUSTOM_GASTOS)CUSTOM_GASTOS=d.CUSTOM_GASTOS;
+      if(d.CUSTOM_INGRESOS)CUSTOM_INGRESOS=d.CUSTOM_INGRESOS;
+      if(d.CUSTOM_CAPEX)CUSTOM_CAPEX=d.CUSTOM_CAPEX;
+      if(d.OCC_PTS&&d.OCC_PTS.length&&d.OCC_PTS.every(v=>v>=60&&v<=140))OCC_PTS=d.OCC_PTS;
+      if(d.DEVAL_EVENTS)DEVAL_EVENTS=d.DEVAL_EVENTS;
+      if(d.slots)slots=d.slots;
+      if(d.aSlot!=null)aSlot=d.aSlot;
+      Object.entries({co:'s-co',ohd:'s-ohd',oc:'s-oc',pr:'s-pr',rc:'s-rc',st:'s-st',fe:'s-fe',rs:'s-rs',pn:'s-pn',pod:'s-pod',pa:'s-pa',pp:'s-pp',rp:'s-rp',fx:'s-fx',meses:'s-meses',negro:'s-negro',obra:'s-obra',pInvM:'s-pInvM',seas:'s-seas',startMonth:'s-startMonth',startYear:'s-startYear',ibRate:'s-ibRate',indemFam:'s-indemFam',stRatio:'s-stRatio',stSalArs:'s-stSalArs',chequeRate:'s-chequeRate',ganRate:'s-ganRate'})
+        .forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.value=P[k];});
+      document.getElementById('pdOn').checked=P.po;
+      document.getElementById('sw-bu').checked=P.buOn;document.getElementById('sw-ev').checked=P.evOn;document.getElementById('sw-to').checked=P.toOn;
+      const fcOn=document.getElementById('fin-cOn');if(fcOn)fcOn.checked=!!P.finCOn;
+      const sCFC=document.getElementById('s-finCCuotas');if(sCFC){sCFC.value=P.finCCuotas||24;document.getElementById('v-finCCuotas').textContent=P.finCCuotas||24;}
+      const nCT=document.getElementById('n-finCTasa');if(nCT)nCT.value=P.finCTasa!=null?P.finCTasa:8;
+      const fpOn=document.getElementById('fin-pdOn');if(fpOn)fpOn.checked=!!P.finPdOn;
+      const sFPC=document.getElementById('s-finPdCuotas');if(sFPC){sFPC.value=P.finPdCuotas||18;document.getElementById('v-finPdCuotas').textContent=P.finPdCuotas||18;}
+      const nPT=document.getElementById('n-finPdTasa');if(nPT)nPT.value=P.finPdTasa!=null?P.finPdTasa:8;
+      document.querySelectorAll('#cw [data-fmt]').forEach(el=>{const v=parseFloat(el.getAttribute('data-raw'))||0;el.value=fmtByType(v,el.getAttribute('data-fmt'));});
+      rfr();render();
+    }catch(err){alert('Error al leer el archivo: '+err.message);}
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+// ── File System Sync (Chrome/Edge) ───────────────────────────────────────
+let _fh=null,_htmlFh=null;
+function _openIDB(){return new Promise((res,rej)=>{const r=indexedDB.open('canchitas_fsa',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('h');r.onsuccess=e=>res(e.target.result);r.onerror=rej;});}
+async function _saveIDB(h){try{const db=await _openIDB();await new Promise((res,rej)=>{const tx=db.transaction('h','readwrite');tx.objectStore('h').put(h,'k');tx.oncomplete=res;tx.onerror=rej;});}catch(e){}}
+async function _loadIDB(){try{const db=await _openIDB();return await new Promise(res=>{const tx=db.transaction('h','readonly');const r=tx.objectStore('h').get('k');r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null);});}catch(e){return null;}}
+async function _saveHTMLIDB(h){try{const db=await _openIDB();await new Promise((res,rej)=>{const tx=db.transaction('h','readwrite');tx.objectStore('h').put(h,'hk');tx.oncomplete=res;tx.onerror=rej;});}catch(e){}}
+async function _loadHTMLIDB(){try{const db=await _openIDB();return await new Promise(res=>{const tx=db.transaction('h','readonly');const r=tx.objectStore('h').get('hk');r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null);});}catch(e){return null;}}
+function _bakedHTML(){
+  const s=v=>JSON.stringify(v);
+  let html=document.documentElement.outerHTML;
+  html=html.replace(/let P=\{[^}]*\};/,()=>'let P='+s(P)+';');
+  html=html.replace(/let EMP=\[.*?\];/,()=>'let EMP='+s(EMP)+';');
+  html=html.replace(/let CUSTOM_GASTOS=\[.*?\];/,()=>'let CUSTOM_GASTOS='+s(CUSTOM_GASTOS)+';');
+  html=html.replace(/let CUSTOM_INGRESOS=\[.*?\];/,()=>'let CUSTOM_INGRESOS='+s(CUSTOM_INGRESOS)+';');
+  html=html.replace(/let CUSTOM_CAPEX=\[.*?\];/,()=>'let CUSTOM_CAPEX='+s(CUSTOM_CAPEX)+';');
+  html=html.replace(/let OCC_PTS=\[.*?\];/,()=>'let OCC_PTS='+s(OCC_PTS)+';');
+  html=html.replace(/let DEVAL_EVENTS=\[.*?\];/,()=>'let DEVAL_EVENTS='+s(DEVAL_EVENTS)+';');
+  html=html.replace(/let slots=.+,aSlot=-?\d+,openSecs=\{ftb:true\}/,()=>'let slots='+s(slots)+',aSlot='+aSlot+',openSecs={ftb:true}');
+  return '<!DOCTYPE html>\n'+html;
+}
+async function _writeHTMLFile(){
+  if(!_htmlFh)return;
+  try{
+    if(await _htmlFh.queryPermission({mode:'readwrite'})!=='granted')return;
+    const w=await _htmlFh.createWritable();
+    await w.write(_bakedHTML());
+    await w.close();
+    _updHTMLBtn('ok');
+  }catch(e){console.warn('html sync:',e);}
+}
+async function linkHTMLFile(){
+  if(!window.showSaveFilePicker){alert('Usá Chrome o Edge para esta función.');return;}
+  try{
+    const h=await window.showSaveFilePicker({suggestedName:'index.html',types:[{description:'HTML',accept:{'text/html':['.html']}}]});
+    _htmlFh=h;await _saveHTMLIDB(h);
+    const w=await _htmlFh.createWritable();
+    await w.write(_bakedHTML());
+    await w.close();
+    _updHTMLBtn('ok');
+  }catch(e){}
+}
+async function saveHTMLFile(){
+  if(!_htmlFh){linkHTMLFile();return;}
+  try{
+    const p=await _htmlFh.requestPermission({mode:'readwrite'});
+    if(p==='granted')await _writeHTMLFile();
+  }catch(e){}
+}
+function _updHTMLBtn(state){
+  const b=document.getElementById('btnHF');if(!b)return;
+  if(state==='ok'){b.textContent='💾✓';b.title='Guardado — el index.html de tu proyecto está actualizado';b.style.color='#5cb85c';}
+  else if(state==='linked'){b.textContent='💾 reconectar';b.title='Clic para reconectar y guardar';b.style.color='#e8a838';}
+  else{b.textContent='💾 guardar en proyecto';b.title='Vincular index.html del proyecto para sobreescribirlo directamente';b.style.color='';}
+}
+async function _writeFile(){
+  if(!_fh)return;
+  try{
+    if(await _fh.queryPermission({mode:'readwrite'})!=='granted')return;
+    const w=await _fh.createWritable();
+    await w.write(JSON.stringify({P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,OCC_PTS,slots,aSlot},null,2));
+    await w.close();
+    _updFSBtn('ok');
+  }catch(e){console.warn('file sync:',e);}
+}
+async function linkFile(){
+  if(!window.showSaveFilePicker){alert('Usá Chrome o Edge para esta función.');return;}
+  try{
+    const h=await window.showSaveFilePicker({suggestedName:'scenarios.json',types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+    _fh=h;await _saveIDB(h);
+    const w=await _fh.createWritable();
+    await w.write(JSON.stringify({P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,OCC_PTS,slots,aSlot},null,2));
+    await w.close();
+    _updFSBtn('ok');
+  }catch(e){}
+}
+async function reconnectFile(){
+  if(!_fh){linkFile();return;}
+  try{await _fh.requestPermission({mode:'readwrite'});await _writeFile();}catch(e){}
+}
+function _updFSBtn(state){
+  const b=document.getElementById('btnFS');if(!b)return;
+  if(state==='ok'){b.textContent='📁✓';b.title='Sincronizado — cada guardado actualiza scenarios.json';b.style.color='#5cb85c';}
+  else if(state==='linked'){b.textContent='📁 reconectar';b.title='Clic para reconectar y activar auto-sync';b.style.color='#e8a838';}
+  else{b.textContent='📁 vincular';b.title='Vincular scenarios.json para auto-sync al guardar';b.style.color='';}
+}
+(async()=>{
+  const h=await _loadIDB();if(!h)return;
+  _fh=h;
+  try{
+    const perm=await h.queryPermission({mode:'readwrite'});
+    if(perm==='granted'){await _writeFile();_updFSBtn('ok');return;}
+    // Permission needs re-granting — request silently on first user interaction
+    _updFSBtn('linked');
+    const ask=async()=>{
+      try{
+        const p=await h.requestPermission({mode:'readwrite'});
+        if(p==='granted'){await _writeFile();_updFSBtn('ok');}
+        else{_fh=null;_updFSBtn('');}
+      }catch(e){_fh=null;_updFSBtn('');}
+    };
+    document.addEventListener('click',ask,{once:true});
+    document.addEventListener('keydown',ask,{once:true});
+  }catch(e){_fh=null;_updFSBtn('');}
+})();
+(async()=>{
+  const h=await _loadHTMLIDB();if(!h)return;
+  _htmlFh=h;
+  try{
+    const perm=await h.queryPermission({mode:'readwrite'});
+    if(perm==='granted'){_updHTMLBtn('ok');return;}
+    _updHTMLBtn('linked');
+    const ask=async()=>{
+      try{
+        const p=await h.requestPermission({mode:'readwrite'});
+        if(p==='granted')_updHTMLBtn('ok');
+        else{_htmlFh=null;_updHTMLBtn('');}
+      }catch(e){_htmlFh=null;_updHTMLBtn('');}
+    };
+    document.addEventListener('click',ask,{once:true});
+    document.addEventListener('keydown',ask,{once:true});
+  }catch(e){_htmlFh=null;_updHTMLBtn('');}
+})();
+// ─────────────────────────────────────────────────────────────────────────
+function _applyD(d){
+  if(d.P)P={...P,...d.P};
+  if(d.EMP)EMP=d.EMP;
+  if(d.CUSTOM_GASTOS)CUSTOM_GASTOS=d.CUSTOM_GASTOS;
+  if(d.CUSTOM_INGRESOS)CUSTOM_INGRESOS=d.CUSTOM_INGRESOS;
+  if(d.CUSTOM_CAPEX)CUSTOM_CAPEX=d.CUSTOM_CAPEX;
+  if(d.DEVAL_EVENTS)DEVAL_EVENTS=d.DEVAL_EVENTS;
+  if(d.OCC_PTS&&d.OCC_PTS.length&&d.OCC_PTS.every(v=>v>=60&&v<=140))OCC_PTS=d.OCC_PTS;
+  if(d.slots)slots=d.slots;
+  if(d.aSlot!=null)aSlot=d.aSlot;
+  Object.entries({co:'s-co',ohd:'s-ohd',oc:'s-oc',pr:'s-pr',rc:'s-rc',st:'s-st',fe:'s-fe',rs:'s-rs',pn:'s-pn',pod:'s-pod',pa:'s-pa',pp:'s-pp',rp:'s-rp',fx:'s-fx',meses:'s-meses',negro:'s-negro',obra:'s-obra',pInvM:'s-pInvM',seas:'s-seas',startMonth:'s-startMonth',startYear:'s-startYear',ibRate:'s-ibRate',indemFam:'s-indemFam',stRatio:'s-stRatio',stSalArs:'s-stSalArs',chequeRate:'s-chequeRate',ganRate:'s-ganRate'})
+    .forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.value=P[k];});
+  const e=id=>document.getElementById(id);
+  if(e('pdOn'))e('pdOn').checked=P.po;
+  if(e('sw-bu'))e('sw-bu').checked=P.buOn;if(e('sw-ev'))e('sw-ev').checked=P.evOn;if(e('sw-to'))e('sw-to').checked=P.toOn;
+  if(e('n-ebl'))e('n-ebl').value=P.eBlanco;if(e('n-ecg'))e('n-ecg').value=P.eCarg;
+}
+// ─── DEVALUATION UI ──────────────────────────────────────────────────
+function renderDevalEvents(){
+  const el=document.getElementById('deval-events');if(!el)return;
+  if(!DEVAL_EVENTS.length){
+    el.innerHTML='<div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;font-style:italic">Sin eventos de crisis — el peso devalúa al ritmo base uniformemente.</div>';
+    return;
+  }
+  el.innerHTML=DEVAL_EVENTS.map((ev,i)=>`<div class="cev-row">
+    <div><span class="fl">Mes</span><input type="number" value="${ev.month}" min="1" style="text-align:center" onblur="DEVAL_EVENTS[${i}].month=Math.max(1,+this.value||1);renderDevalEvents();render()"></div>
+    <div><span class="fl">Shock +%</span><input type="number" value="${ev.jump}" min="0" max="1000" style="text-align:center" onblur="DEVAL_EVENTS[${i}].jump=Math.max(0,+this.value||0);renderDevalEvents();render()"></div>
+    <div><span class="fl">Post %/mes</span><input type="number" value="${ev.postRate}" min="0" max="30" step="0.5" style="text-align:center" onblur="DEVAL_EVENTS[${i}].postRate=Math.max(0,+this.value||0);renderDevalEvents();render()"></div>
+    <div style="font-size:10px;color:var(--color-text-tertiary);align-self:center;line-height:1.3">mes ${ev.month}: +${ev.jump}% y luego ${ev.postRate}%/m</div>
+    <button class="rm-btn" onclick="DEVAL_EVENTS.splice(${i},1);renderDevalEvents();render()">×</button>
+  </div>`).join('');
+}
+function renderDevalHdr(){
+  const on=!!P.devalOn;
+  const sw=document.getElementById('sw-deval');if(sw)sw.checked=on;
+  const det=document.getElementById('det-deval');if(det)det.className='sw-detail'+(on?'':' dis');
+  const sv=document.getElementById('sv-deval');
+  if(sv)sv.textContent=on?(P.devalMonthly||3)+'%/mes':'—';
+  const hd=document.getElementById('hd-dev');
+  if(hd){hd.textContent=on?' — '+P.devalMonthly+'%/mes activo':'';hd.className='hvl '+(on?'neg':'');}
+  const sl=document.getElementById('s-devalMonthly');if(sl)sl.value=P.devalMonthly||3;
+  const vl=document.getElementById('v-devalMonthly');if(vl)vl.textContent=(P.devalMonthly||3)+'%';
+  const nd=document.getElementById('note-deval');
+  if(nd&&on){const r=P.devalMonthly/100;const y1=((Math.pow(1+r,12)-1)*100).toFixed(0);const y2=((Math.pow(1+r,24)-1)*100).toFixed(0);nd.textContent=`A ${P.devalMonthly}%/mes → dólar ×${(Math.pow(1+r,12)).toFixed(1)} en año 1, ×${(Math.pow(1+r,24)).toFixed(1)} en año 2. Costos ARS se abaratan en USD.`;}
+  // highlight active preset
+  const presets=[0,3,7,15];const rates=presets;
+  document.querySelectorAll('#devalPresets .dv-preset').forEach((b,i)=>{b.classList.toggle('sel',Math.abs((P.devalMonthly||0)-rates[i])<0.01);});
+}
+function applyDevalPreset(rate,name){
+  P.devalMonthly=rate;P.devalOn=rate>0;renderDevalHdr();render();
+}
+// ─── WATERFALL UI ────────────────────────────────────────────────────
+function renderWfHdr(){
+  const t1Sp1=P.trig1Sp1||55, t2Sp1=P.trig2Sp1||35;
+  const t1Sp2=P.trig1Sp2!=null?P.trig1Sp2:(100-t1Sp1)/2;
+  const t2Sp2=P.trig2Sp2!=null?P.trig2Sp2:(100-t2Sp1)/2;
+  const t1Sp3=Math.max(0,100-t1Sp1-t1Sp2);
+  const t2Sp3=Math.max(0,100-t2Sp1-t2Sp2);
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=typeof v==='number'?+v.toFixed(2):v;};
+  set('n-trig1Pct',P.trig1Pct||100);set('n-trig2Pct',P.trig2Pct||200);
+  set('n-trig1Sp1',t1Sp1);set('n-trig2Sp1',t2Sp1);
+  set('n-trig1Sp2',+t1Sp2.toFixed(2));set('n-trig2Sp2',+t2Sp2.toFixed(2));
+  set('n-trig1Sp3',+t1Sp3.toFixed(2));set('n-trig2Sp3',+t2Sp3.toFixed(2));
+  const hd=document.getElementById('hd-wf');
+  if(hd){hd.textContent=` T2: ${t2Sp1}/${+t2Sp2.toFixed(1)}/${+t2Sp3.toFixed(1)}`;hd.className='hvl';}
+  const wn1=document.getElementById('wf-pn1');if(wn1)wn1.textContent=P.pn1||'Maxi';
+  const wn2=document.getElementById('wf-pn2');if(wn2)wn2.textContent=P.pn2||'Pato';
+  const wn3=document.getElementById('wf-pn3');if(wn3)wn3.textContent=P.pn3||'Julio';
+}
+// ─── PARTNER NAMES UI ────────────────────────────────────────────────
+function renderPartnerNames(){
+  const n1=P.pn1||'Maxi',n2=P.pn2||'Pato',n3=P.pn3||'Julio';
+  const wn1=document.getElementById('wf-pn1');if(wn1)wn1.textContent=n1;
+  const wn2=document.getElementById('wf-pn2');if(wn2)wn2.textContent=n2;
+  const wn3=document.getElementById('wf-pn3');if(wn3)wn3.textContent=n3;
+}
+// ─── BAR CHART (dividends + revenue + costs) ─────────────────────────
+const C2_COLS={rev:'#639922',cost:'#a32d2d',p1:'#f59e0b',p2:'#38bdf8',p3:'#fb7185',acumP1:'#f59e0b',acumP2:'#38bdf8',acumP3:'#fb7185'};
+function updateChart2(r){
+  if(!r)return;lastR2=r;
+  const n1=P.pn1||'Maxi',n2=P.pn2||'Pato',n3=P.pn3||'Julio';
+  const datasets=[];
+  if(chartVis2.rev)datasets.push({label:'Facturación',data:r.grossD,backgroundColor:'rgba(99,153,34,.45)',borderColor:C2_COLS.rev,borderWidth:1,stack:'rev',order:3,type:'bar'});
+  if(chartVis2.cost)datasets.push({label:'Gastos',data:r.costsD,backgroundColor:'rgba(163,45,45,.4)',borderColor:C2_COLS.cost,borderWidth:1,stack:'cost',order:3,type:'bar'});
+  if(partVis.p1)datasets.push({label:'Div. '+n1,data:r.pn1D,backgroundColor:'rgba(245,158,11,.65)',borderColor:C2_COLS.p1,borderWidth:1,stack:'div',order:2,type:'bar'});
+  if(partVis.p2)datasets.push({label:'Div. '+n2,data:r.pn2D,backgroundColor:'rgba(56,189,248,.55)',borderColor:C2_COLS.p2,borderWidth:1,stack:'div',order:2,type:'bar'});
+  if(partVis.p3)datasets.push({label:'Div. '+n3,data:r.pn3D,backgroundColor:'rgba(251,113,133,.55)',borderColor:C2_COLS.p3,borderWidth:1,stack:'div',order:2,type:'bar'});
+  if(partVis.p1&&chartVis2.acum)datasets.push({label:'Acum. '+n1,data:r.pn1CumD,borderColor:C2_COLS.p1,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
+  if(partVis.p2&&chartVis2.acum)datasets.push({label:'Acum. '+n2,data:r.pn2CumD,borderColor:C2_COLS.p2,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
+  if(partVis.p3&&chartVis2.acum)datasets.push({label:'Acum. '+n3,data:r.pn3CumD,borderColor:C2_COLS.p3,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',yAxisID:'ya',order:1});
+  if(chartVis2.net)datasets.push({label:'Ganancia mensual',data:r.netD,borderColor:'#378add',backgroundColor:'transparent',borderWidth:2,pointRadius:0,pointHoverRadius:5,tension:0.35,type:'line',yAxisID:'y',order:0});
+  if(chartVis2.sp)datasets.push({label:'S&P500',data:r.spD,borderColor:'#888780',backgroundColor:'transparent',borderWidth:1.5,borderDash:[5,4],pointRadius:0,tension:0.35,type:'line',yAxisID:'ya',order:0});
+  const cvBtn=document.getElementById('cv-acum');if(cvBtn)cvBtn.classList.toggle('off',!chartVis2.acum);
+  const cvNet=document.getElementById('cv-net');if(cvNet)cvNet.classList.toggle('off',!chartVis2.net);
+  const cvSp=document.getElementById('cv-sp');if(cvSp)cvSp.classList.toggle('off',!chartVis2.sp);
+  const hasAcum=(chartVis2.acum&&(partVis.p1||partVis.p2||partVis.p3))||chartVis2.sp||false;
+  if(!chart2){
+    const ctx=document.getElementById('ch2');if(!ctx)return;
+    chart2=new Chart(ctx.getContext('2d'),{type:'bar',data:{labels:r.labels,datasets},
+      options:{responsive:true,maintainAspectRatio:false,
+        interaction:{mode:'index',intersect:false},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmtKU(c.parsed.y)}`}}},
+        scales:{
+          x:{stacked:true,grid:{color:'rgba(128,128,128,.1)'},ticks:{color:'#888780',font:{size:9},maxRotation:0,autoSkip:true,maxTicksLimit:10}},
+          y:{stacked:false,position:'left',grid:{color:'rgba(128,128,128,.1)'},ticks:{color:'#888780',font:{size:10},callback:v=>fmtKU(v)}},
+          ya:{display:hasAcum,position:'right',grid:{drawOnChartArea:false},ticks:{color:'#888780',font:{size:10},callback:v=>fmtKU(v)}}}}});
+  } else {
+    chart2.data.labels=r.labels;chart2.data.datasets=datasets;
+    chart2.options.scales.ya.display=hasAcum;
+    chart2.update('none');
+  }
+}
+// ─── SAVE ─────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const next=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('canchitas_theme',next);
+  const btn=document.getElementById('themeToggle');
+  if(btn)btn.textContent=next==='dark'?'☾':'☀';
+  renderOccChart();
+}
+function initTheme(){
+  const t=document.documentElement.getAttribute('data-theme')||'dark';
+  const btn=document.getElementById('themeToggle');
+  if(btn)btn.textContent=t==='dark'?'☾':'☀';
+}
+function saveLS(){
+  localStorage.setItem('canchitas',JSON.stringify({P,EMP,CUSTOM_GASTOS,CUSTOM_INGRESOS,CUSTOM_CAPEX,DEVAL_EVENTS,OCC_PTS,slots,aSlot}));
+  localStorage.setItem('canchitas_chat',JSON.stringify({chatHistory,chartEvents}));
+  _writeFile();
+  sbSave();
+}
+function loadLS(){
+  const raw=localStorage.getItem('canchitas');
+  if(!raw)return false;
+  try{_applyD(JSON.parse(raw));return true;}catch(e){return false;}
+}
+// ─── SUPABASE PERSISTENCE ─────────────────────────────────────────────
+const SB_URL='https://kbatdnrxfrltcmqvsmyy.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtiYXRkbnJ4ZnJsdGNtcXZzbXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ4Mjk4OTIsImV4cCI6MjA2MDQwNTg5Mn0.3ywvNbPDqNMTTOGI4k5LKs_rNm4LDqRXCHAhOEEKPCY';
+let _sb=null;
+function getSB(){if(!_sb&&window.supabase)_sb=window.supabase.createClient(SB_URL,SB_ANON);return _sb;}
+let _sbSaveTimer=null;
+function sbSave(){
+  clearTimeout(_sbSaveTimer);
+  _sbSaveTimer=setTimeout(async()=>{
+    const sb=getSB();if(!sb)return;
+    for(let i=0;i<4;i++){
+      if(!slots[i])continue;
+      await sb.from('canchitas_scenarios').upsert({slot_index:i,name:slots[i].name,params:slots[i].P,employees:slots[i].EMP,fixed_expenses:CUSTOM_GASTOS,occ_pts:OCC_PTS,updated_at:new Date().toISOString()},{onConflict:'slot_index'});
+    }
+  },1500);
+}
+async function sbLoad(){
+  const sb=getSB();if(!sb)return false;
+  try{
+    const{data}=await sb.from('canchitas_scenarios').select('*').order('slot_index');
+    if(!data||!data.length)return false;
+    let changed=false;
+    data.forEach(row=>{
+      if(row.params&&row.slot_index>=0&&row.slot_index<4){
+        slots[row.slot_index]={name:row.name,P:row.params,EMP:row.employees||[],roi:0,be:null,cum:0};changed=true;
+      }
+    });
+    return changed;
+  }catch(e){return false;}
+}
+initTheme();
+const _lsOk=loadLS();
+if(!_lsOk||slots.every(s=>!s)){
+  sbLoad().then(sbOk=>{
+    if(!sbOk){fetch('scenarios.json').then(r=>r.ok?r.json():null).then(d=>{if(d&&d.slots&&d.slots.some(Boolean))_applyD(d);bindInputs();render();}).catch(()=>{bindInputs();render();});}
+    else{bindInputs();render();}
+  }).catch(()=>{bindInputs();render();});
+}else{bindInputs();render();}
+document.querySelectorAll('#cw [data-fmt]').forEach(el=>{const v=parseFloat(el.getAttribute('data-raw'))||0;el.value=fmtByType(v,el.getAttribute('data-fmt'));});
+</script>
+
+
+<div id="occTip" style="position: fixed; display: none; pointer-events: none; background: rgba(20, 20, 18, 0.82); color: rgb(255, 255, 255); padding: 3px 9px; border-radius: 6px; font-size: 14px; font-weight: 700; z-index: 9999; transform: translate(14px, -50%); letter-spacing: 0.02em; font-family: var(--font-mono);"></div>
+</body></html>
